@@ -1,17 +1,23 @@
 {
-  "name": "artem-school-bot",
-  "version": "1.0.0",
-  "description": "",
+  "name": "telebot-vercel-template",
+  "author": "Vladislav Ponomarev <PonomareVlad@users.noreply.github.com> (https://PonomareVlad.ru)",
+  "funding": "https://PonomareVlad.ru/donate",
+  "license": "MIT",
   "scripts": {
     "dev": "vc dev",
     "dev-with-tunnel": "npm run tunnel & npm run dev",
     "tunnel": "cloudflared tunnel --url http://localhost:3000"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "dependencies": {
-    "mongodb": "^5.8.1",
+    "bard-ai": "^2.0.2",
+    "bing-chat": "^0.2.3",
+    "chat-gpt-authenticator": "^0.5.0",
+    "chatgpt": "^5.2.5",
+    "claude-ai": "^1.2.2",
+    "hercai": "^10.0.2",
+    "mongodb": "^5.7.0",
+    "openai": "^3.3.0",
+    "openai-token": "^1.0.0",
     "telebot": "^1.4.1",
     "telebot-vercel": "^1.0.1"
   },
