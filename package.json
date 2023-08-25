@@ -2,7 +2,6 @@
   "name": "artem-school-bot",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "dev": "vc dev",
     "dev-with-tunnel": "npm run tunnel & npm run dev",
