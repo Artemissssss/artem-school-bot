@@ -1,0 +1,23 @@
+{
+  "name": "artem-school-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vc dev",
+    "dev-with-tunnel": "npm run tunnel & npm run dev",
+    "tunnel": "cloudflared tunnel --url http://localhost:3000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^5.8.1",
+    "telebot": "^1.4.1",
+    "telebot-vercel": "^1.0.1"
+  },
+  "engines": {
+    "node": "^18.0.0"
+  },
+  "type": "module"
+}
