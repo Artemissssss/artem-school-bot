@@ -33,7 +33,7 @@ bot.on('/inlineKeyboard', msg => {
 bot.on('callbackQuery', msg => {
     // User message alert
     console.log(msg)
-    msg.reply.text(msg.data)
+    bot.sendMessage(msg.from.id,msg.data)
     return bot.answerCallbackQuery(msg.id, `Inline button callback: ${ msg.data }`, true);
 });
 
