@@ -30,9 +30,10 @@ bot.on('/start', msg => {
 });
 
 bot.on('ask.class', async msg => {
-console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
+    let replyMarkup = bot.keyboard([
+        [],
+    ], {resize: true});
 if(msg.text === "Створити клас"){
-    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
     let idClass = [nanoid(),nanoid()]
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -44,20 +45,17 @@ if(msg.text === "Створити клас"){
     return bot.sendMessage(msg.from.id, `Клас успішно створився!
     <code>${idClass[0]}</code> - id для приєднання учня в клас
     <code>${idClass[1]}</code> - id для приєднання вчителя в клас
-    `, {ask: 'actiont', parseMode: 'html'});
+    `, {ask: 'actiont', parseMode: 'html',replyMarkup});
 }else if(msg.text === "Приєднатися в клас, як учень"){
-    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
-    return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins'});
+    return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins',replyMarkup});
 }else if(msg.text === "Приєднатися в клас, як вчитель"){
-    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
-    return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint'});
+    return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint',replyMarkup});
 }else{
-    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
-    ], {resize: true});
-    return bot.sendMessage(msg.from.id, `Error`, {ask: 'class',replyMarkup});
+    ], {resize: true,replyMarkup});
+    return bot.sendMessage(msg.from.id, `Error`, {ask: 'class'});
 }
 });
 
