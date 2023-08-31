@@ -30,7 +30,7 @@ bot.on('/start', msg => {
 });
 
 bot.on('ask.class', async msg => {
-console.log(msg,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
+console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
 if(msg.text === "Створити клас"){
     let idClass = [nanoid(),nanoid()]
     const client = await MongoClient.connect(
