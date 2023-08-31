@@ -45,6 +45,19 @@ if(msg.text === "Створити клас"){
     <code>${idClass[1]}</code> - id для приєднання вчителя в клас
     `, {ask: 'actiont', parseMode: 'html'});
 }else if(msg.text === "Приєднатися в клас, як учень"){
+    return await bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins'});
+}else if(msg.text === "Приєднатися в клас, як вчитель"){
+    return await bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint'});
+}else{
+    let replyMarkup = bot.keyboard([
+        ['Створити клас'],
+        ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
+    ], {resize: true});
+    return bot.sendMessage(msg.from.id, `Error`, {ask: 'class',replyMarkup});
+}
+});
+
+bot.on('ask.joins', async msg => {
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
@@ -68,7 +81,9 @@ if(msg.text === "Створити клас"){
                 await client.close();
                 return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`, {ask: 'class'});
             }  
-}else if(msg.text === "Приєднатися в клас, як вчитель"){
+})
+
+bot.on('ask.joint', async msg => {
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
@@ -91,15 +106,9 @@ if(msg.text === "Створити клас"){
             }else{
                 await client.close();
                 return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`, {ask: 'class'});
-            }  
-}else{
-    let replyMarkup = bot.keyboard([
-        ['Створити клас'],
-        ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
-    ], {resize: true});
-    return bot.sendMessage(msg.from.id, `Error`, {ask: 'class',replyMarkup});
-}
-});
+            }   
+})
+
 
 // bot.on("text", async msg => {
 //     let replyMarkup = bot.keyboard([
