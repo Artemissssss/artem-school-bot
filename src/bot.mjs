@@ -40,14 +40,14 @@ if(msg.text === "Створити клас"){
     const coll = client.db('artem-school').collection('classrooms');
     const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[],users:[{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Вчитель"}]})
     await client.close();
-    return await bot.sendMessage(msg.from.id, `Клас успішно створився!
+    return bot.sendMessage(msg.from.id, `Клас успішно створився!
     <code>${idClass[0]}</code> - id для приєднання учня в клас
     <code>${idClass[1]}</code> - id для приєднання вчителя в клас
     `, {ask: 'actiont', parseMode: 'html'});
 }else if(msg.text === "Приєднатися в клас, як учень"){
-    return await bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins'});
+    return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins'});
 }else if(msg.text === "Приєднатися в клас, як вчитель"){
-    return await bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint'});
+    return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint'});
 }else{
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
