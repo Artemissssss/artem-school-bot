@@ -32,6 +32,7 @@ bot.on('/start', msg => {
 bot.on('ask.class', async msg => {
 console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
 if(msg.text === "Створити клас"){
+    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
     let idClass = [nanoid(),nanoid()]
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -45,10 +46,13 @@ if(msg.text === "Створити клас"){
     <code>${idClass[1]}</code> - id для приєднання вчителя в клас
     `, {ask: 'actiont', parseMode: 'html'});
 }else if(msg.text === "Приєднатися в клас, як учень"){
+    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
     return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins'});
 }else if(msg.text === "Приєднатися в клас, як вчитель"){
+    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
     return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint'});
 }else{
+    console.log(msg.text,msg.text === "Створити клас",msg.text === "Приєднатися в клас, як учень",msg.text === "Приєднатися в клас, як вчитель")
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
