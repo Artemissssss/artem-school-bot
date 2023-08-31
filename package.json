@@ -16,6 +16,7 @@
     "claude-ai": "^1.2.2",
     "hercai": "^10.0.2",
     "mongodb": "^5.7.0",
+    "nanoid": "^4.0.2",
     "openai": "^3.3.0",
     "openai-token": "^1.0.0",
     "telebot": "^1.4.1",
