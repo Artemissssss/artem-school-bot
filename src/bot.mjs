@@ -71,7 +71,7 @@ bot.on('ask.joins', async msg => {
             if(result[0]){
                 const users = {"users": [{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Вчитель"},...result[0].users]}
                 coll.updateOne(
-                    {_id: new ObjectId(id._id)},
+                    {idS: msg.text},
                     {
                       $set: { ...users},
                       $currentDate: { lastModified: true }
@@ -97,7 +97,7 @@ bot.on('ask.joint', async msg => {
             if(result[0]){
                 const users = {"users": [{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Учень"},...result[0].users]}
                 coll.updateOne(
-                    {_id: new ObjectId(id._id)},
+                    {idT: msg.text},
                     {
                       $set: { ...users},
                       $currentDate: { lastModified: true }
