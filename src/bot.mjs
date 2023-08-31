@@ -34,7 +34,7 @@ bot.on('ask.class', async msg => {
 if(msg.text === "Створити клас"){
     let idClass = [nanoid(),nanoid()]
     const client = await MongoClient.connect(
-        `mongodb+srv://${process.env.NEXT_PUBLIC_DATABASE_USER}:${process.env.NEXT_PUBLIC_DATABASE_PASSWORD}@${process.env.NEXT_PUBLIC_DATABASE}/?retryWrites=true&w=majority`,
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
@@ -46,7 +46,7 @@ if(msg.text === "Створити клас"){
     `, {ask: 'actiont', parseMode: 'html'});
 }else if(msg.text === "Приєднатися в клас, як учень"){
     const client = await MongoClient.connect(
-        `mongodb+srv://${process.env.NEXT_PUBLIC_DATABASE_USER}:${process.env.NEXT_PUBLIC_DATABASE_PASSWORD}@${process.env.NEXT_PUBLIC_DATABASE}/?retryWrites=true&w=majority`,
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
@@ -70,7 +70,7 @@ if(msg.text === "Створити клас"){
             }  
 }else if(msg.text === "Приєднатися в клас, як вчитель"){
     const client = await MongoClient.connect(
-        `mongodb+srv://${process.env.NEXT_PUBLIC_DATABASE_USER}:${process.env.NEXT_PUBLIC_DATABASE_PASSWORD}@${process.env.NEXT_PUBLIC_DATABASE}/?retryWrites=true&w=majority`,
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
