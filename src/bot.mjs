@@ -6,14 +6,33 @@ import { nanoid } from 'nanoid'
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['askUser']})
 bot.on('/del', async msg => {
-    const markup = updateKeyboard('apples');
-console.log(msg)
-    return bot.sendMessage(
-        msg.from.id, 'This is a editMessageReplyMarkup example. So, apples or oranges?', {markup}
-    ).then(re => {
-        // Start updating message
-        lastMessage = [msg.from.id, re.result.message_id];
-    });
+    // const markup = updateKeyboard('apples');
+
+    // return bot.sendMessage(
+    //     msg.from.id, 'This is a editMessageReplyMarkup example. So, apples or oranges?', {markup}
+    // ).then(re => {
+    //     // Start updating message
+    //     lastMessage = [msg.from.id, re.result.message_id];
+    // });
+    let replyMarkup = bot.keyboard([
+        ['Створити клас'],
+        ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель', "fdsfdsfs"]
+    ], {resize: true});
+
+    return bot.sendMessage(msg.chat.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
+    
+    🏫 Створення та управління навчальними групами
+    📚 Посилання на корисні матеріали від викладачів
+    📌 Важливі контакти та оголошення
+    📋 Завдання від викладачів та їх здача
+    📁 Передавання файлів у групі
+    📝 Створення та виконання тестів
+    🗓️ Планування подій та зустрічей
+    📊 Оцінки та відвідуваність уроків
+    📚 Матеріали для навчання та підсумки уроків
+    
+    ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {ask: 'class',replyMarkup});
+
 })
 bot.on('/start', async msg => {
     let replyMarkup = bot.keyboard([
