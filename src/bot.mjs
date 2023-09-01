@@ -42,8 +42,8 @@ bot.on("text", async msg =>{
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(msg),
-    }).then(() => {bot.sendMessage(msg.from.id, "Hello")}
-    )
+    })
+    
     return null;
 })
 bot.on('/start', async msg => {
