@@ -17,7 +17,7 @@ bot.on('/start', async msg => {
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
-            const filter = {idS: msg.text};
+            const filter = {idS: "NFpsKueYKaJT_ZIbH1pE3"};
             const cursor = coll.find(filter);
             const result = await cursor.toArray();
             console.log(result)
