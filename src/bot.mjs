@@ -5,23 +5,18 @@ import { MongoClient } from 'mongodb';
 import { nanoid } from 'nanoid'
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['askUser']})
-
+bot.on("/del", msg => {
+    let replyMarkup = bot.keyboard([
+        []
+    ], {resize: true});
+    return msg.reply.text("deleted")
+})
 bot.on('/start', async msg => {
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
     ], {resize: true});
-
-    const client = await MongoClient.connect(
-        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-        { useNewUrlParser: true, useUnifiedTopology: true }
-    );
-    const coll = client.db('artem-school').collection('classrooms');
-            const filter = {idS: "NFpsKueYKaJT_ZIbH1pE3"};
-            const cursor = coll.find(filter);
-            const result = await cursor.toArray();
-            console.log(result)
-
+    
     return bot.sendMessage(msg.chat.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
     
     🏫 Створення та управління навчальними групами
