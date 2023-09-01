@@ -17,11 +17,10 @@ bot.on('/start', async msg => {
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
-    const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
-    const coll2 = client.db('artem-school').collection('users');
-    const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
-    await client.close();
-    console.log(result)
+            const filter = {idS: msg.text};
+            const cursor = coll.find(filter);
+            const result = await cursor.toArray();
+            console.log(result)
 
     return bot.sendMessage(msg.chat.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
     
