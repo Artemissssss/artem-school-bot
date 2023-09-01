@@ -5,11 +5,15 @@ import { MongoClient } from 'mongodb';
 import { nanoid } from 'nanoid'
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['askUser']})
-bot.on("/del", msg => {
-    let replyMarkup = bot.keyboard([
-        []
-    ], {resize: true});
-    return msg.sendMessage(msg.chat.id, "deleted", replyMarkup)
+bot.on("/del", async msg => {
+    const markup = updateKeyboard('apples');
+
+    return bot.sendMessage(
+        msg.from.id, 'This is a editMessageReplyMarkup example. So, apples or oranges?', {markup}
+    ).then(re => {
+        // Start updating message
+        lastMessage = [msg.from.id, re.result.message_id];
+    });
 })
 bot.on('/start', async msg => {
     let replyMarkup = bot.keyboard([
