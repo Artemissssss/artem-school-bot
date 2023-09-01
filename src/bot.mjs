@@ -13,7 +13,7 @@ bot.on('/start', msg => {
     ], {resize: true});
 
 
-    return bot.sendMessage(msg.from.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
+    return bot.sendMessage(msg.chat.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
     
     🏫 Створення та управління навчальними групами
     📚 Посилання на корисні матеріали від викладачів
@@ -42,20 +42,20 @@ if(msg.text === "Створити клас"){
     const coll = client.db('artem-school').collection('classrooms');
     const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[],users:[{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Вчитель"}]})
     await client.close();
-    return bot.sendMessage(msg.from.id, `Клас успішно створився!
+    return bot.sendMessage(msg.chat.id, `Клас успішно створився!
     <code>${idClass[0]}</code> - id для приєднання учня в клас
     <code>${idClass[1]}</code> - id для приєднання вчителя в клас
     `, {ask: 'actiont', parseMode: 'html',replyMarkup});
 }else if(msg.text === "Приєднатися в клас, як учень"){
-    return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins',replyMarkup});
+    return  bot.sendMessage(msg.chat.id, `Надішліть id учня`, {ask: 'joins',replyMarkup});
 }else if(msg.text === "Приєднатися в клас, як вчитель"){
-    return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint',replyMarkup});
+    return  bot.sendMessage(msg.chat.id, `Надішліть id вчителя `, {ask: 'joint',replyMarkup});
 }else{
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
     ], {resize: true,replyMarkup});
-    return bot.sendMessage(msg.from.id, `Error`, {ask: 'class'});
+    return bot.sendMessage(msg.chat.id, `Error`, {ask: 'class',replyMarkup});
 }
 });
 
@@ -78,10 +78,10 @@ bot.on('ask.joins', async msg => {
                     }
                  );
                  await client.close();
-                 return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {ask: 'actiont'});
+                 return await bot.sendMessage(msg.chat.id, `Ви успішно доєдналися до класу`, {ask: 'actiont'});
             }else{
                 await client.close();
-                return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`, {ask: 'class'});
+                return await bot.sendMessage(msg.chat.id, `Ви вели неправильний id класу`, {ask: 'class'});
             }  
 })
 
@@ -104,10 +104,10 @@ bot.on('ask.joint', async msg => {
                     }
                  );
                  await client.close();
-                 return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {ask: 'actions'});
+                 return await bot.sendMessage(msg.chat.id, `Ви успішно доєдналися до класу`, {ask: 'actions'});
             }else{
                 await client.close();
-                return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`, {ask: 'class'});
+                return await bot.sendMessage(msg.chat.id, `Ви вели неправильний id класу`, {ask: 'class'});
             }   
 })
 
