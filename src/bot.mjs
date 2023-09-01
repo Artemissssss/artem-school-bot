@@ -36,13 +36,14 @@ bot.on('/del', async msg => {
 })
 bot.on("text", async msg =>{
     console.log(msg)
-    fetch("https://artem-school-bot.vercel.app/keyboard", {
+    await fetch("https://artem-school-bot.vercel.app/keyboard", {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(msg),
-    })
+    }).then(() => {bot.sendMessage(msg.from.id, "Hello")}
+    )
     return null;
 })
 bot.on('/start', async msg => {
