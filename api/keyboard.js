@@ -16,7 +16,6 @@ export default async function handler(req, res) {
                 one_time_keyboard: true
             }
         };
-        bot.sendMessage(chatId, 'Choose a level:');
         bot.sendMessage(chatId, 'Choose a level:', opts);
         res.status(200)
 }
