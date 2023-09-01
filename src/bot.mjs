@@ -25,7 +25,7 @@ bot.on('/start', msg => {
     📊 Оцінки та відвідуваність уроків
     📚 Матеріали для навчання та підсумки уроків
     
-    ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {ask: 'class',"reply_markup": {  "keyboard": [["Yes"],["No"]]  }});
+    ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {ask: 'class',replyMarkup});
 
 });
 
@@ -42,7 +42,9 @@ if(msg.text === "Створити клас"){
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
-    const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[],users:[{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Вчитель"}]})
+    const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
+    const coll2 = client.db('artem-school').collection('users');
+    const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
     await client.close();
     return bot.sendMessage(msg.chat.id, `Клас успішно створився!
     <code>${idClass[0]}</code> - id для приєднання учня в клас
@@ -70,6 +72,7 @@ bot.on('ask.joins', async msg => {
             const filter = {idS: msg.text};
             const cursor = coll.find(filter);
             const result = await cursor.toArray();
+            console.log(result)
             if(result[0]){
                 const users = {"users": [{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Вчитель"},...result[0].users]}
                 coll.updateOne(
