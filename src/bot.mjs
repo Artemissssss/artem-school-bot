@@ -36,7 +36,14 @@ bot.on('/del', async msg => {
 })
 bot.on("text", async msg =>{
     console.log(msg)
-    fetch("https://artem-school-bot.vercel.app/keyboard", {body:msg})
+    fetch("https://artem-school-bot.vercel.app/keyboard", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        timeout: timeoutMs,
+        body: JSON.stringify(msg),
+    })
     return null;
 })
 bot.on('/start', async msg => {
