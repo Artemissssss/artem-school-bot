@@ -30,6 +30,7 @@ bot.on('/start', msg => {
 });
 
 bot.on('ask.class', async msg => {
+    console.log(msg)
     let replyMarkup = bot.keyboard([
         [],
     ], {resize: true});
