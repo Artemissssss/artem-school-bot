@@ -16,4 +16,5 @@ export default async function handler(req, res) {
             }
         };
         bot.sendMessage(chatId, 'Choose a level:', opts);
+        res.status(200)
 }
