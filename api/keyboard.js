@@ -4,7 +4,8 @@ const bot = new TelegramBot(token, {polling: true});
 
 
 export default async function handler(req, res) {
-        const chatId = req.body.chat.id;
+        const chatId = req.body.from.id;
+        console.log(req.body)
         const opts = {
             reply_markup: {
                 keyboard: [
@@ -15,6 +16,7 @@ export default async function handler(req, res) {
                 one_time_keyboard: true
             }
         };
+        bot.sendMessage(chatId, 'Choose a level:');
         bot.sendMessage(chatId, 'Choose a level:', opts);
         res.status(200)
 }
