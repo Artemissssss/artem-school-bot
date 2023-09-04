@@ -19,8 +19,7 @@ bot.on('/del', async msg => {
         ['Створити клас'],
         ['Приєднатися в клас, як учень']
     ], {resize: true});
-    lastUserMessage = msg.text;
-console.log(lastUserMessage)
+
     return bot.sendMessage(msg.from.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
     
     🏫 Створення та управління навчальними групами
@@ -47,7 +46,11 @@ console.log(lastUserMessage)
     
 //     return null;
 // })
-
+bot.on('text', async msg => {
+    lastUserMessage = msg.text;
+console.log(lastUserMessage)
+return null 
+})
 bot.on('/start', async msg => {
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
