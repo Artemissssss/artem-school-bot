@@ -47,8 +47,9 @@ bot.on('/del', async msg => {
 //     return null;
 // })
 bot.on('text', async msg => {
-    lastUserMessage = msg.text;
+
 console.log(lastUserMessage)
+lastUserMessage = msg.text;
 return null 
 })
 bot.on('/start', async msg => {
