@@ -217,11 +217,11 @@ if(userStatus[msg.from.id]){
         await client.close();
         console.log(result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId})
         if(result1[0]){
-            if(result1.files.length===0){
+            if(result1[0].files.length===0){
                 return bot.sendMessage(msg.from.id, 'В цьому класі ще немає файлів');
             }else{
-                for(let i = 0; i<result1.files.length;i++){
-                    await bot.forwardMessage(msg.from.id,result1.files[i].chatID,result1.files[i].msgID);
+                for(let i = 0; i<result1[0].files.length;i++){
+                    await bot.forwardMessage(msg.from.id,result1[0].files[i].chatID,result1[0].files[i].msgID);
                 }
                 return bot.sendMessage(msg.from.id, 'Це всі файли в цьому класі');
             }
