@@ -264,8 +264,8 @@ bot.on('/start', async msg => {
 bot.on('callbackQuery', msg => {
     // User message alert
     console.log(msg)
-    bot.sendMessage(msg.from.id,msg.data)
-    return bot.answerCallbackQuery(msg.id, `Inline button callback: ${ msg.data }`, true);
+    bot.sendMessage(msg.chat.id,msg.data)
+    return bot.answerCallbackQuery(msg.chat.id, `Inline button callback: ${ msg.data }`, true);
 });
 
 // // Inline query
