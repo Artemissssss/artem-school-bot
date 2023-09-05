@@ -62,6 +62,7 @@ bot.on('*', async msg => {
     let replyMarkup = bot.keyboard([
         [""],
     ], {resize: true});
+    console.log(lastUserMessage)
     if(text === "Створити клас" && lastUserMessage[msg.from.id] === "/start"){
 
         let idClass = [nanoid(),nanoid()]
