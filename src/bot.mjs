@@ -4,8 +4,9 @@ import TeleBot from "telebot"
 import { MongoClient } from 'mongodb';
 import { nanoid } from 'nanoid'
 
-const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['askUser']})
+const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
 let lastUserMessage = {};
+let userStatus = {};
 bot.on('/del', async msg => {
     // const markup = updateKeyboard('apples');
 
@@ -58,9 +59,21 @@ bot.on('/del', async msg => {
 
 bot.on('*', async msg => {
     const text = msg.text
-    let replyMarkup = bot.keyboard([
-        [""],
+    let replyMarkupT = bot.keyboard([
+        ["Журнал","Події","Статистика","Розклад"],
+        ["Файли", "Видалення файла"],
+        ["Матеріали","Cтворення матеріалу"],
+        ["Д/з", "Задати д/з"]
     ], {resize: true});
+
+    let replyMarkupS = bot.keyboard([
+        ["Щоденик","Події","Статистика","Розклад"],
+        ["Файли", "Видалення файла"],
+        ["Матеріали","Cтворення матеріалу"],
+        ["Д/з", "Здати д/з"]
+    ], {resize: true});
+
+
     console.log(lastUserMessage)
     if(text === "Створити клас" && lastUserMessage[msg.from.id] === "/start"){
 
@@ -72,14 +85,36 @@ bot.on('*', async msg => {
         const coll = client.db('artem-school').collection('classrooms');
         const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
         const coll2 = client.db('artem-school').collection('users');
-        const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
+        const result2 = await coll2.insertOne({name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
         await client.close();
         lastUserMessage[msg.from.id] = text;
-        return bot.sendMessage(msg.from.id, `Клас успішно створився!
-        <code>${idClass[0]}</code> - id для приєднання учня в клас
-        <code>${idClass[1]}</code> - id для приєднання вчителя в клас
-        `, { parseMode: 'html',replyMarkup});
+        userStatus[msg.from.id] = 1;
+        return bot.sendMessage(msg.from.id, `Клас успішно створився!<br><code>${idClass[0]}</code> - id для приєднання учня в клас<br><code>${idClass[1]}</code> - id для приєднання вчителя в клас
+        `, { parseMode: 'html',replyMarkupT});
+    }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень") && text === "Назад"){
+        lastUserMessage[msg.from.id] = msg.text;
+        let replyMarkup = bot.keyboard([
+            ['Створити клас'],
+            ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
+        ], {resize: true});
+    
+        return bot.sendMessage(msg.from.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
+        
+        🏫 Створення та управління навчальними групами
+        📚 Посилання на корисні матеріали від викладачів
+        📌 Важливі контакти та оголошення
+        📋 Завдання від викладачів та їх здача
+        📁 Передавання файлів у групі
+        📝 Створення та виконання тестів
+        🗓️ Планування подій та зустрічей
+        📊 Оцінки та відвідуваність уроків
+        📚 Матеріали для навчання та підсумки уроків
+        
+        ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {replyMarkup});
     }else if(text === "Приєднатися в клас, як учень" && lastUserMessage[msg.from.id] === "/start"){
+        let replyMarkup = bot.keyboard([
+            ["Назад"],
+        ], {resize: true});
         lastUserMessage[msg.from.id] = text;
         return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень"){
@@ -94,15 +129,19 @@ bot.on('*', async msg => {
                 console.log(result)
                 if(result[0]){
                     const coll2 = client.db('artem-school').collection('users');
-                    const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
+                    const result2 = await coll2.insertOne({name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
-                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`);
+                     userStatus[msg.from.id] = 0;
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkupS);
                 }else{
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
                 }  
     }else if(text === "Приєднатися в клас, як вчитель" && lastUserMessage[msg.from.id] === "/start"){
+        let replyMarkup = bot.keyboard([
+            ["Назад"],
+        ], {resize: true});
         lastUserMessage[msg.from.id] = text;
         return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель"){
@@ -116,10 +155,11 @@ bot.on('*', async msg => {
                 const result = await cursor.toArray();
                 if(result[0]){
                     const coll2 = client.db('artem-school').collection('users');
-                    const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:1, classId: result[0].idT})
+                    const result2 = await coll2.insertOne({name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: result[0].idT})
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
-                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`);
+                     userStatus[msg.from.id] = 1;
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkupT);
                 }else{
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
