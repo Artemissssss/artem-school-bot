@@ -174,6 +174,28 @@ bot.on('*', async msg => {
         return bot.sendMessage(msg.from.id, `Error`, {replyMarkup});
     }
 
+    if(!userStatus[msg.from.id] && text !== "/start"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('users');
+        const filter = {id: msg.from.id};
+        const cursor = coll.find(filter);
+        const result = await cursor.toArray();
+        if(result[0]){
+            userStatus[msg.from.id] = result[0].role;
+        }else{
+            console.log(msg)
+            // return bot.sendMessage(msg.from.id)
+        }
+    }
+
+if(userStatus[msg.from.id]){
+return null;
+}else if(userStatus[msg.from.id] === 0){
+return null;
+}
 
 })
 
