@@ -62,19 +62,12 @@ bot.on('/del', async msg => {
 
 bot.on('*', async msg => {
     const text = msg.text
-    let replyMarkupT = bot.keyboard([
+    let replyMarkup = bot.keyboard([
         ["Журнал","Події","Статистика","Розклад"],
         ["Файли", "Видалення файла"],
         ["Матеріали","Cтворення матеріалу"],
         ["Д/з", "Задати д/з"]
     ], {resize: true});
-
-    // let replyMarkupS = bot.keyboard([
-    //     ["Щоденик","Події","Статистика","Розклад"],
-    //     ["Файли", "Видалення файла"],
-    //     ["Матеріали","Cтворення матеріалу"],
-    //     ["Д/з", "Здати д/з"]
-    // ], {resize: true});
 
 
     console.log(lastUserMessage)
@@ -93,7 +86,7 @@ bot.on('*', async msg => {
         lastUserMessage[msg.from.id] = text;
         userStatus[msg.from.id] = 1;
         return bot.sendMessage(msg.from.id, `Клас успішно створився!\n<code>${idClass[0]}</code> - id для приєднання учня в клас\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас
-        `, { parseMode: 'html',replyMarkupT});
+        `, { parseMode: 'html',replyMarkup});
     }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень") && text === "Назад"){
         lastUserMessage[msg.from.id] = msg.text;
         let replyMarkup = bot.keyboard([
@@ -121,6 +114,12 @@ bot.on('*', async msg => {
         lastUserMessage[msg.from.id] = text;
         return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень"){
+        let replyMarkup = bot.keyboard([
+            ["Щоденик","Події","Статистика","Розклад"],
+            ["Файли", "Видалення файла"],
+            ["Матеріали","Cтворення матеріалу"],
+            ["Д/з", "Здати д/з"]
+        ], {resize: true});
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -136,7 +135,7 @@ bot.on('*', async msg => {
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 0;
-                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkupS);
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkup);
                 }else{
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
@@ -162,7 +161,7 @@ bot.on('*', async msg => {
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 1;
-                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkupT);
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkup);
                 }else{
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
