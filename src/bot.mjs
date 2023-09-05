@@ -5,7 +5,7 @@ import { MongoClient } from 'mongodb';
 import { nanoid } from 'nanoid'
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['askUser']})
-let lastUserMessage = '';
+let lastUserMessage = {};
 bot.on('/del', async msg => {
     // const markup = updateKeyboard('apples');
 
@@ -47,9 +47,10 @@ bot.on('/del', async msg => {
 //     return null;
 // })
 bot.on('text', async msg => {
-
-console.log(lastUserMessage)
-lastUserMessage = msg.text;
+if(lastUserMessage[msg.from.username]){
+    console.log(lastUserMessage[msg.from.username])
+    lastUserMessage[msg.from.username] = msg.text;
+}
 return null 
 })
 bot.on('/start', async msg => {
