@@ -194,6 +194,7 @@ bot.on('*', async msg => {
     }
 
 if(userStatus[msg.from.id]){
+    console.log(userStatus[msg.from.id])
     if(text === "Події"){
         let replyMarkup = bot.inlineKeyboard([
             [
