@@ -56,6 +56,85 @@ if(lastUserMessage[msg.from.username]){
 }
 return null 
 })
+
+bot.on('*', async msg => {
+    const text = msg.text
+    let replyMarkup = bot.keyboard([
+        [""],
+    ], {resize: true});
+    if(text === "Створити клас" && lastUserMessage[msg.from.id] === "/start"){
+
+        let idClass = [nanoid(),nanoid()]
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('classrooms');
+        const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
+        const coll2 = client.db('artem-school').collection('users');
+        const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
+        await client.close();
+        lastUserMessage[msg.from.id] = text;
+        return bot.sendMessage(msg.from.id, `Клас успішно створився!
+        <code>${idClass[0]}</code> - id для приєднання учня в клас
+        <code>${idClass[1]}</code> - id для приєднання вчителя в клас
+        `, { parseMode: 'html',replyMarkup});
+    }else if(text === "Приєднатися в клас, як учень" && lastUserMessage[msg.from.id] === "/start"){
+        lastUserMessage[msg.from.id] = text;
+        return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('classrooms');
+                const filter = {idS: msg.text};
+                const cursor = coll.find(filter);
+                const result = await cursor.toArray();
+                console.log(result)
+                if(result[0]){
+                    const coll2 = client.db('artem-school').collection('users');
+                    const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
+                     await client.close();
+                     lastUserMessage[msg.from.id] = text;
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`);
+                }else{
+                    await client.close();
+                    return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
+                }  
+    }else if(text === "Приєднатися в клас, як вчитель" && lastUserMessage[msg.from.id] === "/start"){
+        lastUserMessage[msg.from.id] = text;
+        return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('classrooms');
+                const filter = {idS: msg.text};
+                const cursor = coll.find(filter);
+                const result = await cursor.toArray();
+                if(result[0]){
+                    const coll2 = client.db('artem-school').collection('users');
+                    const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:1, classId: result[0].idT})
+                     await client.close();
+                     lastUserMessage[msg.from.id] = text;
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`);
+                }else{
+                    await client.close();
+                    return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
+                } 
+    }else if(lastUserMessage[msg.from.id] === "/start" && text !== "Приєднатися в клас, як вчитель" && text !== "Приєднатися в клас, як учень" && text !== "Створити клас"){
+        let replyMarkup = bot.keyboard([
+            ['Створити клас'],
+            ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
+        ], {resize: true});
+        return bot.sendMessage(msg.from.id, `Error`, {replyMarkup});
+    }
+
+
+})
+
 bot.on('/start', async msg => {
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
@@ -78,92 +157,7 @@ bot.on('/start', async msg => {
 
 });
 
-bot.on('ask.class', async msg => {
-    // console.log(msg.reply_to_message.reply_markup)
-    console.log(msg)
-    let replyMarkup = bot.keyboard([
-        [],
-    ], {resize: true});
-if(msg.text === "Створити клас"){
-    let idClass = [nanoid(),nanoid()]
-    const client = await MongoClient.connect(
-        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-        { useNewUrlParser: true, useUnifiedTopology: true }
-    );
-    const coll = client.db('artem-school').collection('classrooms');
-    const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
-    const coll2 = client.db('artem-school').collection('users');
-    const result2 = await coll2.insertOne({name:msg.from.name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
-    await client.close();
-    return bot.sendMessage(msg.from.id, `Клас успішно створився!
-    <code>${idClass[0]}</code> - id для приєднання учня в клас
-    <code>${idClass[1]}</code> - id для приєднання вчителя в клас
-    `, {ask: 'actiont', parseMode: 'html',replyMarkup});
-}else if(msg.text === "Приєднатися в клас, як учень"){
-    return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {ask: 'joins',replyMarkup});
-}else if(msg.text === "Приєднатися в клас, як вчитель"){
-    return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {ask: 'joint',replyMarkup});
-}else{
-    let replyMarkup = bot.keyboard([
-        ['Створити клас'],
-        ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
-    ], {resize: true,replyMarkup});
-    return bot.sendMessage(msg.from.id, `Error`, {ask: 'class',replyMarkup});
-}
-});
 
-bot.on('ask.joins', async msg => {
-    const client = await MongoClient.connect(
-        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-        { useNewUrlParser: true, useUnifiedTopology: true }
-    );
-    const coll = client.db('artem-school').collection('classrooms');
-            const filter = {idS: msg.text};
-            const cursor = coll.find(filter);
-            const result = await cursor.toArray();
-            console.log(result)
-            if(result[0]){
-                const users = {"users": [{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Вчитель"},...result[0].users]}
-                coll.updateOne(
-                    {idS: msg.text},
-                    {
-                      $set: { ...users},
-                      $currentDate: { lastModified: true }
-                    }
-                 );
-                 await client.close();
-                 return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {ask: 'actiont'});
-            }else{
-                await client.close();
-                return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`, {ask: 'class'});
-            }  
-})
-
-bot.on('ask.joint', async msg => {
-    const client = await MongoClient.connect(
-        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-        { useNewUrlParser: true, useUnifiedTopology: true }
-    );
-    const coll = client.db('artem-school').collection('classrooms');
-            const filter = {idS: msg.text};
-            const cursor = coll.find(filter);
-            const result = await cursor.toArray();
-            if(result[0]){
-                const users = {"users": [{name:msg.from.name, username:msg.from.username, id:msg.from.id, role:"Учень"},...result[0].users]}
-                coll.updateOne(
-                    {idT: msg.text},
-                    {
-                      $set: { ...users},
-                      $currentDate: { lastModified: true }
-                    }
-                 );
-                 await client.close();
-                 return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {ask: 'actions'});
-            }else{
-                await client.close();
-                return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`, {ask: 'class'});
-            }   
-})
 
 
 // bot.on("text", async msg => {
