@@ -61,6 +61,7 @@ bot.on('/del', async msg => {
 // })
 
 bot.on('*', async msg => {
+    console.log(msg)
     const text = msg.text
     let replyMarkup = bot.keyboard([
         ["Журнал","Події","Статистика","Розклад"],
@@ -191,12 +192,23 @@ bot.on('*', async msg => {
     }
 
 if(userStatus[msg.from.id]){
-return null;
+    if(text === "Події"){
+        let replyMarkup = bot.inlineKeyboard([
+            [
+                bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
+            ], [
+                bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
+            ]
+        ]);
+    
+        return bot.sendMessage(msg.from.id, 'Ви хочете:', {replyMarkup});
+    }else{
+        return null;
+    }
 }else if(userStatus[msg.from.id] === 0){
 return null;
 }
-
-})
+});
 
 bot.on('/start', async msg => {
     lastUserMessage[msg.from.id] = msg.text;
@@ -248,13 +260,13 @@ bot.on('/start', async msg => {
 
 // });
 
-// // Inline button callback
-// bot.on('callbackQuery', msg => {
-//     // User message alert
-//     console.log(msg)
-//     bot.sendMessage(msg.from.id,msg.data)
-//     return bot.answerCallbackQuery(msg.id, `Inline button callback: ${ msg.data }`, true);
-// });
+// Inline button callback
+bot.on('callbackQuery', msg => {
+    // User message alert
+    console.log(msg)
+    bot.sendMessage(msg.from.id,msg.data)
+    return bot.answerCallbackQuery(msg.id, `Inline button callback: ${ msg.data }`, true);
+});
 
 // // Inline query
 // bot.on('inlineQuery', msg => {
