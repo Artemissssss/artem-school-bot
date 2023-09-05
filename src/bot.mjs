@@ -245,7 +245,7 @@ if(userStatus[msg.from.id]){
         const coll1 = client.db('artem-school').collection('classrooms');
         const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
         const cursor1 = coll1.find(filter1);
-        const result1 = await cursor.toArray();
+        const result1 = await cursor1.toArray();
                 const files = [...result1[0].files, {chatID:msg.from.id, msgID:msg.message_id}]
                 coll.updateOne(
                     filter1,
