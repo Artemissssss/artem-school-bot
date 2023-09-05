@@ -265,6 +265,12 @@ bot.on('callbackQuery', msg => {
     // User message alert
     console.log(msg)
     bot.sendMessage(msg.from.id,msg.data)
+    let replyMarkup = bot.inlineKeyboard([
+        [
+        ]
+    ]);
+
+    return bot.editMessageReplyMarkup({chatId, messageId}, {replyMarkup});
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
 
