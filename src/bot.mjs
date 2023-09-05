@@ -62,7 +62,6 @@ bot.on('/del', async msg => {
 
 bot.on('*', async msg => {
     console.log(msg)
-    console.log(userStatus[msg.from.id])
     const text = msg.text
     let replyMarkup = bot.keyboard([
         ["Журнал","Події","Статистика","Розклад"],
@@ -185,7 +184,6 @@ bot.on('*', async msg => {
         const filter = {id: msg.from.id};
         const cursor = coll.find(filter);
         const result = await cursor.toArray();
-        console.log(result[0])
         if(result[0]){
             userStatus[msg.from.id] = result[0].role;
         }else{
@@ -193,9 +191,8 @@ bot.on('*', async msg => {
         }
     }
 
-if(userStatus[msg.from.id]){
-    console.log(userStatus[msg.from.id])
-    if(text === "Події"){
+if(userStatus[msg.from.id] === 1){
+    if(text === "Файли"){
         let replyMarkup = bot.inlineKeyboard([
             [
                 bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
