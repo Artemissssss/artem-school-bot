@@ -186,8 +186,7 @@ bot.on('*', async msg => {
         if(result[0]){
             userStatus[msg.from.id] = result[0].role;
         }else{
-            console.log(msg)
-            // return bot.sendMessage(msg.from.id)
+            return bot.sendMessage(msg.from.id, "Не зареєстрований")
         }
     }
 
