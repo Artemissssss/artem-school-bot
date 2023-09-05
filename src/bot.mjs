@@ -185,6 +185,7 @@ bot.on('*', async msg => {
         const filter = {id: msg.from.id};
         const cursor = coll.find(filter);
         const result = await cursor.toArray();
+        console.log(result[0])
         if(result[0]){
             userStatus[msg.from.id] = result[0].role;
         }else{
