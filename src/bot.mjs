@@ -62,6 +62,7 @@ bot.on('/del', async msg => {
 
 bot.on('*', async msg => {
     console.log(msg)
+    console.log(userStatus[msg.from.id])
     const text = msg.text
     let replyMarkup = bot.keyboard([
         ["Журнал","Події","Статистика","Розклад"],
