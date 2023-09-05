@@ -137,7 +137,7 @@ bot.on('*', async msg => {
 })
 
 bot.on('/start', async msg => {
-    console.log(msg)
+    lastUserMessage[msg.from.id] = msg.text;
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
