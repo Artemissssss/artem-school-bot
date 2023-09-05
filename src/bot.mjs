@@ -270,7 +270,7 @@ bot.on('callbackQuery', msg => {
         ]
     ]);
 
-    return bot.editMessageReplyMarkup({chatId, messageId}, {replyMarkup});
+    return bot.editMessageReplyMarkup(msg.chat.id , msg.message.message_id, {replyMarkup});
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
 
