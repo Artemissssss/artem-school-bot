@@ -211,7 +211,7 @@ if(userStatus[msg.from.id]){
         const result = await cursor.toArray();
 
         const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = result[0].role  ?  {idT: result[0].role.classId} : {idS: result[0].role.classId};
+        const filter1 = result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId};
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
         await client.close();
