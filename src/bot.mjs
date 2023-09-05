@@ -46,16 +46,16 @@ bot.on('/del', async msg => {
     
 //     return null;
 // })
-bot.on('text', async msg => {
-if(lastUserMessage[msg.from.username]){
-    console.log(lastUserMessage[msg.from.username])
-    lastUserMessage[msg.from.username] = msg.text;
-}else{
-    lastUserMessage[msg.from.username] = msg.text;
+// bot.on('text', async msg => {
+// if(lastUserMessage[msg.from.username]){
+//     console.log(lastUserMessage[msg.from.username])
+//     lastUserMessage[msg.from.username] = msg.text;
+// }else{
+//     lastUserMessage[msg.from.username] = msg.text;
 
-}
-return null 
-})
+// }
+// return null 
+// })
 
 bot.on('*', async msg => {
     const text = msg.text
