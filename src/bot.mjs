@@ -65,7 +65,7 @@ bot.on('*', async msg => {
     const text = msg.text
     let replyMarkup = bot.keyboard([
         ["Журнал","Події","Статистика","Розклад"],
-        ["Файли", "Видалення файла"],
+        ["Файли", "Завантаження файла"],
         ["Матеріали","Cтворення матеріалу"],
         ["Д/з", "Задати д/з"]
     ], {resize: true});
@@ -184,24 +184,77 @@ bot.on('*', async msg => {
         const filter = {id: msg.from.id};
         const cursor = coll.find(filter);
         const result = await cursor.toArray();
+        await client.close();
         if(result[0]){
             userStatus[msg.from.id] = result[0].role;
         }else{
             return bot.sendMessage(msg.from.id, "Не зареєстрований")
         }
     }
-
-if(userStatus[msg.from.id] === 1){
+//.filter((arr) => arr.id === msg.from.id)
+if(userStatus[msg.from.id]){
     if(text === "Файли"){
-        let replyMarkup = bot.inlineKeyboard([
-            [
-                bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
-            ], [
-                bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
-            ]
-        ]);
-    
-        return bot.sendMessage(msg.from.id, 'Ви хочете:', {replyMarkup});
+        // let replyMarkup = bot.inlineKeyboard([
+        //     [
+        //         bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
+        //     ], [
+        //         bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
+        //     ]
+        // ]);
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('users');
+        const filter = {id: msg.from.id};
+        const cursor = coll.find(filter);
+        const result = await cursor.toArray();
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = result[0].role  ?  {idT: result[0].role.classId} : {idS: result[0].role.classId};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+        await client.close();
+        if(result1[0]){
+            if(result1.files.length===0){
+                return bot.sendMessage(msg.from.id, 'В цьому класі ще немає файлів');
+            }else{
+                for(let i = 0; i<result1.files.length;i++){
+                    await bot.forwardMessage(msg.from.id,result1.files[i].chatID,result1.files[i].msgID);
+                }
+                return bot.sendMessage(msg.from.id, 'Це всі файли в цьому класі');
+            }
+        }else{
+            return bot.sendMessage(msg.from.id, 'Error');
+        }
+    }else if(text === "Завантаження файла"){
+        lastUserMessage[msg.from.id] = text;
+        return bot.sendMessage(msg.from.id, 'Надішліть файл');
+    }else if(text === "Завантаження файла" && lastUserMessage[msg.from.id] === "Завантаження файла"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('users');
+        const filter = {id: msg.from.id};
+        const cursor = coll.find(filter);
+        const result = await cursor.toArray();
+
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor.toArray();
+                const files = [...result1[0].files, {chatID:msg.from.id, msgID:msg.message_id}]
+                coll.updateOne(
+                    filter1,
+                    {
+                      $set: { ...files},
+                      $currentDate: { lastModified: true }
+                    }
+                 )
+                await client.close();
+        return bot.sendMessage(msg.from.id, 'Файл додано');
     }else{
         return null;
     }
@@ -265,12 +318,7 @@ bot.on('callbackQuery', msg => {
     // User message alert
     console.log(msg)
     bot.sendMessage(msg.from.id,msg.data)
-    let replyMarkup = bot.inlineKeyboard([
-        [
-        ]
-    ]);
 
-    return bot.editMessageReplyMarkup(msg.chat.id , msg.message.message_id, {replyMarkup});
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
 
