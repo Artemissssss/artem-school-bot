@@ -319,6 +319,7 @@ if(userStatus[msg.from.id] !== undefined){
 }
 
 if(userStatus[msg.from.id]){
+    userAction[msg.from.id] === undefined ? userAction[msg.from.id] = {} : null
     console.log(userAction[msg.from.id])
     if(text === "Створення події" && userAction[msg.from.id] === undefined){
         lastUserMessage[msg.from.id] = text;
