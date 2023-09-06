@@ -10,7 +10,6 @@ export default async function handler(req, res) {
     const coll = client.db('artem-school').collection('users');
     const cursor = coll.find();
     const result = await cursor.toArray();
-console.log(result)
     const coll1 = client.db('artem-school').collection('classrooms');
     const cursor1 = coll1.find();
     const result1 = await cursor1.toArray();
@@ -18,6 +17,7 @@ console.log(result)
     
     for(let i = 0; i < result.length;i++){
         let userClassroom = result1.filter(arr => result[i].role ? arr.idT === result.classId : arr.idS === result.classId)
+        console.log(userClassroom)
         if(userClassroom.events.length){
             const today = new Date();
             const yyyy = today.getFullYear();
@@ -29,6 +29,7 @@ console.log(result)
             const formattedToday = dd + '.' + mm + '.' + yyyy;
     
             let countEvent = userClassroom[0].events.filter(arr => formattedToday === arr.date)
+            console.log(countEvent)
             await bot.sendMessage(result[i].id, `Сьогодні у вас ${countEvent.length}`)
         }else{
             await bot.sendMessage(result[i].id, `У вас немає подій`)
