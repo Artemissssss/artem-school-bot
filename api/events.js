@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     for(let i = 0; i < result.length;i++){
         let userClassroom = result1.filter(arr => result[i].role ? arr.idT === result[i].classId : arr.idS === result[i].classId)
         console.log(userClassroom)
-        if(userClassroom.events.length){
+        if(userClassroom[0].events.length){
             const today = new Date();
             const yyyy = today.getFullYear();
             let mm = today.getMonth() + 1; // Months start at 0!
