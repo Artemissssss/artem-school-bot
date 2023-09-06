@@ -362,7 +362,7 @@ if(userStatus[msg.from.id]){
                  )
                 await client.close();
                 lastUserMessage[msg.from.id] = "textФайл";
-                userAction[msg.from.id].time = undefined;
+                userAction[msg.from.id] = undefined;
         return await bot.sendMessage(msg.chat.id, 'Подія додано');
     }
 
