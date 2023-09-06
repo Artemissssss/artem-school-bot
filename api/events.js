@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     const coll = client.db('artem-school').collection('users');
     const cursor = coll.find();
     const result = await cursor.toArray();
-
+console.log(result)
     const coll1 = client.db('artem-school').collection('classrooms');
     const cursor1 = coll1.find();
     const result1 = await cursor1.toArray();
