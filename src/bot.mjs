@@ -153,7 +153,7 @@ bot.on('*', async msg => {
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
         const coll = client.db('artem-school').collection('classrooms');
-                const filter = {idS: msg.text};
+                const filter = {idT: msg.text};
                 const cursor = coll.find(filter);
                 const result = await cursor.toArray();
                 if(result[0]){
@@ -192,7 +192,7 @@ bot.on('*', async msg => {
         }
     }
 //.filter((arr) => arr.id === msg.from.id)
-if(userStatus[msg.from.id]){
+if(userStatus[msg.from.id] !== undefined){
     if(text === "Файли"){
         // let replyMarkup = bot.inlineKeyboard([
         //     [
@@ -257,9 +257,15 @@ if(userStatus[msg.from.id]){
                     }
                  )
                 await client.close();
-                lastUserMessage[msg.from.id] = "text";
+                lastUserMessage[msg.from.id] = "textФайл";
         return await bot.sendMessage(msg.from.id, 'Файл додано');
-    }else{
+    }
+}
+
+if(userStatus[msg.from.id]){
+if (text === "Видалити"){
+
+}else{
         return null;
     }
 }else if(userStatus[msg.from.id] === 0){
