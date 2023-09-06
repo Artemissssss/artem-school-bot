@@ -322,6 +322,7 @@ if(userStatus[msg.from.id]){
     console.log(userAction[msg.from.id])
     if(text === "Створення події" && userAction[msg.from.id] === undefined){
         lastUserMessage[msg.from.id] = text;
+        userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
         return bot.sendMessage(msg.chat.id, 'Надішліть текст події');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && lastUserMessage[msg.from.id] === "Створення події" && !userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
         userAction[msg.from.id] = {id:nanoid(),text:text,date:"", time:"",who:""}
