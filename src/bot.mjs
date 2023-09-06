@@ -231,7 +231,7 @@ if(userStatus[msg.from.id]){
     }else if(text === "Завантаження файла"){
         lastUserMessage[msg.from.id] = text;
         return bot.sendMessage(msg.from.id, 'Надішліть файл');
-    }else if(text === "Завантаження файла" && lastUserMessage[msg.from.id] === "Завантаження файла"){
+    }else if(lastUserMessage[msg.from.id] === "Завантаження файла"){
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -255,6 +255,7 @@ if(userStatus[msg.from.id]){
                     }
                  )
                 await client.close();
+                lastUserMessage[msg.from.id] = "text";
         return bot.sendMessage(msg.from.id, 'Файл додано');
     }else{
         return null;
