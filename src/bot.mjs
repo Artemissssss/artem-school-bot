@@ -304,9 +304,9 @@ if(userStatus[msg.from.id] !== undefined){
             }else{
                 console.log(result1[0].events)
                 for(let i = 0; i<result1[0].events.length;i++){
-                    await bot.forwardMessage(msg.chat.id, `${result1[0].events[i].text}\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\nДля:${result1[0].events[i].who}`);
+                    await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\nДля:${result1[0].events[i].who}`);
                     if(msg.chat.type ==="private" && result[0].role){
-                        await bot.forwardMessage(msg.from.id, `${result1[0].events[i].id}`);
+                        await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
                     }
                 }
                 return bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
