@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     await client.close();
     
     for(let i = 0; i < result.length;i++){
-        let userClassroom = result1.filter(arr => result[i].role ? arr.idT === result.classId : arr.idS === result.classId)
+        let userClassroom = result1.filter(arr => result[i].role ? arr.idT === result[i].classId : arr.idS === result[i].classId)
         console.log(userClassroom)
         if(userClassroom.events.length){
             const today = new Date();
