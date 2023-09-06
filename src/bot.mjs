@@ -257,7 +257,7 @@ if(userStatus[msg.from.id] !== undefined){
         const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
-                const files = {files : [...result1[0].files, {chatID:msg.from.id, msgID:msg.message_id}]}
+                const files = {files : [...result1[0].files, {chatID:msg.chat.id, msgID:msg.message_id}]}
                 console.log(result1)
                 await coll1.updateOne(
                     {_id: new ObjectId(result1[0]._id)},
