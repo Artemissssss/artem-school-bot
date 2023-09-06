@@ -304,7 +304,7 @@ if(userStatus[msg.from.id] !== undefined){
             }else{
                 console.log(result1[0].events)
                 for(let i = 0; i<result1[0].events.length;i++){
-                    await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\nДля:${result1[0].events[i].who}`);
+                    await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля:${result1[0].events[i].who}`);
                     if(msg.chat.type ==="private" && result[0].role){
                         await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
                     }
@@ -411,7 +411,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
     const result1 = await cursor1.toArray();
     console.log(msg.reply_to_message.text)
             const events = {events : [...result1[0].events.filter((arr) => arr.id !== msg.reply_to_message.text)]}
-            console.log(files)
+            console.log(events)
             await coll1.updateOne(
                 {_id: new ObjectId(result1[0]._id)},
                 {
