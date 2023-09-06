@@ -225,22 +225,22 @@ if(userStatus[msg.from.id] !== undefined){
         console.log(result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId})
         if(result1[0]){
             if(result1[0].files.length===0){
-                return bot.sendMessage(msg.from.id, 'В цьому класі ще немає файлів');
+                return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає файлів');
             }else{
                 for(let i = 0; i<result1[0].files.length;i++){
-                    await bot.forwardMessage(msg.from.id,result1[0].files[i].chatID,result1[0].files[i].msgID);
+                    await bot.forwardMessage(msg.chat.id,result1[0].files[i].chatID,result1[0].files[i].msgID);
                     if(userStatus[msg.from.id]){
                         await bot.sendMessage(msg.chat.id,`${result1[0].files[i].chatID}&&${result1[0].files[i].msgID}`);
                     }
                 }
-                return bot.sendMessage(msg.from.id, 'Це всі файли в цьому класі');
+                return bot.sendMessage(msg.chat.id, 'Це всі файли в цьому класі');
             }
         }else{
-            return bot.sendMessage(msg.from.id, 'Error');
+            return bot.sendMessage(msg.chat.id, 'Error');
         }
     }else if(text === "Завантаження файла"){
         lastUserMessage[msg.from.id] = text;
-        return bot.sendMessage(msg.from.id, 'Надішліть файл');
+        return bot.sendMessage(msg.chat.id, 'Надішліть файл');
     }else if(lastUserMessage[msg.from.id] === "Завантаження файла"){
         console.log(lastUserMessage[msg.from.id])
         const client = await MongoClient.connect(
@@ -268,7 +268,7 @@ if(userStatus[msg.from.id] !== undefined){
                  )
                 await client.close();
                 lastUserMessage[msg.from.id] = "textФайл";
-        return await bot.sendMessage(msg.from.id, 'Файл додано');
+        return await bot.sendMessage(msg.chat.id, 'Файл додано');
     }
 }
 
