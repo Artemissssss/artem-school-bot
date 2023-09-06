@@ -148,6 +148,13 @@ bot.on('*', async msg => {
         lastUserMessage[msg.from.id] = text;
         return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель"){
+        let replyMarkup = bot.keyboard([
+            ["Журнал","Події","Статистика","Розклад"],
+            ["Файли", "Завантаження файла"],
+            ["Матеріали","Cтворення матеріалу"],
+            ["Д/з", "Задати д/з"]
+        ], {resize: true});
+
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -222,6 +229,9 @@ if(userStatus[msg.from.id] !== undefined){
             }else{
                 for(let i = 0; i<result1[0].files.length;i++){
                     await bot.forwardMessage(msg.from.id,result1[0].files[i].chatID,result1[0].files[i].msgID);
+                    if(userStatus[msg.from.id]){
+                        await bot.sendMessage(msg.chat.id,`${result1[0].files[i].chatID}&&${result1[0].files[i].msgID}`);
+                    }
                 }
                 return bot.sendMessage(msg.from.id, 'Це всі файли в цьому класі');
             }
@@ -263,8 +273,33 @@ if(userStatus[msg.from.id] !== undefined){
 }
 
 if(userStatus[msg.from.id]){
-if (text === "Видалити"){
+if (text === "Видалити" && msg.reply_to_message !== undefined){
+    const client = await MongoClient.connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    const coll = client.db('artem-school').collection('users');
+    const filter = {id: msg.from.id};
+    const cursor = coll.find(filter);
+    const result = await cursor.toArray();
+    
 
+    const coll1 = client.db('artem-school').collection('classrooms');
+    const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+    const cursor1 = coll1.find(filter1);
+    const result1 = await cursor1.toArray();
+            const files = {files : [...result1[0].files.filter((arr) => arr.chatID === parseInt(msg.reply_to_message.text.split("&&")[0]) && arr.msgID === parseInt(msg.reply_to_message.text.split("&&")[1]))]}
+            console.log(files)
+            await coll1.updateOne(
+                {_id: new ObjectId(result1[0]._id)},
+                {
+                  $set: { ...files},
+                  $currentDate: { lastModified: true }
+                }
+             )
+            await client.close();
+            lastUserMessage[msg.from.id] = "textФайл";
+    return await bot.sendMessage(msg.from.id, 'Файл видалено');
 }else{
         return null;
     }
@@ -352,3 +387,65 @@ bot.on('callbackQuery', msg => {
 export default bot
 
 //YsbcVL8dXcW0lAY7
+
+
+{
+    message_id: 495,
+    from: {
+      id: 5551509960,
+      is_bot: false,
+      first_name: 'idi',
+      last_name: 'ponodik',
+      username: 'honkai_star_rails',
+      language_code: 'uk'
+    },
+    chat: {
+      id: 5551509960,
+      first_name: 'idi',
+      last_name: 'ponodik',
+      username: 'honkai_star_rails',
+      type: 'private'
+    },
+    date: 1693986385,
+    reply_to_message: {
+      message_id: 493,
+      from: {
+        id: 6619970925,
+        is_bot: true,
+        first_name: 'Навчальний бот',
+        username: 'artemisSchool_bot'
+      },
+      chat: {
+        id: 5551509960,
+        first_name: 'idi',
+        last_name: 'ponodik',
+        username: 'honkai_star_rails',
+        type: 'private'
+      },
+      date: 1693986378,
+      forward_from: {
+        id: 1052973544,
+        is_bot: false,
+        first_name: '✙Артем✙',
+        username: 'Artemis_Vainshtein',
+        language_code: 'uk'
+      },
+      forward_date: 1693985524,
+      photo: [ [Object], [Object], [Object], [Object] ]
+    },
+    text: 'hello',
+    reply: {
+      text: [Function (anonymous)],
+      photo: [Function (anonymous)],
+      video: [Function (anonymous)],
+      videoNote: [Function (anonymous)],
+      file: [Function (anonymous)],
+      sticker: [Function (anonymous)],
+      audio: [Function (anonymous)],
+      voice: [Function (anonymous)],
+      game: [Function (anonymous)],
+      action: [Function (anonymous)],
+      location: [Function (anonymous)],
+      place: [Function: bound place]
+    }
+  }
