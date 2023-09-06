@@ -7,6 +7,7 @@ import { nanoid } from 'nanoid'
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
 let lastUserMessage = {};
 let userStatus = {};
+let userAction = {};
 bot.on('/del', async msg => {
     // const markup = updateKeyboard('apples');
 
@@ -64,8 +65,9 @@ bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
     let replyMarkup = bot.keyboard([
-        ["Журнал","Події","Статистика","Розклад"],
+        ["Журнал","Статистика","Розклад"],
         ["Файли", "Завантаження файла"],
+        ["Події","Створення події"]
         ["Матеріали","Cтворення матеріалу"],
         ["Д/з", "Задати д/з"]
     ], {resize: true});
@@ -200,7 +202,7 @@ bot.on('*', async msg => {
     }
 //.filter((arr) => arr.id === msg.from.id)
 if(userStatus[msg.from.id] !== undefined){
-    if(text === "Файли"){
+    if(text === "Файли" && userAction[msg.from.id] === undefined){
         // let replyMarkup = bot.inlineKeyboard([
         //     [
         //         bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
@@ -229,7 +231,7 @@ if(userStatus[msg.from.id] !== undefined){
             }else{
                 for(let i = 0; i<result1[0].files.length;i++){
                     await bot.forwardMessage(msg.chat.id,result1[0].files[i].chatID,result1[0].files[i].msgID);
-                    if(userStatus[msg.from.id]){
+                    if(msg.chat.type ==="private" && userStatus[msg.from.id]){
                         await bot.sendMessage(msg.chat.id,`${result1[0].files[i].chatID}&&${result1[0].files[i].msgID}`);
                     }
                 }
@@ -238,7 +240,7 @@ if(userStatus[msg.from.id] !== undefined){
         }else{
             return bot.sendMessage(msg.chat.id, 'Error');
         }
-    }else if(text === "Завантаження файла"){
+    }else if(text === "Завантаження файла" && userAction[msg.from.id] === undefined){
         lastUserMessage[msg.from.id] = text;
         return bot.sendMessage(msg.chat.id, 'Надішліть файл');
     }else if(lastUserMessage[msg.from.id] === "Завантаження файла" && msg.text === undefined){
@@ -270,10 +272,97 @@ if(userStatus[msg.from.id] !== undefined){
                 lastUserMessage[msg.from.id] = "textФайл";
         return await bot.sendMessage(msg.chat.id, 'Файл додано');
     }
+
+
+    if(text === "Події" && userAction[msg.from.id] === undefined){
+        // let replyMarkup = bot.inlineKeyboard([
+        //     [
+        //         bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
+        //     ], [
+        //         bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
+        //     ]
+        // ]);
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('users');
+        const filter = {id: msg.from.id};
+        const cursor = coll.find(filter);
+        const result = await cursor.toArray();
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+        await client.close();
+        console.log(result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId})
+        if(result1[0]){
+            if(result1[0].events.length===0){
+                return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
+            }else{
+                for(let i = 0; i<result1[0].events.length;i++){
+                    await bot.forwardMessage(msg.chat.id, `${result1[0].events.text}\nО ${result1[0].events.date} ${result1[0].events.time}\nДля:${result1[0].events.who}`);
+                    if(msg.chat.type ==="private" && result[0].role){
+                        await bot.forwardMessage(msg.chat.id, `${result1[0].events.id}`);
+                    }
+                }
+                return bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
+            }
+        }else{
+            return bot.sendMessage(msg.chat.id, 'Error');
+        }
+    }
+
 }
 
 if(userStatus[msg.from.id]){
-if (text === "Видалити" && msg.reply_to_message !== undefined){
+    if(text === "Створення події" && userAction[msg.from.id] === undefined){
+        lastUserMessage[msg.from.id] = text;
+        return bot.sendMessage(msg.chat.id, 'Надішліть текст події');
+    }else if(lastUserMessage[msg.from.id] === "Створення події" && lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
+        userAction[msg.from.id] = {id:nanoid(),text:text}
+        return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
+    }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
+        userAction[msg.from.id].date = text;
+        return bot.sendMessage(msg.chat.id, 'Надішліть час події у форматі гг:хх');
+    }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && userAction[msg.from.id].time && !userAction[msg.from.id].who){
+        userAction[msg.from.id].time = text;
+        return bot.sendMessage(msg.chat.id, 'Надішліть для кого призначена ця подія у довільному форматі');
+    }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && userAction[msg.from.id].time && userAction[msg.from.id].who){
+        userAction[msg.from.id].who = text;
+        
+        console.log(lastUserMessage[msg.from.id])
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('users');
+        const filter = {id: msg.from.id};
+        const cursor = coll.find(filter);
+        const result = await cursor.toArray();
+
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+                const events = {events : [...result1[0].events, userAction[msg.from.id]]}
+                console.log(result1)
+                await coll1.updateOne(
+                    {_id: new ObjectId(result1[0]._id)},
+                    {
+                      $set: { ...events},
+                      $currentDate: { lastModified: true }
+                    }
+                 )
+                await client.close();
+                lastUserMessage[msg.from.id] = "textФайл";
+                userAction[msg.from.id].time = undefined;
+        return await bot.sendMessage(msg.chat.id, 'Подія додано');
+    }
+
+if (text === "Видалити" && msg.reply_to_message !== undefined && userAction[msg.from.id] === undefined && text.includes("&&")){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
@@ -301,6 +390,34 @@ if (text === "Видалити" && msg.reply_to_message !== undefined){
             await client.close();
             lastUserMessage[msg.from.id] = "textФайл";
     return await bot.sendMessage(msg.chat.id, 'Файл видалено');
+}else if (text === "Видалити" && msg.reply_to_message !== undefined && userAction[msg.from.id] === undefined){
+    const client = await MongoClient.connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    const coll = client.db('artem-school').collection('users');
+    const filter = {id: msg.from.id};
+    const cursor = coll.find(filter);
+    const result = await cursor.toArray();
+    
+
+    const coll1 = client.db('artem-school').collection('classrooms');
+    const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+    const cursor1 = coll1.find(filter1);
+    const result1 = await cursor1.toArray();
+    console.log(msg.reply_to_message.text)
+            const events = {events : [...result1[0].events.filter((arr) => arr.id !== msg.reply_to_message.text)]}
+            console.log(files)
+            await coll1.updateOne(
+                {_id: new ObjectId(result1[0]._id)},
+                {
+                  $set: { ...events},
+                  $currentDate: { lastModified: true }
+                }
+             )
+            await client.close();
+            lastUserMessage[msg.from.id] = "textФайл";
+    return await bot.sendMessage(msg.chat.id, 'Подію видалено');
 }else{
         return null;
     }
