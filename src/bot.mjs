@@ -300,7 +300,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined){
              )
             await client.close();
             lastUserMessage[msg.from.id] = "textФайл";
-    return await bot.sendMessage(msg.from.id, 'Файл видалено');
+    return await bot.sendMessage(msg.chat.id, 'Файл видалено');
 }else{
         return null;
     }
