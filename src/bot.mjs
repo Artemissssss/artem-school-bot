@@ -324,7 +324,7 @@ if(userStatus[msg.from.id]){
         lastUserMessage[msg.from.id] = text;
         return bot.sendMessage(msg.chat.id, 'Надішліть текст події');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id] = {id:nanoid(),text:text}
+        userAction[msg.from.id] = {id:nanoid(),text:text,date:"", time:"",who:""}
         return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
         userAction[msg.from.id] = {...userAction[msg.from.id], date:text};
