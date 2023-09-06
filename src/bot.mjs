@@ -249,7 +249,7 @@ if(userStatus[msg.from.id]){
         const result1 = await cursor1.toArray();
                 const files = {files : [...result1[0].files, {chatID:msg.from.id, msgID:msg.message_id}]}
                 console.log(result1)
-                coll1.updateOne(
+                await coll1.updateOne(
                     {_id: new ObjectId(result1[0]._id)},
                     {
                       $set: { ...files},
@@ -258,7 +258,7 @@ if(userStatus[msg.from.id]){
                  )
                 await client.close();
                 lastUserMessage[msg.from.id] = "text";
-        return bot.sendMessage(msg.from.id, 'Файл додано');
+        return await bot.sendMessage(msg.from.id, 'Файл додано');
     }else{
         return null;
     }
