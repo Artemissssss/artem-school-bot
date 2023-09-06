@@ -232,6 +232,7 @@ if(userStatus[msg.from.id]){
         lastUserMessage[msg.from.id] = text;
         return bot.sendMessage(msg.from.id, 'Надішліть файл');
     }else if(lastUserMessage[msg.from.id] === "Завантаження файла"){
+        console.log(lastUserMessage[msg.from.id])
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -247,6 +248,7 @@ if(userStatus[msg.from.id]){
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
                 const files = {files : [...result1[0].files, {chatID:msg.from.id, msgID:msg.message_id}]}
+                console.log(result1)
                 coll1.updateOne(
                     {_id: new ObjectId(result1[0]._id)},
                     {
