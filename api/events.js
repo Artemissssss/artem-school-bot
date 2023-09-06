@@ -33,7 +33,7 @@ export default async function handler(req, res) {
             await bot.sendMessage(result[i].id, `Сьогодні у вас ${countEvent.length} подій`)
         }else{
             await bot.sendMessage(result[i].id, `У вас немає подій`)
-            res.status(200)
+            
         }
     }
 
