@@ -329,6 +329,7 @@ if(userStatus[msg.from.id]){
         return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
         userAction[msg.from.id] = {...userAction[msg.from.id], date:text};
+        console.log(userAction[msg.from.id])
         return bot.sendMessage(msg.chat.id, 'Надішліть час події у форматі гг:хх');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
         userAction[msg.from.id] = {...userAction[msg.from.id], time:text};
