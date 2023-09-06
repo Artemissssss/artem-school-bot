@@ -136,7 +136,7 @@ bot.on('*', async msg => {
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 0;
-                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkup);
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
                 }else{
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
@@ -169,7 +169,7 @@ bot.on('*', async msg => {
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 1;
-                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, replyMarkup);
+                     return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
                 }else{
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
