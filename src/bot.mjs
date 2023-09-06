@@ -18,8 +18,9 @@ bot.on('/del', async msg => {
     //     lastMessage = [msg.from.id, re.result.message_id];
     // });
     let replyMarkup = bot.keyboard([
-        ["Журнал","Події","Статистика","Розклад"],
-        ["Файли", "Видалення файла"],
+        ["Журнал","Статистика","Розклад"],
+        ["Файли", "Завантаження файла"],
+        ["Події","Створення події"]
         ["Матеріали","Cтворення матеріалу"],
         ["Д/з", "Задати д/з"]
     ], {resize: true});
@@ -151,8 +152,9 @@ bot.on('*', async msg => {
         return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель"){
         let replyMarkup = bot.keyboard([
-            ["Журнал","Події","Статистика","Розклад"],
+            ["Журнал","Статистика","Розклад"],
             ["Файли", "Завантаження файла"],
+            ["Події","Створення події"]
             ["Матеріали","Cтворення матеріалу"],
             ["Д/з", "Задати д/з"]
         ], {resize: true});
@@ -324,13 +326,13 @@ if(userStatus[msg.from.id]){
         userAction[msg.from.id] = {id:nanoid(),text:text}
         return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id].date = text;
+        userAction[msg.from.id] = {...userAction[msg.from.id], date:text};
         return bot.sendMessage(msg.chat.id, 'Надішліть час події у форматі гг:хх');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id].time = text;
+        userAction[msg.from.id] = {...userAction[msg.from.id], time:text};
         return bot.sendMessage(msg.chat.id, 'Надішліть для кого призначена ця подія у довільному форматі');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && userAction[msg.from.id].time && userAction[msg.from.id].who){
-        userAction[msg.from.id].who = text;
+        userAction[msg.from.id] = {...userAction[msg.from.id],who:text};
         
         console.log(lastUserMessage[msg.from.id])
         const client = await MongoClient.connect(
