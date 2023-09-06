@@ -298,15 +298,15 @@ if(userStatus[msg.from.id] !== undefined){
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
         await client.close();
-        console.log(result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId})
         if(result1[0]){
             if(result1[0].events.length===0){
                 return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
             }else{
+                console.log(result1[0].events)
                 for(let i = 0; i<result1[0].events.length;i++){
                     await bot.forwardMessage(msg.chat.id, `${result1[0].events[i].text}\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\nДля:${result1[0].events[i].who}`);
                     if(msg.chat.type ==="private" && result[0].role){
-                        await bot.forwardMessage(msg.chat.id, `${result1[0].events[i].id}`);
+                        await bot.forwardMessage(msg.from.id, `${result1[0].events[i].id}`);
                     }
                 }
                 return bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
