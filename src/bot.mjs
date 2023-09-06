@@ -247,8 +247,8 @@ if(userStatus[msg.from.id]){
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
                 const files = {files : [...result1[0].files, {chatID:msg.from.id, msgID:msg.message_id}]}
-                coll.updateOne(
-                    filter1,
+                coll1.updateOne(
+                    {_id: new ObjectId(result1[0]._id)},
                     {
                       $set: { ...files},
                       $currentDate: { lastModified: true }
