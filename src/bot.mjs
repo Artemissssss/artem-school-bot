@@ -289,7 +289,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined){
     const cursor1 = coll1.find(filter1);
     const result1 = await cursor1.toArray();
     console.log(msg.reply_to_message.text)
-            const files = {files : [...result1[0].files.filter((arr) => arr.chatID === parseInt(msg.reply_to_message.text.split("&&")[0]) && arr.msgID === parseInt(msg.reply_to_message.text.split("&&")[1]))]}
+            const files = {files : [...result1[0].files.filter((arr) => arr.chatID !== parseInt(msg.reply_to_message.text.split("&&")[0]) && arr.msgID !== parseInt(msg.reply_to_message.text.split("&&")[1]))]}
             console.log(files)
             await coll1.updateOne(
                 {_id: new ObjectId(result1[0]._id)},
