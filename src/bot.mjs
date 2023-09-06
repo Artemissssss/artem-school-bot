@@ -241,7 +241,7 @@ if(userStatus[msg.from.id] !== undefined){
     }else if(text === "Завантаження файла"){
         lastUserMessage[msg.from.id] = text;
         return bot.sendMessage(msg.chat.id, 'Надішліть файл');
-    }else if(lastUserMessage[msg.from.id] === "Завантаження файла"){
+    }else if(lastUserMessage[msg.from.id] === "Завантаження файла" && msg.text === undefined){
         console.log(lastUserMessage[msg.from.id])
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
