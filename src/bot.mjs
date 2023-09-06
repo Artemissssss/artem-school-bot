@@ -1,7 +1,7 @@
 import TeleBot from "telebot"
 // const openai = require('openai');
 // const { MongoClient } = require('mongodb');
-import { MongoClient } from 'mongodb';
+import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
