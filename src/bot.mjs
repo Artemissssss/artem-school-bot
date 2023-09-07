@@ -198,6 +198,7 @@ bot.on('*', async msg => {
         if(result[0]){
             userStatus[msg.from.id] = result[0].role;
             userClass[msg.from.id] = result[0].role ? result[0].idT : result[0].idS;
+            console.log(userClass[msg.from.id],userStatus[msg.from.id])
         }else{
             return bot.sendMessage(msg.from.id, "Не зареєстрований натисніть /start")
         }
