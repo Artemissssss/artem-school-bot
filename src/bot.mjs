@@ -193,7 +193,7 @@ bot.on('*', async msg => {
         if(result[0]){
             userStatus[msg.from.id] = result[0].role;
         }else{
-            return bot.sendMessage(msg.from.id, "Не зареєстрований")
+            return bot.sendMessage(msg.from.id, "Не зареєстрований натисніть /start")
         }
     }
 //.filter((arr) => arr.id === msg.from.id)
