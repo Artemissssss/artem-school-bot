@@ -4,12 +4,6 @@
       "includeFiles": "node_modules/telebot/plugins/**"
     }
   },
-  "crons": [
-    {
-      "path": "/api/events",
-      "schedule": "0 6 * * *"
-    }
-  ],
   "github": {
     "silent": true
   }
