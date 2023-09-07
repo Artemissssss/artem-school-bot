@@ -7,6 +7,8 @@ import { nanoid } from 'nanoid'
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
 let lastUserMessage = {};
 let userStatus = {};
+let userClass = {};
+let userChat = {};
 let userAction = {};
 bot.on('/del', async msg => {
     // const markup = updateKeyboard('apples');
@@ -85,6 +87,7 @@ bot.on('*', async msg => {
         await client.close();
         lastUserMessage[msg.from.id] = text;
         userStatus[msg.from.id] = 1;
+        userClass[msg.from.id] = idClass[1];
         return bot.sendMessage(msg.from.id, `Клас успішно створився!\n<code>${idClass[0]}</code> - id для приєднання учня в клас\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас
         `, { parseMode: 'html',replyMarkup});
     }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень") && text === "Назад"){
@@ -135,6 +138,7 @@ bot.on('*', async msg => {
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 0;
+                     userClass[msg.from.id] = result[0].idS;
                      return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
                 }else{
                     await client.close();
@@ -167,6 +171,7 @@ bot.on('*', async msg => {
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 1;
+                     userClass[msg.from.id] = result[0].idT;
                      return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
                 }else{
                     await client.close();
@@ -192,6 +197,7 @@ bot.on('*', async msg => {
         await client.close();
         if(result[0]){
             userStatus[msg.from.id] = result[0].role;
+            userClass[msg.from.id] = result[0].role ? result[0].idT : result[0].idS;
         }else{
             return bot.sendMessage(msg.from.id, "Не зареєстрований натисніть /start")
         }
@@ -210,17 +216,17 @@ if(userStatus[msg.from.id] !== undefined){
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
-        const coll = client.db('artem-school').collection('users');
-        const filter = {id: msg.from.id};
-        const cursor = coll.find(filter);
-        const result = await cursor.toArray();
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
 
         const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId};
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
         await client.close();
-        console.log(result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId})
+        console.log(userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]})
         if(result1[0]){
             if(result1[0].files.length===0){
                 return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає файлів');
@@ -245,14 +251,14 @@ if(userStatus[msg.from.id] !== undefined){
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
-        const coll = client.db('artem-school').collection('users');
-        const filter = {id: msg.from.id};
-        const cursor = coll.find(filter);
-        const result = await cursor.toArray();
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
 
 
         const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
                 const files = {files : [...result1[0].files, {chatID:msg.chat.id, msgID:msg.message_id}]}
@@ -282,13 +288,13 @@ if(userStatus[msg.from.id] !== undefined){
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
-        const coll = client.db('artem-school').collection('users');
-        const filter = {id: msg.from.id};
-        const cursor = coll.find(filter);
-        const result = await cursor.toArray();
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
 
         const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = result[0].role  ?  {idT: result[0].classId} : {idS: result[0].classId};
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]}
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
         await client.close();
@@ -299,7 +305,7 @@ if(userStatus[msg.from.id] !== undefined){
                 console.log(result1[0].events)
                 for(let i = 0; i<result1[0].events.length;i++){
                     await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
-                    if(msg.chat.type ==="private" && result[0].role){
+                    if(msg.chat.type ==="private" && userStatus[msg.from.id]){
                         await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
                     }
                 }
@@ -336,14 +342,14 @@ if(userStatus[msg.from.id]){
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
-        const coll = client.db('artem-school').collection('users');
-        const filter = {id: msg.from.id};
-        const cursor = coll.find(filter);
-        const result = await cursor.toArray();
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
 
 
         const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
                 const events = {events : [...result1[0].events, userAction[msg.from.id]]}
@@ -366,14 +372,14 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
-    const coll = client.db('artem-school').collection('users');
-    const filter = {id: msg.from.id};
-    const cursor = coll.find(filter);
-    const result = await cursor.toArray();
+    // const coll = client.db('artem-school').collection('users');
+    // const filter = {id: msg.from.id};
+    // const cursor = coll.find(filter);
+    // const result = await cursor.toArray();
     
 
     const coll1 = client.db('artem-school').collection('classrooms');
-    const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+    const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
     const cursor1 = coll1.find(filter1);
     const result1 = await cursor1.toArray();
     console.log(msg.reply_to_message.text)
@@ -394,14 +400,14 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
-    const coll = client.db('artem-school').collection('users');
-    const filter = {id: msg.from.id};
-    const cursor = coll.find(filter);
-    const result = await cursor.toArray();
+    // const coll = client.db('artem-school').collection('users');
+    // const filter = {id: msg.from.id};
+    // const cursor = coll.find(filter);
+    // const result = await cursor.toArray();
     
 
     const coll1 = client.db('artem-school').collection('classrooms');
-    const filter1 = result[0].role ? {idT: result[0].classId} : {idS: result[0].classId};
+    const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
     const cursor1 = coll1.find(filter1);
     const result1 = await cursor1.toArray();
     console.log(msg.reply_to_message.text)
