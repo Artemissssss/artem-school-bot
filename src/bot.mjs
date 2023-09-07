@@ -368,7 +368,7 @@ if(userStatus[msg.from.id]){
         return await bot.sendMessage(msg.chat.id, 'Подія додано');
     }
 
-if (text === "Видалити" && msg.reply_to_message !== undefined && userAction[msg.from.id] === undefined && text.includes("&&")){
+if (text === "Видалити" && msg.reply_to_message !== undefined && userAction[msg.from.id] === undefined && msg.reply_to_message.text.includes("&&")){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
