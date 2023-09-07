@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     await client.close();
     
     for(let i = 0; i < result.length;i++){
-        let userClassroom = result1.filter(arr => result[i].role ? arr.idT === result[i].classId : arr.idS === result[i].classId)
+        let userClassroom = result1.filter(arr => result[i].role ? arr[0].idT === result[i].classId : arr[0].idS === result[i].classId)
         console.log(userClassroom)
         if(userClassroom[0].events.length){
             const today = new Date();
@@ -29,11 +29,11 @@ export default async function handler(req, res) {
             const formattedToday = dd + '.' + mm + '.' + yyyy;
     
             let countEvent = userClassroom[0].events.filter(arr => formattedToday === arr.date)
-            console.log(countEvent)
-            await bot.sendMessage(result[i].id, `Сьогодні у вас ${countEvent.length} подій`)
+            console.log(userClassroom[0].events.filter(arr => formattedToday === arr.date))
+            console.log(countEvent.length)
+            // await bot.sendMessage(result[i].id, `Сьогодні у вас ${countEvent.length}`)
         }else{
             await bot.sendMessage(result[i].id, `У вас немає подій`)
-            
         }
     }
 
