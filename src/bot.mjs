@@ -116,7 +116,7 @@ bot.on('*', async msg => {
             ['Назад'],
         ], {resize: true});
         userAction[msg.from.id] = {actionReg:true}
-        lastUserMessage[msg.from.id] = "Створити клас"
+        lastUserMessage[msg.from.id] = "Створити клас";
         return  bot.sendMessage(msg.from.id, `Напишіть назву класу`, {replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Створити клас" && userAction[msg.from.id].actionReg){
         let idClass = [nanoid(),nanoid()]
@@ -156,6 +156,21 @@ bot.on('*', async msg => {
         📚 Матеріали для навчання та підсумки уроків
         
         ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {replyMarkup});
+    }else if(text === "Назад"){
+        lastUserMessage[msg.from.id] = '/start';
+        userAction[msg.from.id] = undefined;
+        if(userStatus[msg.from.id]){
+            return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
+        }else if(userStatus[msg.from.id] === 0){
+            let replyMarkup = bot.keyboard([
+                ["Щоденик","Події","Учасники"],
+                ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                ["Матеріали","Cтворення матеріалу"],
+                ["Написати учаснику","Класи"]
+            ], {resize: true});
+            return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
+        }
     }else if(text === "Приєднатися в клас, як учень" && lastUserMessage[msg.from.id] === "/start"){
         let replyMarkup = bot.keyboard([
             ["Назад"],
@@ -256,7 +271,6 @@ bot.on('*', async msg => {
 
                 return bot.sendMessage(msg.chat.id,`Ви знаходитесь в декількох класах, тому натисніть на кнопку знизу в якому ви хочете зараз взаємодіяти:`, {replyMarkup});
             }
-            console.log(userClass[msg.from.id],userStatus[msg.from.id])
         }else{
             return bot.sendMessage(msg.from.id, "Не зареєстрований натисніть /start")
         }
@@ -336,8 +350,12 @@ if(userStatus[msg.from.id] !== undefined){
             return bot.sendMessage(msg.chat.id, 'Error');
         }
     }else if(text === "Завантаження файла" && userAction[msg.from.id] === undefined){
+        let replyMarkup = bot.keyboard([
+            ["Назад"],
+        ], {resize: true});
+
         lastUserMessage[msg.from.id] = text;
-        return bot.sendMessage(msg.chat.id, 'Надішліть файл');
+        return bot.sendMessage(msg.chat.id, 'Надішліть файл',{replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Завантаження файла" && msg.text === undefined){
         console.log(lastUserMessage[msg.from.id])
         const client = await MongoClient.connect(
@@ -365,6 +383,18 @@ if(userStatus[msg.from.id] !== undefined){
                  )
                 await client.close();
                 lastUserMessage[msg.from.id] = "textФайл";
+                if(userStatus[msg.from.id]){
+                    return await bot.sendMessage(msg.chat.id, 'Файл додано', {replyMarkup});
+                }else if(userStatus[msg.from.id] === 0){
+                    let replyMarkup = bot.keyboard([
+                        ["Щоденик","Події","Учасники"],
+                        ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                        ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                        ["Матеріали","Cтворення матеріалу"],
+                        ["Написати учаснику","Класи"]
+                    ], {resize: true});
+                    return await bot.sendMessage(msg.chat.id, 'Файл додано', {replyMarkup});
+                }
         return await bot.sendMessage(msg.chat.id, 'Файл додано');
     }
 
@@ -413,10 +443,61 @@ if(userStatus[msg.from.id] !== undefined){
 
 if(userStatus[msg.from.id]){
     console.log(userAction[msg.from.id])
+    if(text ==="Зробити оголошення"){
+        let replyMarkup = bot.keyboard([
+            ["Назад"],
+        ], {resize: true});
+        lastUserMessage[msg.from.id] = "Зробити оголошення";
+        return bot.sendMessage(msg.chat.id, `Надішліть текст для оголошення/n(оголошення буде надіслано зразу після насилання тексту)`, {replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Зробити оголошення"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]}
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+
+        const coll = client.db('artem-school').collection('users');
+        const filter = {classId: result1[0].idS};
+        const filter2 = {classId: result1[0].idT};
+        const cursor = coll.find(filter);
+        const cursor2 = coll.find(filter2);
+        const result = await cursor.toArray();
+        const result2 = await cursor2.toArray();
+        await client.close();
+
+        for(let i = 0; i<result.length;i++){
+            await bot.sendMessage(result[0].id, `У вас нове оголошення від ${msg.from.first_name}:/n${text}`);
+        }
+
+        for(let i = 0; i<result2.length;i++){
+            if(result2[i].id !== msg.from.id){
+                await bot.sendMessage(result2[0].id, `У вас нове оголошення від ${msg.from.first_name}:/n${text}`);
+            }
+        }
+
+        if(userStatus[msg.from.id]){
+            return  await bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
+        }else if(userStatus[msg.from.id] === 0){
+            let replyMarkup = bot.keyboard([
+                ["Щоденик","Події","Учасники"],
+                ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                ["Матеріали","Cтворення матеріалу"],
+                ["Написати учаснику","Класи"]
+            ], {resize: true});
+            return  await bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
+        }
+    }
     if(text === "Створення події" && userAction[msg.from.id] === undefined){
+        let replyMarkup = bot.keyboard([
+            ["Назад"],
+        ], {resize: true});
         lastUserMessage[msg.from.id] = text;
         userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
-        return bot.sendMessage(msg.chat.id, 'Надішліть текст події');
+        return bot.sendMessage(msg.chat.id, 'Надішліть текст події',{replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Створення події" && lastUserMessage[msg.from.id] === "Створення події" && !userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
         userAction[msg.from.id] = {id:nanoid(),text:text,date:"", time:"",who:""}
         return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
@@ -457,7 +538,18 @@ if(userStatus[msg.from.id]){
                 await client.close();
                 lastUserMessage[msg.from.id] = "textФайл";
                 userAction[msg.from.id] = undefined;
-        return await bot.sendMessage(msg.chat.id, 'Подія додано');
+                if(userStatus[msg.from.id]){
+                    return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
+                }else if(userStatus[msg.from.id] === 0){
+                    let replyMarkup = bot.keyboard([
+                        ["Щоденик","Події","Учасники"],
+                        ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                        ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                        ["Матеріали","Cтворення матеріалу"],
+                        ["Написати учаснику","Класи"]
+                    ], {resize: true});
+                    return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
+                }
     }
 
 if (text === "Видалити" && msg.reply_to_message !== undefined && userAction[msg.from.id] === undefined && msg.reply_to_message.text.includes("&&")){
