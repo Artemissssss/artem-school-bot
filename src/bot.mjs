@@ -541,7 +541,6 @@ bot.on('/start', async msg => {
 bot.on('callbackQuery', msg => {
     // User message alert
     console.log(msg.data)
-    `${result[i].nameC}&&_&&@@true&&_&&@@${result[i].classId}&&_&&@@${result[i].role}`
 
     if(msg.data.split("&&_&&@@")[1] === "true"){
         userStatus[msg.from.id] = parseInt(msg.data.split("&&_&&@@")[3]);
