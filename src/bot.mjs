@@ -110,16 +110,22 @@ bot.on('*', async msg => {
     ], {resize: true});
 
 
-    console.log(lastUserMessage)
-    if(text === "Створити клас" && lastUserMessage[msg.from.id] === "/start"){
-
+    
+    if(text === "Створити клас" && lastUserMessage[msg.from.id] === "/start" && userAction[msg.from.id] === undefined){
+        let replyMarkup = bot.keyboard([
+            ['Назад'],
+        ], {resize: true});
+        userAction[msg.from.id] = {actionReg:true}
+        lastUserMessage[msg.from.id] = "Створити клас"
+        return  bot.sendMessage(msg.from.id, `Напишіть назву класу`, {replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Створити клас" && userAction[msg.from.id].tactionRegext){
         let idClass = [nanoid(),nanoid()]
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
         const coll = client.db('artem-school').collection('classrooms');
-        const result = await coll.insertOne({idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
+        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
         const coll2 = client.db('artem-school').collection('users');
         const result2 = await coll2.insertOne({name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
         await client.close();
@@ -128,7 +134,7 @@ bot.on('*', async msg => {
         userClass[msg.from.id] = idClass[1];
         return bot.sendMessage(msg.from.id, `Клас успішно створився!\n<code>${idClass[0]}</code> - id для приєднання учня в клас\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас
         `, { parseMode: 'html',replyMarkup});
-    }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень") && text === "Назад"){
+    }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень" || lastUserMessage[msg.from.id] === "Створити клас") && text === "Назад"){
         lastUserMessage[msg.from.id] = msg.text;
         let replyMarkup = bot.keyboard([
             ['Створити клас'],
@@ -229,8 +235,21 @@ bot.on('*', async msg => {
         const result = await cursor.toArray();
         await client.close();
         if(result[0]){
-            userStatus[msg.from.id] = result[0].role;
-            userClass[msg.from.id] = result[0].classId;
+            if(result.length === 1){
+                userStatus[msg.from.id] = result[0].role;
+                userClass[msg.from.id] = result[0].classId;
+            }else{
+                let arrBtn = () => {
+                    let arr = [];
+                    for(let i = 0; i< result.length;i++){
+                        arr = [[bot.inlineButton(`${result[i].name}`, {callback: {actC:true, id:result[i].classId, role: result[i].role}})],...arr]
+                    };
+                    return arr;
+                };
+                let replyMarkup = bot.inlineKeyboard(arrBtn());
+
+                return bot.sendMessage(msg.chat.id,`Ви знаходитесь в декількох класах, тому натисніть на кнопку знизу в якому ви хочете зараз взаємодіяти:`, {replyMarkup});
+            }
             console.log(userClass[msg.from.id],userStatus[msg.from.id])
         }else{
             return bot.sendMessage(msg.from.id, "Не зареєстрований натисніть /start")
@@ -519,9 +538,13 @@ bot.on('/start', async msg => {
 bot.on('callbackQuery', msg => {
     // User message alert
     console.log(msg)
-    bot.sendMessage(msg.from.id,msg.data)
+    if(msg.data.actC){
+        userStatus[msg.from.id] = msg.data.role;
+        userClass[msg.from.id] = msg.data.id;
+        bot.sendMessage(msg.from.id,"Ви успішно увійшли в кімнату")
+    }
 
-    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data.id }`, true);
 });
 
 // // Inline query
