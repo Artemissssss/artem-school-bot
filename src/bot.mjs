@@ -125,7 +125,7 @@ bot.on('*', async msg => {
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
         const coll = client.db('artem-school').collection('classrooms');
-        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
+        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[],materials:[]})
         const coll2 = client.db('artem-school').collection('users');
         const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
         await client.close();
@@ -398,6 +398,45 @@ if(userStatus[msg.from.id] !== undefined){
         return await bot.sendMessage(msg.chat.id, 'Файл додано');
     }
 
+    if(text === "Матеріали" && userAction[msg.from.id] === undefined){
+        // let replyMarkup = bot.inlineKeyboard([
+        //     [
+        //         bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
+        //     ], [
+        //         bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
+        //     ]
+        // ]);
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+        await client.close();
+        console.log(userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]})
+        if(result1[0]){
+            if(result1[0].materials.length===0){
+                return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає файлів');
+            }else{
+                for(let i = 0; i<result1[0].materials.length;i++){
+                    await bot.forwardMessage(msg.chat.id,result1[0].materials[i].chatID,result1[0].materials[i].msgID);
+                    if(msg.chat.type ==="private" && userStatus[msg.from.id]){
+                        await bot.sendMessage(msg.chat.id,`${result1[0].materials[i].chatID}&&${result1[0].materials[i].msgID}`);
+                    }
+                }
+                return bot.sendMessage(msg.chat.id, 'Це всі файли в цьому класі');
+            }
+        }else{
+            return bot.sendMessage(msg.chat.id, 'Error');
+        }
+    }
 
     if(text === "Події" && userAction[msg.from.id] === undefined){
         // let replyMarkup = bot.inlineKeyboard([
@@ -550,6 +589,45 @@ if(userStatus[msg.from.id]){
                         ["Написати учаснику","Класи"]
                     ], {resize: true});
                     return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
+                }
+    }
+
+    if(text === "Cтворення матеріалу" && userAction[msg.from.id] === undefined){
+        let replyMarkup = bot.keyboard([
+            ["Назад"],
+        ], {resize: true});
+
+        lastUserMessage[msg.from.id] = text;
+        return bot.sendMessage(msg.chat.id, 'Надішліть матеріал текст/зображення/посилання/файл',{replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Cтворення матеріалу" && msg.text === undefined){
+        console.log(lastUserMessage[msg.from.id])
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
+
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+                const materials = {materials : [...result1[0].materials, {chatID:msg.chat.id, msgID:msg.message_id}]}
+                console.log(result1)
+                await coll1.updateOne(
+                    {_id: new ObjectId(result1[0]._id)},
+                    {
+                      $set: { ...materials},
+                      $currentDate: { lastModified: true }
+                    }
+                 )
+                await client.close();
+                lastUserMessage[msg.from.id] = "textФайл";
+                if(userStatus[msg.from.id]){
+                    return await bot.sendMessage(msg.chat.id, 'Матеріал додано', {replyMarkup});
                 }
     }
 
