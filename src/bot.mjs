@@ -554,7 +554,7 @@ bot.on('callbackQuery', msg => {
         bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`)
     }
 
-    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data.split("&&_&&@@")[2] }`, true);
+    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
 
 // // Inline query
