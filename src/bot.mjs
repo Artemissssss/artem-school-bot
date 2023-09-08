@@ -127,7 +127,7 @@ bot.on('*', async msg => {
         const coll = client.db('artem-school').collection('classrooms');
         const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[]})
         const coll2 = client.db('artem-school').collection('users');
-        const result2 = await coll2.insertOne({name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
+        const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
         await client.close();
         lastUserMessage[msg.from.id] = text;
         userStatus[msg.from.id] = 1;
@@ -179,7 +179,7 @@ bot.on('*', async msg => {
                 console.log(result)
                 if(result[0]){
                     const coll2 = client.db('artem-school').collection('users');
-                    const result2 = await coll2.insertOne({name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
+                    const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 0;
@@ -206,7 +206,7 @@ bot.on('*', async msg => {
                 const result = await cursor.toArray();
                 if(result[0]){
                     const coll2 = client.db('artem-school').collection('users');
-                    const result2 = await coll2.insertOne({name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: result[0].idT})
+                    const result2 = await coll2.insertOne({nameC: result[0].name,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: result[0].idT})
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 1;
@@ -233,6 +233,7 @@ bot.on('*', async msg => {
         const filter = {id: msg.from.id};
         const cursor = coll.find(filter);
         const result = await cursor.toArray();
+
         await client.close();
         if(result[0]){
             if(result.length === 1){
@@ -242,7 +243,7 @@ bot.on('*', async msg => {
                 let arrBtn = () => {
                     let arr = [];
                     for(let i = 0; i< result.length;i++){
-                        arr = [[bot.inlineButton(`${result[i].name}`, {callback: {actC:true, id:result[i].classId, role: result[i].role}})],...arr]
+                        arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: {name: result[i].nameC ,actC:true, id:result[i].classId, role: result[i].role}})],...arr]
                     };
                     return arr;
                 };
@@ -541,7 +542,7 @@ bot.on('callbackQuery', msg => {
     if(msg.data.actC){
         userStatus[msg.from.id] = msg.data.role;
         userClass[msg.from.id] = msg.data.id;
-        bot.sendMessage(msg.from.id,"Ви успішно увійшли в кімнату")
+        bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${msg.data.nameC}`)
     }
 
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data.id }`, true);
