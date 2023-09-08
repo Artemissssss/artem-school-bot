@@ -510,7 +510,7 @@ if(userStatus[msg.from.id] !== undefined){
             msgRep+= `<code>${conArr[i].id}</code> - це ${conArr[i].name} та ${conArr[i] ? "вчитель" : "учень"}\n`;
         }
 
-        return  await bot.sendMessage(result2[i].id, msgRep,{parseMode: 'html'});
+        return  await bot.sendMessage(msg.chat.id, msgRep,{parseMode: 'html'});
 
     }
 
