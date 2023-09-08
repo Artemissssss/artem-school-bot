@@ -245,6 +245,7 @@ bot.on('*', async msg => {
                 let arrBtn = () => {
                     let arr = [];
                     for(let i = 0; i< result.length;i++){
+                        console.log( `${result[i].nameC}&&_&&@@true&&_&&@@${result[i].classId}&&_&&@@${result[i].role}`)
                         arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: `${result[i].nameC}&&_&&@@true&&_&&@@${result[i].classId}&&_&&@@${result[i].role}`})],...arr]
                     };
                     return arr;
