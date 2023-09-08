@@ -248,7 +248,7 @@ bot.on('*', async msg => {
                     for(let i = 0; i< result.length;i++){
                         let joinId =nanoid()
                         console.log( `${result[i].nameC}&&_&&@@true&&_&&@@${result[i].classId}&&_&&@@${result[i].role}`)
-                        userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userStatus[msg.from.id]]
+                        userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userAction[msg.from.id]]
                         arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: joinId})],...arr]
                     };
                     return arr;
