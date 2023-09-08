@@ -118,7 +118,7 @@ bot.on('*', async msg => {
         userAction[msg.from.id] = {actionReg:true}
         lastUserMessage[msg.from.id] = "Створити клас"
         return  bot.sendMessage(msg.from.id, `Напишіть назву класу`, {replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Створити клас" && userAction[msg.from.id].tactionRegext){
+    }else if(lastUserMessage[msg.from.id] === "Створити клас" && userAction[msg.from.id].actionReg){
         let idClass = [nanoid(),nanoid()]
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
