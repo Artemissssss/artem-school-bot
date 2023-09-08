@@ -584,7 +584,26 @@ bot.on('callbackQuery', msg => {
         userStatus[msg.from.id] = newArr[0].role;
         userClass[msg.from.id] = newArr[0].id;
         userAction[msg.from.id]= undefined;
-        bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`)
+        if(userStatus[msg.from.id]){
+            let replyMarkup = bot.keyboard([
+                ["Журнал","Статистика","Учасники"],
+                ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                ["Матеріали","Cтворення матеріалу","Д/з", "Задати д/з"],
+                ["Файли", "Завантаження файла","Події","Створення події"],
+                ["Написати учаснику","Зробити оголошення","Класи"]
+            ], {resize: true});
+            bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`,{replyMarkup})
+        }else{
+            let replyMarkup = bot.keyboard([
+                ["Щоденик","Події","Учасники"],
+                ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                ["Матеріали","Cтворення матеріалу"],
+                ["Написати учаснику","Класи"]
+            ], {resize: true});
+            bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`,{replyMarkup})
+        }
+
     }
 
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
