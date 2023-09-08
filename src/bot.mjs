@@ -247,7 +247,6 @@ bot.on('*', async msg => {
                     userAction[msg.from.id] =[{act:true}];
                     for(let i = 0; i< result.length;i++){
                         let joinId =nanoid()
-                        console.log( `${result[i].nameC}&&_&&@@true&&_&&@@${result[i].classId}&&_&&@@${result[i].role}`)
                         userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userAction[msg.from.id]]
                         arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: joinId})],...arr]
                     };
@@ -264,6 +263,40 @@ bot.on('*', async msg => {
     }
 //.filter((arr) => arr.id === msg.from.id)
 if(userStatus[msg.from.id] !== undefined){
+    if(text === "Класи"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('users');
+        const filter = {id: msg.from.id};
+        const cursor = coll.find(filter);
+        const result = await cursor.toArray();
+
+        await client.close();
+        if(result[0]){
+            if(result.length === 1){
+                return bot.sendMessage(msg.chat.id,`Ви знаходитеся тільки в одному класі`);
+            }else{
+                let arrBtn = () => {
+                    let arr = [];
+                    userAction[msg.from.id] =[{act:true}];
+                    for(let i = 0; i< result.length;i++){
+                        let joinId =nanoid()
+                        userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userAction[msg.from.id]]
+                        arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: joinId})],...arr]
+                    };
+                    return arr;
+                };
+                let replyMarkup = bot.inlineKeyboard(arrBtn());
+
+                return bot.sendMessage(msg.chat.id,`Ви знаходитесь в декількох класах, тому натисніть на кнопку знизу в якому ви хочете зараз взаємодіяти:`, {replyMarkup});
+            }
+            console.log(userClass[msg.from.id],userStatus[msg.from.id])
+        }
+    }
+
+
     if(text === "Файли" && userAction[msg.from.id] === undefined){
         // let replyMarkup = bot.inlineKeyboard([
         //     [
