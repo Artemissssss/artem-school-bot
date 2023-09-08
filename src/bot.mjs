@@ -469,13 +469,13 @@ if(userStatus[msg.from.id]){
         await client.close();
 
         for(let i = 0; i<result.length;i++){
-            await bot.sendMessage(result[0].id, `У вас нове оголошення від ${msg.from.first_name}:\n${text}`);
+            await bot.sendMessage(result[i].id, `У вас нове оголошення від ${msg.from.first_name}:\n${text}`);
         }
 
         for(let i = 0; i<result2.length;i++){
             console.log(result2[i])
             // if(result2[i].id !== msg.from.id){
-                await bot.sendMessage(result2[0].id, `У вас нове оголошення від ${msg.from.first_name}:\n${text}`);
+                await bot.sendMessage(result2[i].id, `У вас нове оголошення від ${msg.from.first_name}:\n${text}`);
             // }
         }
 
