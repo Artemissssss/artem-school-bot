@@ -540,7 +540,7 @@ bot.on('/start', async msg => {
 // Inline button callback
 bot.on('callbackQuery', msg => {
     // User message alert
-    console.log(msg)
+    console.log(msg.data)
     if(msg.data.actC){
         userStatus[msg.from.id] = msg.data.role;
         userClass[msg.from.id] = msg.data.id;
