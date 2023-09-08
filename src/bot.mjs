@@ -136,7 +136,8 @@ bot.on('*', async msg => {
         return bot.sendMessage(msg.from.id, `Клас успішно створився!\n<code>${idClass[0]}</code> - id для приєднання учня в клас\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас
         `, { parseMode: 'html',replyMarkup});
     }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень" || lastUserMessage[msg.from.id] === "Створити клас") && text === "Назад"){
-        lastUserMessage[msg.from.id] = msg.text;
+        lastUserMessage[msg.from.id] = '/start';
+        userAction[msg.from.id] = undefined;
         let replyMarkup = bot.keyboard([
             ['Створити клас'],
             ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
