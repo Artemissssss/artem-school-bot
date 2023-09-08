@@ -474,9 +474,9 @@ if(userStatus[msg.from.id]){
 
         for(let i = 0; i<result2.length;i++){
             console.log(result2[i])
-            // if(result2[i].id !== msg.from.id){
+            if(result2[i].id !== msg.from.id){
                 await bot.sendMessage(result2[i].id, `У вас нове оголошення від ${msg.from.first_name}:\n${text}`);
-            // }
+            }
         }
 
         if(userStatus[msg.from.id]){
