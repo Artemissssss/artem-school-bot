@@ -157,7 +157,7 @@ bot.on('*', async msg => {
         
         ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {replyMarkup});
     }else if(text === "Назад"){
-        lastUserMessage[msg.from.id] = '/start';
+        lastUserMessage[msg.from.id] = 'someText';
         userAction[msg.from.id] = undefined;
         if(userStatus[msg.from.id]){
             return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
