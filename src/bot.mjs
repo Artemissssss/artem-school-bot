@@ -599,7 +599,7 @@ if(userStatus[msg.from.id]){
 
         lastUserMessage[msg.from.id] = text;
         return bot.sendMessage(msg.chat.id, 'Надішліть матеріал текст/зображення/посилання/файл',{replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Cтворення матеріалу" && msg.text === undefined){
+    }else if(lastUserMessage[msg.from.id] === "Cтворення матеріалу"){
         console.log(lastUserMessage[msg.from.id])
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
