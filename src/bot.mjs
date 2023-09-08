@@ -422,7 +422,7 @@ if(userStatus[msg.from.id] !== undefined){
         await client.close();
         console.log(userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]})
         if(result1[0]){
-            console.log(result1[0].materials)
+            console.log(result1[0].materials && !result1[0].materials[0])
             if(result1[0].materials.length===0){
                 return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає файлів');
             }else{
