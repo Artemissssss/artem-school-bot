@@ -55,7 +55,7 @@ bot.on('/delS', async msg => {
         ["Щоденик","Події","Учасники"],
         ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
         ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-        ["Матеріали","Cтворення матеріалу"],
+        ["Матеріали"],
         ["Написати учаснику","Класи"]
     ], {resize: true});
 
@@ -166,7 +166,7 @@ bot.on('*', async msg => {
                 ["Щоденик","Події","Учасники"],
                 ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                 ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                ["Матеріали","Cтворення матеріалу"],
+                ["Матеріали"],
                 ["Написати учаснику","Класи"]
             ], {resize: true});
             return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
@@ -182,7 +182,7 @@ bot.on('*', async msg => {
             ["Щоденик","Події","Учасники"],
             ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
             ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-            ["Матеріали","Cтворення матеріалу"],
+            ["Матеріали"],
             ["Написати учаснику","Класи"]
         ], {resize: true});
         const client = await MongoClient.connect(
@@ -390,7 +390,7 @@ if(userStatus[msg.from.id] !== undefined){
                         ["Щоденик","Події","Учасники"],
                         ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                         ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                        ["Матеріали","Cтворення матеріалу"],
+                        ["Матеріали"],
                         ["Написати учаснику","Класи"]
                     ], {resize: true});
                     return await bot.sendMessage(msg.chat.id, 'Файл додано', {replyMarkup});
@@ -422,7 +422,7 @@ if(userStatus[msg.from.id] !== undefined){
         await client.close();
         console.log(userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]})
         if(result1[0]){
-            console.log(result1[0].materials && !result1[0].materials[0])
+            console.log(result1[0].materials || !result1[0].materials[0])
             if(result1[0].materials.length===0){
                 return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає файлів');
             }else{
@@ -477,6 +477,41 @@ if(userStatus[msg.from.id] !== undefined){
         }else{
             return bot.sendMessage(msg.chat.id, 'Error');
         }
+    }
+    if(text === "Учасники" && userAction[msg.from.id] === undefined){
+        // let replyMarkup = bot.inlineKeyboard([
+        //     [
+        //         bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
+        //     ], [
+        //         bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
+        //     ]
+        // ]);
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]}
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+
+        const coll = client.db('artem-school').collection('users');
+        const filter = {classId: result1[0].idS};
+        const filter2 = {classId: result1[0].idT};
+        const cursor = coll.find(filter);
+        const cursor2 = coll.find(filter2);
+        const result = await cursor.toArray();
+        const result2 = await cursor2.toArray();
+        await client.close();
+        
+        let conArr = [...result2,...result];
+        let msgRep = ``;
+        for(let i = 0; i<conArr.length;i++){
+            msgRep+= `<code>${conArr[i].id}</code> - це ${conArr[i].name} та ${conArr[i] ? "вчитель" : "учень"}\n`;
+        }
+
+        return  await bot.sendMessage(result2[i].id, msgRep,{parseMode: 'html'});
+
     }
 
 }
