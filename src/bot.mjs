@@ -245,7 +245,7 @@ bot.on('*', async msg => {
                 let arrBtn = () => {
                     let arr = [];
                     for(let i = 0; i< result.length;i++){
-                        arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: {name: result[i].nameC ,actC:true, id:result[i].classId, role: result[i].role}})],...arr]
+                        arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: `${result[i].nameC}&&_&&@@true&&_&&@@${result[i].classId}&&_&&@@${result[i].role}`})],...arr]
                     };
                     return arr;
                 };
@@ -540,14 +540,16 @@ bot.on('/start', async msg => {
 // Inline button callback
 bot.on('callbackQuery', msg => {
     // User message alert
-    console.log(msg.data.actC)
-    if(msg.data.actC){
-        userStatus[msg.from.id] = msg.data.role;
-        userClass[msg.from.id] = msg.data.id;
-        bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${msg.data.nameC}`)
+    console.log(msg.data)
+    `${result[i].nameC}&&_&&@@true&&_&&@@${result[i].classId}&&_&&@@${result[i].role}`
+
+    if(msg.data.split("&&_&&@@")[1] === "true"){
+        userStatus[msg.from.id] = parseInt(msg.data.split("&&_&&@@")[3]);
+        userClass[msg.from.id] = msg.data.split("&&_&&@@")[2];
+        bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${msg.data.split("&&_&&@@")[0]}`)
     }
 
-    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data.id }`, true);
+    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data.split("&&_&&@@")[2] }`, true);
 });
 
 // // Inline query
