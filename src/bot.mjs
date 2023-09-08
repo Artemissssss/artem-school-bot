@@ -545,7 +545,7 @@ bot.on('/start', async msg => {
 bot.on('callbackQuery', msg => {
     // User message alert
     console.log(msg.data)
-    if(userAction[msg.from.id] !== undefined && userAction[msg.from.id][length-1].act){
+    if(userAction[msg.from.id] !== undefined && userAction[msg.from.id][userAction[msg.from.id].length-1].act){
         let newArr = userAction[msg.from.id].filter(arr => arr.joinId === msg.data);
         console.log(newArr)
         userStatus[msg.from.id] = newArr[0].role;
