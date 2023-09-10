@@ -555,16 +555,8 @@ if(userStatus[msg.from.id]){
         }
 
         if(userStatus[msg.from.id]){
-            return  await bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
-        }else if(userStatus[msg.from.id] === 0){
-            let replyMarkup = bot.keyboard([
-                ["Щоденик","Події","Учасники"],
-                ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
-                ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                ["Матеріали","Cтворення матеріалу"],
-                ["Написати учаснику","Класи"]
-            ], {resize: true});
-            return  await bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
+            lastUserMessage[msg.from.id] = "оголошення зроблене";
+            return  await bot.sendMessage(msg.from.id, `Оголошення надіслане`, {replyMarkup});
         }
     }
     if(text === "Створення події" && userAction[msg.from.id] === undefined){
