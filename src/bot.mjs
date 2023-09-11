@@ -133,7 +133,7 @@ bot.on('*', async msg => {
         userStatus[msg.from.id] = 1;
         userClass[msg.from.id] = idClass[1];
         userAction[msg.from.id] = undefined;
-        return bot.sendMessage(msg.from.id, `Клас успішно створився!\n<code>${idClass[0]}</code> - id для приєднання учня в клас\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас
+        return bot.sendMessage(msg.from.id, `Клас успішно створився!\n\n<code>${idClass[0]}</code> - id для приєднання учня в клас\nабо посилання для приєдання учня https://t.me/artemisSchool_bot?start=S:${idClass[0]}\n\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас\nабо посилання для приєдання вчителя https://t.me/artemisSchool_bot?start=T:${idClass[1]}
         `, { parseMode: 'html',replyMarkup});
     }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень" || lastUserMessage[msg.from.id] === "Створити клас") && text === "Назад"){
         lastUserMessage[msg.from.id] = '/start';
@@ -723,13 +723,59 @@ return null;
 }
 });
 
-bot.on('/start', async msg => {
+bot.on('/start', async (msg,props) => {
     lastUserMessage[msg.from.id] = msg.text;
+    console.log(props)
     let replyMarkup = bot.keyboard([
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
     ], {resize: true});
-
+if(msg.text.split(" ")[1]){
+if(msg.text.split(" ")[1].split(":")[0] === "T"){
+    const client = await MongoClient.connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    const coll = client.db('artem-school').collection('classrooms');
+            const filter = {idT: msg.text};
+            const cursor = coll.find(filter);
+            const result = await cursor.toArray();
+            if(result[0]){
+                const coll2 = client.db('artem-school').collection('users');
+                const result2 = await coll2.insertOne({nameC: result[0].name,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: result[0].idT})
+                 await client.close();
+                 lastUserMessage[msg.from.id] = text;
+                 userStatus[msg.from.id] = 1;
+                 userClass[msg.from.id] = result[0].idT;
+                 return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
+            }else{
+                await client.close();
+                return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу, натисніть на /start та використайте id для доєднанання або попросіть правильне посилання!`);
+            } 
+}else if(msg.text.split(" ")[1].split(":")[0] === "S"){
+    const client = await MongoClient.connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    const coll = client.db('artem-school').collection('classrooms');
+            const filter = {idS: msg.text};
+            const cursor = coll.find(filter);
+            const result = await cursor.toArray();
+            console.log(result)
+            if(result[0]){
+                const coll2 = client.db('artem-school').collection('users');
+                const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
+                 await client.close();
+                 lastUserMessage[msg.from.id] = text;
+                 userStatus[msg.from.id] = 0;
+                 userClass[msg.from.id] = result[0].idS;
+                 return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
+            }else{
+                await client.close();
+                return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу, натисніть на /start та використайте id для доєднанання або попросіть правильне посилання!`);
+            }  
+}
+}else{
     return bot.sendMessage(msg.from.id, `🤖 Привіт, ${msg.from.first_name}! Я ваш особистий навчальний асистент! З моєю допомогою ви зможете легко керувати навчальним процесом. Ось деякі з функцій, які я можу виконувати:
     
     🏫 Створення та управління навчальними групами
@@ -743,6 +789,7 @@ bot.on('/start', async msg => {
     📚 Матеріали для навчання та підсумки уроків
     
     ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {replyMarkup});
+}
 
 });
 
