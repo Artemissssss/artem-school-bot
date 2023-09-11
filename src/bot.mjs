@@ -737,7 +737,7 @@ if(msg.text.split(" ")[1].split(":")[0] === "T"){
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
-            const filter = {idT: msg.text};
+            const filter = {idT: msg.text.split(" ")[1].split(":")[1]};
             const cursor = coll.find(filter);
             const result = await cursor.toArray();
             if(result[0]){
@@ -758,7 +758,7 @@ if(msg.text.split(" ")[1].split(":")[0] === "T"){
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
     const coll = client.db('artem-school').collection('classrooms');
-            const filter = {idS: msg.text};
+            const filter = {idS: msg.text.split(" ")[1].split(":")[1]};
             const cursor = coll.find(filter);
             const result = await cursor.toArray();
             console.log(result)
