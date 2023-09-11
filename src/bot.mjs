@@ -744,7 +744,7 @@ if(msg.text.split(" ")[1]){
                 const coll2 = client.db('artem-school').collection('users');
                 const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
                  await client.close();
-                 lastUserMessage[msg.from.id] = text;
+                 lastUserMessage[msg.from.id] = msg.text;
                  userStatus[msg.from.id] = 0;
                  userClass[msg.from.id] = result[0].idS;
                  return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
@@ -757,7 +757,7 @@ if(msg.text.split(" ")[1]){
                             const coll2 = client.db('artem-school').collection('users');
                             const result2 = await coll2.insertOne({nameC: result[0].name,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: result[0].idT})
                              await client.close();
-                             lastUserMessage[msg.from.id] = text;
+                             lastUserMessage[msg.from.id] = msg.text;
                              userStatus[msg.from.id] = 1;
                              userClass[msg.from.id] = result[0].idT;
                              return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
