@@ -241,7 +241,7 @@ bot.on('*', async msg => {
         return bot.sendMessage(msg.from.id, `Error`, {replyMarkup});
     }
 
-    if(userStatus[msg.from.id] === undefined && text !== "/start"){
+    if(userStatus[msg.from.id] === undefined && (text !== "/start" || text.indexOf("/start"))){
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -741,6 +741,13 @@ if(msg.text.split(" ")[1]){
             const result = await cursor.toArray();
             console.log(result)
             if(result[0]){
+                let replyMarkup = bot.keyboard([
+                    ["Щоденик","Події","Учасники"],
+                    ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                    ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                    ["Матеріали"],
+                    ["Написати учаснику","Класи"]
+                ], {resize: true});
                 const coll2 = client.db('artem-school').collection('users');
                 const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: result[0].idS})
                  await client.close();
@@ -749,6 +756,13 @@ if(msg.text.split(" ")[1]){
                  userClass[msg.from.id] = result[0].idS;
                  return await bot.sendMessage(msg.from.id, `Ви успішно доєдналися до класу`, {replyMarkup});
             }else{
+                let replyMarkup = bot.keyboard([
+                    ["Журнал","Статистика","Учасники"],
+                    ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                    ["Матеріали","Cтворення матеріалу","Д/з", "Задати д/з"],
+                    ["Файли", "Завантаження файла","Події","Створення події"],
+                    ["Написати учаснику","Зробити оголошення","Класи"]
+                ], {resize: true});
                 const coll = client.db('artem-school').collection('classrooms');
                         const filter = {idT: msg.text.split(" ")[1]};
                         const cursor = coll.find(filter);
