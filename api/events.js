@@ -24,7 +24,7 @@ export default async function handler(req, res) {
         console.log(userClassroom)
         if(userClassroom[i].events.length){
             let countEvent = userClassroom[i].events.filter(arr => time === arr.date)
-            console.log(userClassroom[ш].events.filter(arr => time === arr.date))
+            console.log(userClassroom[i].events.filter(arr => time === arr.date))
             console.log(countEvent.length)
             // await bot.sendMessage(result[i].id, `Сьогодні у вас ${countEvent.length}`)
         }else{
