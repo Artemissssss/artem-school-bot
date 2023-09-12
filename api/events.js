@@ -1,8 +1,12 @@
 import { MongoClient,ObjectId } from 'mongodb';
+import moment from 'moment';
+
 import TeleBot from "telebot"
 
 export default async function handler(req, res) {
-    const bot = new TeleBot(process.env.TELEGRAM_BOT_TOKEN)
+    let time = moment().format('L').split("/").join(".");
+
+    const bot = new TeleBot(process.env.TELEGRAM_BOT_TOKEN);
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
@@ -18,18 +22,9 @@ export default async function handler(req, res) {
     for(let i = 0; i < result.length;i++){
         let userClassroom = result1.filter(arr => result[i].role ? arr.idT === result[i].classId : arr.idS === result[i].classId)
         console.log(userClassroom)
-        if(userClassroom[0].events.length){
-            const today = new Date();
-            const yyyy = today.getFullYear();
-            let mm = today.getMonth() + 1; // Months start at 0!
-            let dd = today.getDate();
-    
-            if (dd < 10) dd = '0' + dd;
-            if (mm < 10) mm = '0' + mm;
-            const formattedToday = dd + '.' + mm + '.' + yyyy;
-    
-            let countEvent = userClassroom[0].events.filter(arr => formattedToday === arr.date)
-            console.log(userClassroom[0].events.filter(arr => formattedToday === arr.date))
+        if(userClassroom[i].events.length){
+            let countEvent = userClassroom[i].events.filter(arr => time === arr.date)
+            console.log(userClassroom[ш].events.filter(arr => time === arr.date))
             console.log(countEvent.length)
             // await bot.sendMessage(result[i].id, `Сьогодні у вас ${countEvent.length}`)
         }else{
