@@ -540,7 +540,7 @@ if(userStatus[msg.from.id]){
             ["Назад"],
         ], {resize: true});
         userAction[msg.from.id] = {id:"",name:text,task:[],date:"", time:"",teacher:userAction[msg.from.id].teacher, status:1};
-        return bot.sendMessage(msg.chat.id, `Надішліть всі файли домашнього завдання та тексти\nТобто напишіть все що потрібно для цього д/з(фото завдань, текст завдань, аудіо та подібне)\n<bold>Після того як надіслали всі файли натисніть на "Це всі файли"</bold>`,{parseMode:"html", replyMarkup});
+        return bot.sendMessage(msg.chat.id, `Надішліть всі файли домашнього завдання та тексти\nТобто напишіть все що потрібно для цього д/з(фото завдань, текст завдань, аудіо та подібне)\nПісля того як надіслали всі файли натисніть на "Це всі файли"`,{replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
         userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:text, time:"",teacher:userAction[msg.from.id].teacher, status:0};
         return bot.sendMessage(msg.chat.id, `Надішліть час здачі у форматі гг:хх`);
