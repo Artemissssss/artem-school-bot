@@ -525,10 +525,6 @@ if(userStatus[msg.from.id]){
         lastUserMessage[msg.from.id] = "Задати д/з";
         userAction[msg.from.id] = {id:"",name:"",task:[],date:"", time:"",teacher:msg.from.id, status:0};
         return bot.sendMessage(msg.chat.id, `Напишіть назву домашнього завдання`, {replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && !userAction[msg.from.id].date && !userAction[msg.from.id].time && userAction[msg.from.id].status){
-        userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:[{chatId: msg.from.id,msgId:msg.message_id },...userAction[msg.from.id].task],date:"", time:"",teacher:userAction[msg.from.id].teacher, status:1};
-        console.log(userAction[msg.from.id])
-        return null;
     }else if(text === "Це всі файли" && lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && !userAction[msg.from.id].date && !userAction[msg.from.id].time && userAction[msg.from.id].status){
         let replyMarkup = bot.keyboard([
             ["Назад"],
@@ -536,6 +532,10 @@ if(userStatus[msg.from.id]){
         userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:"", time:"",teacher:userAction[msg.from.id].teacher, status:0};
         console.log(userAction[msg.from.id])
         return bot.sendMessage(msg.chat.id, `Тепер надішліть до котрого числа потрібно надіслати домашнє завдання у форматі дд:мм:рррр`,{replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && !userAction[msg.from.id].date && !userAction[msg.from.id].time && userAction[msg.from.id].status){
+        userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:[{chatId: msg.from.id,msgId:msg.message_id },...userAction[msg.from.id].task],date:"", time:"",teacher:userAction[msg.from.id].teacher, status:1};
+        console.log(userAction[msg.from.id])
+        return null;
     }else if(lastUserMessage[msg.from.id] === "Задати д/з" && !userAction[msg.from.id].name && !userAction[msg.from.id].task.length && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
         let replyMarkup = bot.keyboard([
             ["Це всі файли"],
