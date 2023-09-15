@@ -554,7 +554,7 @@ if(userStatus[msg.from.id]){
             );
         const coll1 = client.db('artem-school').collection('homework');
         // const filter1 = {idT: userClass[msg.from.id]} 
-        const result1 = coll1.insertOne(userAction[msg.from.id]);
+        const result1 = coll1.insertOne({...userAction[msg.from.id]});
         // const result1 = await cursor1.toArray();
         // const homework = {homework : [...result1[0].homework, {task:userAction[msg.from.id],whoMade:[]}]}
         // console.log(result1)
