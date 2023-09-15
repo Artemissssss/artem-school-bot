@@ -547,24 +547,24 @@ if(userStatus[msg.from.id]){
         userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:text, time:"",teacher:userAction[msg.from.id].teacher, status:0};
         return bot.sendMessage(msg.chat.id, `Надішліть час здачі у форматі гг:хх`);
     }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
-        userAction[msg.from.id] = {id:nanoid(),name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher, status:0};
+        userAction[msg.from.id] = {whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher, status:0};
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
             );
         const coll1 = client.db('artem-school').collection('homework');
-        const filter1 = {idT: userClass[msg.from.id]} 
-        const cursor1 = coll1.find(filter1);
-        const result1 = await cursor1.toArray();
-        const homework = {homework : [...result1[0].homework, {task:userAction[msg.from.id],whoMade:[]}]}
-        console.log(result1)
-        await coll1.updateOne(
-            {_id: new ObjectId(result1[0]._id)},
-            {
-              $set: { ...homework},
-              $currentDate: { lastModified: true }
-            }
-         )
+        // const filter1 = {idT: userClass[msg.from.id]} 
+        const result1 = coll1.insertOne(userAction[msg.from.id]);
+        // const result1 = await cursor1.toArray();
+        // const homework = {homework : [...result1[0].homework, {task:userAction[msg.from.id],whoMade:[]}]}
+        // console.log(result1)
+        // await coll1.updateOne(
+        //     {_id: new ObjectId(result1[0]._id)},
+        //     {
+        //       $set: { ...homework},
+        //       $currentDate: { lastModified: true }
+        //     }
+        //  )
         await client.close();
         lastUserMessage[msg.from.id] === "Зада";
         userAction[msg.from.id] = undefined;
