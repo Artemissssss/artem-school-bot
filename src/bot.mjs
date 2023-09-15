@@ -305,7 +305,7 @@ if(userStatus[msg.from.id] !== undefined){
                     };
                     return arr;
                 };
-                let replyMarkup = Markup.inlineKeyboard(arrBtn());
+                let replyMarkup = bot.inlineKeyboard(arrBtn());
 
                 return bot.sendMessage(msg.chat.id,`Ви знаходитесь в декількох класах, тому натисніть на кнопку знизу в якому ви хочете зараз взаємодіяти:`, {replyMarkup});
             }
