@@ -1,4 +1,5 @@
 import TeleBot from "telebot"
+import {Markup} from "telebot"
 // const openai = require('openai');
 // const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
@@ -125,7 +126,7 @@ bot.on('*', async msg => {
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
         const coll = client.db('artem-school').collection('classrooms');
-        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],homework:[],marks:[],lessons:[],statisticks:[],materials:[]})
+        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],marks:[],lessons:[],statisticks:[],materials:[]})
         const coll2 = client.db('artem-school').collection('users');
         const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
         await client.close();
@@ -303,7 +304,7 @@ if(userStatus[msg.from.id] !== undefined){
                     };
                     return arr;
                 };
-                let replyMarkup = bot.inlineKeyboard(arrBtn());
+                let replyMarkup = bot.Markup.inlineKeyboard(arrBtn());
 
                 return bot.sendMessage(msg.chat.id,`Ви знаходитесь в декількох класах, тому натисніть на кнопку знизу в якому ви хочете зараз взаємодіяти:`, {replyMarkup});
             }
@@ -547,7 +548,7 @@ if(userStatus[msg.from.id]){
         userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:text, time:"",teacher:userAction[msg.from.id].teacher, status:0};
         return bot.sendMessage(msg.chat.id, `Надішліть час здачі у форматі гг:хх`);
     }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
-        userAction[msg.from.id] = {whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher, status:0};
+        userAction[msg.from.id] = {whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher};
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -802,7 +803,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:text, time:"",teacher:userAction[msg.from.id].teacher, status:0};
         return bot.sendMessage(msg.chat.id, `Надішліть час здачі у форматі гг:хх`);
     }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
-        userAction[msg.from.id] = {whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher, status:0};
+        userAction[msg.from.id] = {whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher};
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
