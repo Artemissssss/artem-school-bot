@@ -1,5 +1,6 @@
 import TeleBot from "telebot"
-import {Markup} from "telebot"
+import pkg from 'telebot';
+const { Markup } = pkg;
 // const openai = require('openai');
 // const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
@@ -304,7 +305,7 @@ if(userStatus[msg.from.id] !== undefined){
                     };
                     return arr;
                 };
-                let replyMarkup = bot.Markup.inlineKeyboard(arrBtn());
+                let replyMarkup = Markup.inlineKeyboard(arrBtn());
 
                 return bot.sendMessage(msg.chat.id,`Ви знаходитесь в декількох класах, тому натисніть на кнопку знизу в якому ви хочете зараз взаємодіяти:`, {replyMarkup});
             }
