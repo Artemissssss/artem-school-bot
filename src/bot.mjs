@@ -818,7 +818,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
             { useNewUrlParser: true, useUnifiedTopology: true }
             );
         const coll1 = client.db('artem-school').collection('homework');
-        const filter1 = {_id: new ObjectId(userClass[msg.from.id].id)};
+        const filter1 = {_id: new ObjectId(userAction[msg.from.id].id)};
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
         moment.tz.setDefault('Europe/Kiev');
@@ -830,7 +830,7 @@ console.log(result1[0])
         const whoMade = {whoMade : [...result1[0].whoMade, {files:userAction[msg.from.id].files, who:msg.from.first_name, id:msg.from.id,date: currentDateInUkraine, time:currentTimeInUkraine}]}
         console.log(result1)
         await coll1.updateOne(
-            {_id: new ObjectId(result1[0]._id)},
+            {_id: result1[0]._id},
             {
               $set: { ...whoMade},
               $currentDate: { lastModified: true }
