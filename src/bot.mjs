@@ -985,8 +985,7 @@ bot.on('callbackQuery', msg => {
             bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`,{replyMarkup})
         }
 
-    }
-    if(userAction[msg.from.id].typeHm){
+    }else if(userAction[msg.from.id].typeHm){
         let newArr = userAction[msg.from.id].task.filter(arr => arr._id === msg.data);
         if(!newArr[0].type){
             let replyMarkup = bot.keyboard([
