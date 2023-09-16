@@ -1,4 +1,6 @@
 import TeleBot from "telebot"
+import pkg from 'telebot';
+const { Markup } = pkg;
 // const openai = require('openai');
 // const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
@@ -547,14 +549,18 @@ if(userStatus[msg.from.id]){
         userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:text, time:"",teacher:userAction[msg.from.id].teacher, status:0};
         return bot.sendMessage(msg.chat.id, `Надішліть час здачі у форматі гг:хх`);
     }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
-        userAction[msg.from.id] = {whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher};
+        userAction[msg.from.id] = {type:0,whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher};
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
             );
+        const coll = client.db('artem-school').collection('classrooms');
+        const cursor = coll.find({idT:userClass[msg.from.id]});
+        const result = await cursor.toArray();
+            
         const coll1 = client.db('artem-school').collection('homework');
         // const filter1 = {idT: userClass[msg.from.id]} 
-        const result1 = await coll1.insertOne({...userAction[msg.from.id]});
+        const result1 = await coll1.insertOne({...userAction[msg.from.id],idS:result[0].idS,type:0});
         // const result1 = await cursor1.toArray();
         // const homework = {homework : [...result1[0].homework, {task:userAction[msg.from.id],whoMade:[]}]}
         // console.log(result1)
@@ -777,53 +783,61 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         //     ["Назад"],
         // ], {resize: true});
         lastUserMessage[msg.from.id] = "Здати д/з";
-        userAction[msg.from.id] = {id:"",name:"",task:[],date:"", time:"",teacher:msg.from.first_name, status:0};
-        return bot.sendMessage(msg.chat.id, `Напишіть назву домашнього завдання`, {replyMarkup});
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+        const coll = client.db('artem-school').collection('homework');
+        const cursor = coll.find({idS:userClass[msg.from.id]});
+        const result = await cursor.toArray();
+
+        let arrNew = [];
+
+        for(let i =0; i<result.length;i++){
+            arrNew = [[
+                bot.inlineButton(result[i].name, {callback: result[i]._id}),
+            ],...arrNew]
+        }
+        let replyMarkup = bot.inlineKeyboard(arrNew);
+        userAction[msg.from.id] = {task:result,typeHm:true};
+        lastUserMessage[msg.from.id] = "Здати д/з";
+        return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
     }
-    else if(text === "Це всі файли" && lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && !userAction[msg.from.id].date && !userAction[msg.from.id].time && userAction[msg.from.id].status){
+    userAction[msg.from.id] = {id:newArr[0].id,typeHMUP:1,files:[],status:1};
+    if(text === "Це всі файли" && lastUserMessage[msg.from.id] === "Здати д/з" && !userAction[msg.from.id].status ){
         let replyMarkup = bot.keyboard([
-            ["Назад"],
+            ["Щоденик","Події","Учасники"],
+            ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+            ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+            ["Матеріали"],
+            ["Написати учаснику","Класи"]
         ], {resize: true});
-        userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:"", time:"",teacher:userAction[msg.from.id].teacher, status:0};
         console.log(userAction[msg.from.id])
-        return bot.sendMessage(msg.chat.id, `Тепер надішліть до котрого числа потрібно надіслати домашнє завдання у форматі дд:мм:рррр`,{replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && !userAction[msg.from.id].date && !userAction[msg.from.id].time && userAction[msg.from.id].status){
-        userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:[{chatId: msg.from.id,msgId:msg.message_id },...userAction[msg.from.id].task],date:"", time:"",teacher:userAction[msg.from.id].teacher, status:1};
-        console.log(userAction[msg.from.id])
-        return null;
-    }else if(lastUserMessage[msg.from.id] === "Задати д/з" && !userAction[msg.from.id].name && !userAction[msg.from.id].task.length && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
-        let replyMarkup = bot.keyboard([
-            ["Це всі файли"],
-            ["Назад"],
-        ], {resize: true});
-        userAction[msg.from.id] = {id:"",name:text,task:[],date:"", time:"",teacher:userAction[msg.from.id].teacher, status:1};
-        return bot.sendMessage(msg.chat.id, `Надішліть всі файли домашнього завдання та тексти\nТобто напишіть все що потрібно для цього д/з(фото завдань, текст завдань, аудіо та подібне)\nПісля того як надіслали всі файли натисніть на "Це всі файли"`,{replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
-        userAction[msg.from.id] = {id:"",name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:text, time:"",teacher:userAction[msg.from.id].teacher, status:0};
-        return bot.sendMessage(msg.chat.id, `Надішліть час здачі у форматі гг:хх`);
-    }else if(lastUserMessage[msg.from.id] === "Задати д/з" && userAction[msg.from.id].name && userAction[msg.from.id].task.length && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].status){
-        userAction[msg.from.id] = {whoMade:[],id:userClass[msg.from.id],name:userAction[msg.from.id].name,task:userAction[msg.from.id].task,date:userAction[msg.from.id].date, time:text,teacher:userAction[msg.from.id].teacher};
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
             );
         const coll1 = client.db('artem-school').collection('homework');
-        // const filter1 = {idT: userClass[msg.from.id]} 
-        const result1 = coll1.insertOne(userAction[msg.from.id]);
-        // const result1 = await cursor1.toArray();
-        // const homework = {homework : [...result1[0].homework, {task:userAction[msg.from.id],whoMade:[]}]}
-        // console.log(result1)
-        // await coll1.updateOne(
-        //     {_id: new ObjectId(result1[0]._id)},
-        //     {
-        //       $set: { ...homework},
-        //       $currentDate: { lastModified: true }
-        //     }
-        //  )
+        const filter1 = {_id: new ObjectId(userClass[msg.from.id].id)};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+        const whoMade = {whoMade : [...result1[0].whoMade, {files:userAction[msg.from.id].files, who:msg.from.first_name, id:msg.from.id}]}
+        console.log(result1)
+        await coll1.updateOne(
+            {_id: new ObjectId(result1[0]._id)},
+            {
+              $set: { ...whoMade},
+              $currentDate: { lastModified: true }
+            }
+         )
         await client.close();
-        lastUserMessage[msg.from.id] === "Зада";
+        lastUserMessage[msg.from.id] = "Зд"; 
         userAction[msg.from.id] = undefined;
-        return await bot.sendMessage(msg.chat.id, `Домашнє завдання успішно створене`,{replyMarkup});
+        return bot.sendMessage(msg.chat.id, `Відповідь була надіслана`,{replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Здати д/з" && userAction[msg.from.id].status){
+        userAction[msg.from.id] = {...userAction[msg.from.id],files:[{chatId: msg.from.id,msgId:msg.message_id },...userAction[msg.from.id].files]};
+        console.log(userAction[msg.from.id])
+        return null;
     }else{
         return null;
     }
@@ -965,7 +979,17 @@ bot.on('callbackQuery', msg => {
         }
 
     }
-
+    if(userAction[msg.from.id].typeHm){
+        let newArr = userAction[msg.from.id].task.filter(arr => arr._id === msg.data);
+        if(!newArr[0].type){
+            let replyMarkup = bot.keyboard([
+                ["Це всі файли"],
+                ["Назад"],
+            ], {resize: true});
+            userAction[msg.from.id] = {id:newArr[0]._id,typeHMUP:1,files:[],status:1};
+            bot.sendMessage(msg.from.id, "Надішліть текст/файли/зображення вирішення дз",{replyMarkup});
+        }
+    }
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
 
