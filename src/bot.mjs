@@ -992,7 +992,7 @@ bot.on('callbackQuery', msg => {
                 ["Це всі файли"],
                 ["Назад"],
             ], {resize: true});
-            userAction[msg.from.id] = {id:newArr[0]._id,typeHMUP:1,files:[],status:1};
+            userAction[msg.from.id] = {id:`${newArr[0]._id}`,typeHMUP:1,files:[],status:1};
             bot.sendMessage(msg.from.id, "Надішліть текст/файли/зображення вирішення дз",{replyMarkup});
         }
     }
