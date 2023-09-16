@@ -986,8 +986,8 @@ bot.on('callbackQuery', msg => {
         }
 
     }else if(userAction[msg.from.id].typeHm){
-        let newArr = userAction[msg.from.id].task.filter(arr => arr._id === msg.data);
-        console.log(userAction[msg.from.id],msg.data)
+        let newArr = userAction[msg.from.id].task.filter(arr => {console.log(arr);return arr._id === msg.data;});
+        console.log(userAction[msg.from.id],msg.data, newArr)
         if(!newArr[0].type){
             let replyMarkup = bot.keyboard([
                 ["Це всі файли"],
