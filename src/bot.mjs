@@ -824,7 +824,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         moment.tz.setDefault('Europe/Kiev');
         // Отримуємо поточну дату та час в Україні
         const currentDateInUkraine = moment().format('YYYY-MM-DD');
-
+console.log(result1[0])
         // Отримуємо поточний час в Україні без секунд
         const currentTimeInUkraine = moment().format('HH:mm');
         const whoMade = {whoMade : [...result1[0].whoMade, {files:userAction[msg.from.id].files, who:msg.from.first_name, id:msg.from.id,date: currentDateInUkraine, time:currentTimeInUkraine}]}
