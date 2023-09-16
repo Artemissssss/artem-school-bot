@@ -15,6 +15,7 @@
     "claude-ai": "^1.2.2",
     "hercai": "^10.0.2",
     "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
     "mongodb": "^5.7.0",
     "nanoid": "^4.0.2",
     "node-telegram-bot-api": "^0.61.0",

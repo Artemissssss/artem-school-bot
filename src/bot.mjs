@@ -5,6 +5,7 @@ const { Markup } = pkg;
 // const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
+import moment from 'moment-timezone';
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
 let lastUserMessage = {};
@@ -821,7 +822,13 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         const filter1 = {_id: new ObjectId(userClass[msg.from.id].id)};
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
-        const whoMade = {whoMade : [...result1[0].whoMade, {files:userAction[msg.from.id].files, who:msg.from.first_name, id:msg.from.id}]}
+        moment.tz.setDefault('Europe/Kiev');
+        // Отримуємо поточну дату та час в Україні
+        const currentDateInUkraine = moment().format('YYYY-MM-DD');
+
+        // Отримуємо поточний час в Україні без секунд
+        const currentTimeInUkraine = moment().format('HH:mm');
+        const whoMade = {whoMade : [...result1[0].whoMade, {files:userAction[msg.from.id].files, who:msg.from.first_name, id:msg.from.id,date: currentDateInUkraine, time:currentTimeInUkraine}]}
         console.log(result1)
         await coll1.updateOne(
             {_id: new ObjectId(result1[0]._id)},
