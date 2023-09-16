@@ -804,7 +804,6 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         lastUserMessage[msg.from.id] = "Здати д/з";
         return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
     }
-    userAction[msg.from.id] = {id:newArr[0].id,typeHMUP:1,files:[],status:1};
     if(text === "Це всі файли" && lastUserMessage[msg.from.id] === "Здати д/з" && !userAction[msg.from.id].status ){
         let replyMarkup = bot.keyboard([
             ["Щоденик","Події","Учасники"],
