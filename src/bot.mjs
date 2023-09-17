@@ -284,7 +284,7 @@ bot.on('*', async msg => {
 if(userStatus[msg.from.id] !== undefined){
     console.log(userChat[msg.from.id])
 if(userChat[msg.from.id]){
-    bot.forwardMessage(userChat[msg.from.id], msg.from.id, msg.message_id)
+    bot.forwardMessage(userChat[msg.from.id], msg.chat.id,msg.message_id)
 }
 
 if(text === "Написати учаснику"){
