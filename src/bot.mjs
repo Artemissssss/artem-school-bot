@@ -779,6 +779,28 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         return null;
     }
 }else if(userStatus[msg.from.id] === 0){
+    if(text === "Д/з"){
+        lastUserMessage[msg.from.id] = "Д/з";
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+        const coll = client.db('artem-school').collection('homework');
+        const cursor = coll.find({idS:userClass[msg.from.id]});
+        const result = await cursor.toArray();
+
+        let arrNew = [];
+
+        for(let i =0; i<result.length;i++){
+            arrNew = [[
+                bot.inlineButton(result[i].name, {callback: result[i]._id}),
+            ],...arrNew]
+        }
+        let replyMarkup = bot.inlineKeyboard(arrNew);
+        userAction[msg.from.id] = {task:result};
+        lastUserMessage[msg.from.id] = "Здати д/з";
+        return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
+    }
     if(text === "Здати д/з"){
         // let replyMarkup = bot.keyboard([
         //     ["Назад"],
@@ -966,6 +988,21 @@ if(msg.text.split(" ")[1]){
 bot.on('callbackQuery', async msg => {
     // User message alert
     console.log(msg.data)
+    if(lastUserMessage[msg.from.id] === "Д/з" && !userStatus[msg.from.id]){
+        let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === msg.data);
+        console.log(userAction[msg.from.id],msg.data, newArr)
+        if(!newArr[0].type){
+            userAction[msg.from.id] = undefined;
+            lastUserMessage[msg.from.id] = "fgfds";
+            await bot.sendMessage(msg.from.id, "Завдання:");
+            for(let i = 0; i<newArr[0].task.length;i++){
+                 await bot.forwardMessage(msg.from.id,newArr[0].task[i].chatId,newArr[0].task[i].msgId);
+            }
+            await bot.sendMessage(msg.from.id, "Надішліть текст/файли/зображення вирішення дз");
+        }else{
+            await bot.sendMessage(msg.from.id, "Це д/з тест");
+        }
+    }
     if(userAction[msg.from.id] !== undefined && userAction[msg.from.id][userAction[msg.from.id].length-1]?.act){
         let newArr = userAction[msg.from.id].filter(arr => arr.joinId === msg.data);
         console.log(newArr)
