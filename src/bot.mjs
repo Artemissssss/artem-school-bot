@@ -1067,13 +1067,14 @@ bot.on('callbackQuery', async msg => {
         let replyMarkup = bot.inlineKeyboard(arrNew);
         bot.sendMessage(msg.from.id, `Виберіть учня для перевірки д/з`,{replyMarkup})
     }else if(userAction[msg.from.id].idSTHM){
-        let newArr = userAction[msg.from.id].whoMade.filter(arr => `${arr.id}` === mag.data);
+        let newArr = userAction[msg.from.id].filter(arr => `${arr._id}` === userAction[msg.from.id]._id)[0].whoMade.filter(arr => `${arr.id}` === msg.data);
         console.log(userAction[msg.from.id],msg.data, newArr)
             userAction[msg.from.id] = undefined;
             lastUserMessage[msg.from.id] = "fgfds";
             for(let i = 0; i<newArr[0].files.length;i++){
                  await bot.forwardMessage(msg.from.id,newArr[0].files[i].chatId,newArr[0].files[i].msgId);
             }
+            await bot.sendMessage(msg.from.id,`Робота була надіслана о ${newArr[0].time} ${newArr[0].date}`)
     }
     if(userAction[msg.from.id] !== undefined && userAction[msg.from.id][userAction[msg.from.id].length-1]?.act){
         let newArr = userAction[msg.from.id].filter(arr => arr.joinId === msg.data);
