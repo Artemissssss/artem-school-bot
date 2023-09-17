@@ -1061,7 +1061,7 @@ bot.on('callbackQuery', async msg => {
         let arrNew  = [];
         for(let i =0; i<newArr[0].whoMade.length;i++){
             arrNew = [[
-                bot.inlineButton(newArr[0].whoMade[i].who, {callback: newArr[0].id}),
+                bot.inlineButton(newArr[0].whoMade[i].who, {callback: newArr[0].whoMade[i].id}),
             ],...arrNew]
         }
         let replyMarkup = bot.inlineKeyboard(arrNew);
