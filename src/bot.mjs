@@ -1058,6 +1058,7 @@ bot.on('callbackQuery', async msg => {
         let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === userAction[msg.from.id]._id);
         console.log(userAction[msg.from.id],msg.data, newArr)
         userAction[msg.from.id] = {...userAction[msg.from.id], idSTHM:true};
+        let arrNew  = [];
         for(let i =0; i<newArr[0].whoMade.length;i++){
             arrNew = [[
                 bot.inlineButton(newArr[0].whoMade[i].who, {callback: newArr[0].id}),
