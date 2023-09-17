@@ -522,20 +522,19 @@ if(userStatus[msg.from.id] !== undefined){
 
 if(userStatus[msg.from.id]){
     if(text === "Д/з"){
-        lastUserMessage[msg.from.id] = "Д/з";
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
             );
         const coll = client.db('artem-school').collection('homework');
-        const cursor = coll.find({idS:userClass[msg.from.id]});
+        const cursor = coll.find({id:userClass[msg.from.id]});
         const result = await cursor.toArray();
 
         let arrNew = [];
 
         for(let i =0; i<result.length;i++){
             arrNew = [[
-                bot.inlineButton(result[i].name, {callback: result[i]._id}),
+                bot.inlineButton(result[i].name, {callback: `${result[i]._id}`}),
             ],...arrNew]
         }
         let replyMarkup = bot.inlineKeyboard(arrNew);
