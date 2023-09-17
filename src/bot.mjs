@@ -1067,7 +1067,7 @@ bot.on('callbackQuery', async msg => {
         let replyMarkup = bot.inlineKeyboard(arrNew);
         bot.sendMessage(msg.from.id, `Виберіть учня для перевірки д/з`,{replyMarkup})
     }else if(userAction[msg.from.id].idSTHM){
-        let newArr = userAction[msg.from.id].filter(arr => `${arr._id}` === userAction[msg.from.id]._id)[0].whoMade.filter(arr => `${arr.id}` === msg.data);
+        let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === userAction[msg.from.id]._id)[0].whoMade.filter(arr => `${arr.id}` === msg.data);
         console.log(userAction[msg.from.id],msg.data, newArr)
             userAction[msg.from.id] = undefined;
             lastUserMessage[msg.from.id] = "fgfds";
