@@ -311,7 +311,9 @@ if(text === "Написати учаснику"){
         userAction[msg.from.id] = {users:[...conArr]};
         lastUserMessage[msg.from.id] = "Написати учаснику";
         for(let i = 0; i< conArr.length;i++){
-            arr = [[bot.inlineButton(`${conArr[i].name}`, {callback: `${conArr[i]._id}`})],...arr]
+            if(conArr[i].id !== msg.from.id){
+                arr = [[bot.inlineButton(`${conArr[i].name}`, {callback: `${conArr[i]._id}`})],...arr]
+            }
         };
     let replyMarkup = bot.inlineKeyboard(arr);
 
