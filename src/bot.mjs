@@ -284,6 +284,9 @@ bot.on('*', async msg => {
 if(userStatus[msg.from.id] !== undefined){
     console.log(userChat[msg.from.id])
 if(userChat[msg.from.id]){
+    if(userChat[userChat[msg.from.id]] !== msg.from.id){
+        bot.sendMessage(userChat[msg.from.id], `${msg.from.first_name} надіслав вам повідомлення(напишіть учаснику, щоб увійти з ним в переписку)`)
+    }
     return bot.forwardMessage(userChat[msg.from.id], msg.chat.id,msg.message_id)
 }
 
