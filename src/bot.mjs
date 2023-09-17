@@ -998,7 +998,6 @@ bot.on('callbackQuery', async msg => {
             for(let i = 0; i<newArr[0].task.length;i++){
                  await bot.forwardMessage(msg.from.id,newArr[0].task[i].chatId,newArr[0].task[i].msgId);
             }
-            await bot.sendMessage(msg.from.id, "Надішліть текст/файли/зображення вирішення дз");
         }else{
             await bot.sendMessage(msg.from.id, "Це д/з тест");
         }
