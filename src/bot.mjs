@@ -121,23 +121,6 @@ bot.on('*', async msg => {
         userAction[msg.from.id] = {actionReg:true}
         lastUserMessage[msg.from.id] = "Створити клас";
         return  bot.sendMessage(msg.from.id, `Напишіть назву класу`, {replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Створити клас" && userAction[msg.from.id].actionReg){
-        let idClass = [nanoid(),nanoid()]
-        const client = await MongoClient.connect(
-            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-            { useNewUrlParser: true, useUnifiedTopology: true }
-        );
-        const coll = client.db('artem-school').collection('classrooms');
-        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],marks:[],lessons:[],statisticks:[],materials:[]})
-        const coll2 = client.db('artem-school').collection('users');
-        const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
-        await client.close();
-        lastUserMessage[msg.from.id] = text;
-        userStatus[msg.from.id] = 1;
-        userClass[msg.from.id] = idClass[1];
-        userAction[msg.from.id] = undefined;
-        return bot.sendMessage(msg.from.id, `Клас успішно створився!\n\n<code>${idClass[0]}</code> - id для приєднання учня в клас\nабо посилання для приєдання учня https://t.me/artemisSchool_bot?start=${idClass[0]}\n\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас\nабо посилання для приєдання вчителя https://t.me/artemisSchool_bot?start=${idClass[1]}
-        `, { parseMode: 'html',replyMarkup});
     }else if((lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" || lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень" || lastUserMessage[msg.from.id] === "Створити клас") && text === "Назад"){
         lastUserMessage[msg.from.id] = '/start';
         userAction[msg.from.id] = undefined;
@@ -159,6 +142,23 @@ bot.on('*', async msg => {
         📚 Матеріали для навчання та підсумки уроків
         
         ...та багато іншого! Просто введіть команду або натисніть на кнопку, щоб розпочати. Я готовий допомогти вам у всьому, пов'язаному з навчанням. Почнімо разом! 🎓`, {replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "Створити клас" && userAction[msg.from.id].actionReg){
+        let idClass = [nanoid(),nanoid()]
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('classrooms');
+        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],marks:[],lessons:[],statisticks:[],materials:[]})
+        const coll2 = client.db('artem-school').collection('users');
+        const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
+        await client.close();
+        lastUserMessage[msg.from.id] = text;
+        userStatus[msg.from.id] = 1;
+        userClass[msg.from.id] = idClass[1];
+        userAction[msg.from.id] = undefined;
+        return bot.sendMessage(msg.from.id, `Клас успішно створився!\n\n<code>${idClass[0]}</code> - id для приєднання учня в клас\nабо посилання для приєдання учня https://t.me/artemisSchool_bot?start=${idClass[0]}\n\n<code>${idClass[1]}</code> - id для приєднання вчителя в клас\nабо посилання для приєдання вчителя https://t.me/artemisSchool_bot?start=${idClass[1]}
+        `, { parseMode: 'html',replyMarkup});
     }else if(text === "Назад"){
         lastUserMessage[msg.from.id] = 'someText';
         userAction[msg.from.id] = undefined;
@@ -281,6 +281,7 @@ bot.on('*', async msg => {
     }
 //.filter((arr) => arr.id === msg.from.id)
 if(userStatus[msg.from.id] !== undefined){
+
     if(text === "Класи"){
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
