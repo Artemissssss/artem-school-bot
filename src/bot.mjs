@@ -798,7 +798,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         }
         let replyMarkup = bot.inlineKeyboard(arrNew);
         userAction[msg.from.id] = {task:result};
-        lastUserMessage[msg.from.id] = "Здати д/з";
+        lastUserMessage[msg.from.id] = "Д/з";
         return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
     }
     if(text === "Здати д/з"){
@@ -988,7 +988,7 @@ if(msg.text.split(" ")[1]){
 bot.on('callbackQuery', async msg => {
     // User message alert
     console.log(msg.data)
-    if(lastUserMessage[msg.from.id] === "Д/з" && !userStatus[msg.from.id]){
+    if(lastUserMessage[msg.from.id] === "Д/з" && userStatus[msg.from.id] === 0){
         let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === msg.data);
         console.log(userAction[msg.from.id],msg.data, newArr)
         if(!newArr[0].type){
