@@ -521,6 +521,29 @@ if(userStatus[msg.from.id] !== undefined){
 }
 
 if(userStatus[msg.from.id]){
+    if(text === "Д/з"){
+        lastUserMessage[msg.from.id] = "Д/з";
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+        const coll = client.db('artem-school').collection('homework');
+        const cursor = coll.find({idS:userClass[msg.from.id]});
+        const result = await cursor.toArray();
+
+        let arrNew = [];
+
+        for(let i =0; i<result.length;i++){
+            arrNew = [[
+                bot.inlineButton(result[i].name, {callback: result[i]._id}),
+            ],...arrNew]
+        }
+        let replyMarkup = bot.inlineKeyboard(arrNew);
+        userAction[msg.from.id] = {task:result};
+        lastUserMessage[msg.from.id] = "Д/з";
+        return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
+    }
+
     if(text === "Задати д/з"){
         let replyMarkup = bot.keyboard([
             ["Назад"],
@@ -1001,6 +1024,56 @@ bot.on('callbackQuery', async msg => {
         }else{
             await bot.sendMessage(msg.from.id, "Це д/з тест");
         }
+    }
+    if(lastUserMessage[msg.from.id] === "Д/з" && userStatus[msg.from.id]){
+        let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === msg.data);
+        console.log(userAction[msg.from.id],msg.data, newArr)
+        userAction[msg.from.id] = {...userAction[msg.from.id],_id:msg.data}
+        if(!newArr[0].type){
+            let replyMarkup = bot.inlineKeyboard([[
+                bot.inlineButton("Завдання", {callback: "Завдання"}),
+            ],
+            [
+                bot.inlineButton("Хто виконав", {callback: "Хто виконав"}),
+            ]]);
+            bot.sendMessage(msg.from.id, "Виберіть дію:",{replyMarkup})
+            lastUserMessage[msg.from.id] = "fgfds";
+        }else{
+            await bot.sendMessage(msg.from.id, "Це д/з тест");
+        }
+    }
+    if(msg.data === "Завдання"){
+        let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === userAction[msg.from.id]._id);
+        console.log(userAction[msg.from.id],msg.data, newArr)
+        if(!newArr[0].type){
+            userAction[msg.from.id] = undefined;
+            lastUserMessage[msg.from.id] = "fgfds";
+            await bot.sendMessage(msg.from.id, "Завдання:");
+            for(let i = 0; i<newArr[0].task.length;i++){
+                 await bot.forwardMessage(msg.from.id,newArr[0].task[i].chatId,newArr[0].task[i].msgId);
+            }
+        }else{
+            await bot.sendMessage(msg.from.id, "Це д/з тест");
+        }
+    }else if(msg.data === "Хто виконав"){
+        let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === userAction[msg.from.id]._id);
+        console.log(userAction[msg.from.id],msg.data, newArr)
+        userAction[msg.from.id] = {...userAction[msg.from.id], idSTHM:true};
+        for(let i =0; i<newArr[0].whoMade.length;i++){
+            arrNew = [[
+                bot.inlineButton(newArr[0].whoMade[i].who, {callback: newArr[0].id}),
+            ],...arrNew]
+        }
+        let replyMarkup = bot.inlineKeyboard(arrNew);
+        bot.sendMessage(msg.from.id, `Виберіть учня для перевірки д/з`,{replyMarkup})
+    }else if(userAction[msg.from.id].idSTHM){
+        let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === userAction[msg.from.id]._id);
+        console.log(userAction[msg.from.id],msg.data, newArr)
+            userAction[msg.from.id] = undefined;
+            lastUserMessage[msg.from.id] = "fgfds";
+            for(let i = 0; i<newArr[0].task.length;i++){
+                 await bot.forwardMessage(msg.from.id,newArr[0].whoMade.files[i].chatId,newArr[0].whoMade.files[i].msgId);
+            }
     }
     if(userAction[msg.from.id] !== undefined && userAction[msg.from.id][userAction[msg.from.id].length-1]?.act){
         let newArr = userAction[msg.from.id].filter(arr => arr.joinId === msg.data);
