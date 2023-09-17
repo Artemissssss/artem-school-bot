@@ -282,6 +282,7 @@ bot.on('*', async msg => {
     }
 //.filter((arr) => arr.id === msg.from.id)
 if(userStatus[msg.from.id] !== undefined){
+    console.log(userChat[msg.from.id])
 if(userChat[msg.from.id]){
     bot.forwardMessage(userChat[msg.from.id], msg.from.id, msg.message_id)
 }
