@@ -561,7 +561,7 @@ if(userStatus[msg.from.id]){
             
         const coll1 = client.db('artem-school').collection('homework');
         // const filter1 = {idT: userClass[msg.from.id]} 
-        const result1 = await coll1.insertOne({...userAction[msg.from.id],idS:result[0].idS,type:0});
+        const result1 = await coll1.insertOne({...userAction[msg.from.id],idS:result[0].idS,type:0,tchId:msg.from.id});
         // const result1 = await cursor1.toArray();
         // const homework = {homework : [...result1[0].homework, {task:userAction[msg.from.id],whoMade:[]}]}
         // console.log(result1)
@@ -837,9 +837,17 @@ console.log(result1[0])
             }
          )
         await client.close();
+        await bot.sendMessage(userAction[msg.from.id].teach, `Вам була надіслана відповідь на домашнє завдання від ${msg.from.first_name}\nЗадане дз:`);
+        for(let i = 0; i<userAction[msg.from.id].hm.length;i++){
+            await bot.forwardMessage(userAction[msg.from.id].teach,userAction[msg.from.id].hm[i].chatId,userAction[msg.from.id].hm[i].msgId);
+        };
+        await bot.sendMessage(userAction[msg.from.id].teach, `Відповідь:`);
+        for(let i = 0; i<userAction[msg.from.id].files.length;i++){
+            await bot.forwardMessage(userAction[msg.from.id].teach,userAction[msg.from.id].files[i].chatId,userAction[msg.from.id].files[i].msgId);
+        };
         lastUserMessage[msg.from.id] = "Зд"; 
         userAction[msg.from.id] = undefined;
-        return bot.sendMessage(msg.chat.id, `Відповідь була надіслана`,{replyMarkup});
+        return await bot.sendMessage(msg.chat.id, `Відповідь була надіслана`,{replyMarkup});
     }else if(lastUserMessage[msg.from.id] === "Здати д/з" && userAction[msg.from.id].status){
         userAction[msg.from.id] = {...userAction[msg.from.id],files:[{chatId: msg.from.id,msgId:msg.message_id },...userAction[msg.from.id].files]};
         console.log(userAction[msg.from.id])
@@ -955,7 +963,7 @@ if(msg.text.split(" ")[1]){
 // });
 
 // Inline button callback
-bot.on('callbackQuery', msg => {
+bot.on('callbackQuery', async msg => {
     // User message alert
     console.log(msg.data)
     if(userAction[msg.from.id] !== undefined && userAction[msg.from.id][userAction[msg.from.id].length-1]?.act){
@@ -992,8 +1000,12 @@ bot.on('callbackQuery', msg => {
                 ["Це всі файли"],
                 ["Назад"],
             ], {resize: true});
-            userAction[msg.from.id] = {id:`${newArr[0]._id}`,typeHMUP:1,files:[],status:1};
-            bot.sendMessage(msg.from.id, "Надішліть текст/файли/зображення вирішення дз",{replyMarkup});
+            userAction[msg.from.id] = {id:`${newArr[0]._id}`,teach:newArr[0].tchId,typeHMUP:1,files:[],status:1, hm:newArr[0].task};
+            await bot.sendMessage(msg.from.id, "Завдання:");
+            for(let i = 0; i<newArr[0].task.length;i++){
+                 await bot.forwardMessage(msg.from.id,newArr[0].task[i].chatId,newArr[0].task[i].msgId);
+            }
+            await bot.sendMessage(msg.from.id, "Надішліть текст/файли/зображення вирішення дз",{replyMarkup});
         }
     }
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
