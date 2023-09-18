@@ -5,7 +5,7 @@ import TeleBot from "telebot"
 
 export default async function handler(req, res) {
     moment.tz.setDefault('Europe/Kiev');
-    const currentDateInUkraine = moment().format('YYYY-MM-DD');
+    const currentDateInUkraine = moment().format('DD-MM-YYYY');
 
     let time = currentDateInUkraine.split("-").join(".");
 
