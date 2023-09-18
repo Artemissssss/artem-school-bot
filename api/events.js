@@ -28,7 +28,7 @@ export default async function handler(req, res) {
             newArr = [result[i].id,...newArr];
             result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].classId], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].classId]};
         }else{
-            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].classId,...newObj[result[i].id].classId], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].classId,...newObj[result[i].id].classId]};
+            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].classId,...newObj[result[i].id].idT], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].classId,...newObj[result[i].id].idS]};
         }
     };
     for(let i = 0; i<newArr.length;i++){
