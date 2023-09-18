@@ -26,9 +26,9 @@ export default async function handler(req, res) {
     for(let i =0;i<result.length;i++){
         if(newArr.indexOf(result[i].id) === -1){
             newArr = [result[i].id,...newArr];
-            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].idT], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].idS]};
+            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].classId], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].classId]};
         }else{
-            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].idT,...newObj[result[i].id].idT], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].idS,...newObj[result[i].id].idS]};
+            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].classId,...newObj[result[i].id].classId], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].classId,...newObj[result[i].id].classId]};
         }
     };
     for(let i = 0; i<newArr.length;i++){
