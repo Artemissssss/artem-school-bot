@@ -38,14 +38,14 @@ export default async function handler(req, res) {
             if(newEvent[0]?.events){
                 let eventList = newEvent[0].events.filter(arr => {console.log(arr.date);return arr.date === time});
                 console.log(eventList,time)
-                eventArr = 0+eventList.length;
+                eventArr = eventArr+eventList.length;
             }
         };
         for(let y =0; y<newObj[newArr[i]].idS.length;y++){
             let newEvent = result1.filter(arr => arr.idS === newObj[newArr[i]].idS[y]);
             if(newEvent[0]?.events){
                 let eventList = newEvent[0].events.filter(arr => arr.date === time);
-                eventArr = 0+eventList.length;
+                eventArr = eventArr+eventList.length;
             }
         };
         if(eventArr){
