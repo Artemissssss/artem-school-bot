@@ -43,7 +43,7 @@ export default async function handler(req, res) {
             let eventList = newEvent[0].events.filter(arr => arr.date === currentDateInUkraine);
             eventArr = 0+eventList.length;
         };
-        bot.sendMessage(newArr[i], `У вас сьогодні ${eventArr} подій`)
+        await bot.sendMessage(newArr[i], `У вас сьогодні ${eventArr} подій`)
     }
 
     await res.status(200).json({hello:true})
