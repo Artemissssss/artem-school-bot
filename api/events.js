@@ -36,7 +36,7 @@ export default async function handler(req, res) {
         for(let y =0; y<newObj[newArr[i]].idT.length;y++){
             let newEvent = result1.filter(arr => arr.idT === newObj[newArr[i]].idT[y]);
             if(newEvent[0]?.events){
-                let eventList = newEvent[0].events.filter(arr => arr.date === time);
+                let eventList = newEvent[0].events.filter(arr => {console.log(arr);return arr.date === time});
                 console.log(eventList,currentDateInUkraine)
                 eventArr = 0+eventList.length;
             }
