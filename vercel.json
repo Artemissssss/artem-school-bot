@@ -11,7 +11,7 @@
     },
 {
       "path": "/api/events",
-      "schedule": "56 18 * * *"
+      "schedule": "01 19 * * *"
     }
   ],
   "github": {
