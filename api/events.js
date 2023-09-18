@@ -35,14 +35,14 @@ export default async function handler(req, res) {
         let eventArr = 0;
         for(let y =0; y<newObj[newArr[i]].idT.length;y++){
             let newEvent = result1.filter(arr => arr.idT === newObj[newArr[i]].idT[y]);
-            if(newEvent[0].events.length){
+            if(newEvent[0].events){
                 let eventList = newEvent[0].events.filter(arr => arr.date === currentDateInUkraine);
                 eventArr = 0+eventList.length;
             }
         };
         for(let y =0; y<newObj[newArr[i]].idS.length;y++){
             let newEvent = result1.filter(arr => arr.idS === newObj[newArr[i]].idS[y]);
-            if(newEvent[0].events.length){
+            if(newEvent[0].events){
                 let eventList = newEvent[0].events.filter(arr => arr.date === currentDateInUkraine);
                 eventArr = 0+eventList.length;
             }
