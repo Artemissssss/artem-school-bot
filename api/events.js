@@ -1,10 +1,13 @@
 import { MongoClient,ObjectId } from 'mongodb';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import TeleBot from "telebot"
 
 export default async function handler(req, res) {
-    let time = moment().format('L').split("/").join(".");
+    moment.tz.setDefault('Europe/Kiev');
+    const currentDateInUkraine = moment().format('YYYY-MM-DD');
+
+    let time = currentDateInUkraine.split("-").join(".");
 
     const bot = new TeleBot(process.env.TELEGRAM_BOT_TOKEN);
     const client = await MongoClient.connect(
@@ -18,19 +21,30 @@ export default async function handler(req, res) {
     const cursor1 = coll1.find();
     const result1 = await cursor1.toArray();
     await client.close();
-    
-    for(let i = 0; i < result.length;i++){
-        let userClassroom = result1.filter(arr => result[i].role ? arr.idT === result[i].classId : arr.idS === result[i].classId)
-        console.log(userClassroom)
-        if(userClassroom[i].events.length){
-            let countEvent = userClassroom[i].events.filter(arr => time === arr.date)
-            console.log(userClassroom[i].events.filter(arr => time === arr.date))
-            console.log(countEvent.length)
-            // await bot.sendMessage(result[i].id, `Сьогодні у вас ${countEvent.length}`)
+    let newArr = [];
+    let newObj = {};
+    for(let i =0;i<result.length;i++){
+        if(newArr.indexOf(result[i].id) === -1){
+            newArr = [result[i].id,...newArr];
+            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].idT], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].idS]};
         }else{
-            await bot.sendMessage(result[i].id, `У вас немає подій`)
+            result[i].role ? newObj[result[i].id] = {id:result[i].id, idT:[result[i].idT,...newObj[result[i].id].idT], idS:[]} : newObj[result[i].id] = {id:result[i].id, idT:[], idS:[result[i].idS,...newObj[result[i].id].idS]};
         }
+    };
+    for(let i = 0; i<newArr.length;i++){
+        let eventArr = 0;
+        for(let y =0; y<newObj[newArr[i]].idT.length;y++){
+            let newEvent = result1.filter(arr => arr.idT === newObj[newArr[i]].idT[y]);
+            let eventList = newEvent[0].events.filter(arr => arr.date === currentDateInUkraine);
+            eventArr = 0+eventList.length;
+        };
+        for(let y =0; y<newObj[newArr[i]].idS.length;y++){
+            let newEvent = result1.filter(arr => arr.idS === newObj[newArr[i]].idS[y]);
+            let eventList = newEvent[0].events.filter(arr => arr.date === currentDateInUkraine);
+            eventArr = 0+eventList.length;
+        };
+        bot.sendMessage(newArr[i], `У вас сьогодні ${eventArr} подій`)
     }
 
-    await res.status(200)
+    await res.status(200).json({hello:true})
 }
