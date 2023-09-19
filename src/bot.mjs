@@ -110,6 +110,8 @@ bot.on('*', async msg => {
             lastUserMessage[msg.from.id] = "!чат"
             userChat[msg.from.id] = parseInt(text.split(" ")[1]);
             return null;
+        }else if(text === "!стоп"){
+            userChat[msg.from.id] = undefined;
         }else if(lastUserMessage[msg.from.id] === "!чат" && userChat[msg.from.id]){
             if(text){
                 returnbot.sendMessage(userChat[msg.from.id], text);
@@ -126,8 +128,6 @@ bot.on('*', async msg => {
                     return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
                 }
             }
-        }else if(text === "!стоп"){
-            userChat[msg.from.id] = undefined;
         }else if(!text.indexOf("!розсилка")){
             const client = await MongoClient.connect(
                 `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
