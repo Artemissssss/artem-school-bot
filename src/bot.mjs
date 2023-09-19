@@ -145,7 +145,7 @@ bot.on('*', async msg => {
                 }
             };
             return null;
-        }else if(msg.reply_to_message?.forward_from){
+        }else if(msg.reply_to_message?.forward_from.id){
             if(text){
                 return bot.sendMessage(msg.reply_to_message.forward_from.id, text);
             }else if(msg.photo){
