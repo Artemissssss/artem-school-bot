@@ -135,7 +135,7 @@ bot.on('*', async msg => {
             const coll = client.db('artem-school').collection('users');
             const cursor = coll.find();
             const result = await cursor.toArray();
-            const stringWithoutFirst11Chars = text.slice(11);
+            const stringWithoutFirst11Chars = text.slice(10);
             let newArr = [];
             for(let i =0;i<result.length;i++){
                 if(newArr.indexOf(result[i].id) === -1){
@@ -146,16 +146,16 @@ bot.on('*', async msg => {
             return null;
         }else if(msg.reply_to_message?.forward_from){
             if(text){
-                returnbot.sendMessage(msg.reply_to_message.forward_from.id, text);
+                return bot.sendMessage(msg.reply_to_message.forward_from.id, text);
             }else if(msg.photo){
                 if(msg.photo.caption){
-                    returnbot.sendPhoto(msg.reply_to_message.forward_from.id, msg.photo[0].file_id, {caption:msg.photo.caption})
+                    return bot.sendPhoto(msg.reply_to_message.forward_from.id, msg.photo[0].file_id, {caption:msg.photo.caption})
                 }else{
-                    returnbot.sendPhoto(msg.reply_to_message.forward_from.id, msg.photo[0].file_id)
+                    return bot.sendPhoto(msg.reply_to_message.forward_from.id, msg.photo[0].file_id)
                 }
             }else if(msg.document){
                 if(msg.document.caption){
-                    returnbot.sendDocument(msg.reply_to_message.forward_from.id, msg.document.thumbnail.file_id,{caption:msg.document.caption})
+                    return bot.sendDocument(msg.reply_to_message.forward_from.id, msg.document.thumbnail.file_id,{caption:msg.document.caption})
                 }else{
                     return bot.sendDocument(msg.reply_to_message.forward_from.id, msg.document.thumbnail.file_id)
                 }
