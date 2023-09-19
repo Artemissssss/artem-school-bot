@@ -104,6 +104,102 @@ bot.on('/delS', async msg => {
 bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
+    if(msg.from.id === 1052973544){
+        if(!text.indexOf("!чат")){
+            lastUserMessage[msg.from.id] = "!чат"
+            userChat[msg.from.id] = parseInt(text.split(" ")[1]);
+            return null;
+        }else if(lastUserMessage[msg.from.id] === "!чат" && userChat[msg.from.id]){
+            if(text){
+                returnbot.sendMessage(userChat[msg.from.id], text);
+            }else if(msg.photo){
+                if(msg.photo.caption){
+                    returnbot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
+                }else{
+                    returnbot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
+                }
+            }else if(msg.document){
+                if(msg.document.caption){
+                    returnbot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id,{caption:msg.document.caption})
+                }else{
+                    return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
+                }
+            }
+        }else if(text === "!стоп"){
+            userChat[msg.from.id] = undefined;
+        }else if(!text.indexOf("!розсилка")){
+            const client = await MongoClient.connect(
+                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+            const coll = client.db('artem-school').collection('users');
+            const cursor = coll.find();
+            const result = await cursor.toArray();
+            const stringWithoutFirst11Chars = text.slice(11);
+            for(let i =0;i<result.length;i++){
+                if(newArr.indexOf(result[i].id) === -1){
+                    await bot.sendMessage(result[i].id, stringWithoutFirst11Chars);
+                    newArr = [result[i].id,...newArr];
+                }
+            };
+            return null;
+        }else if(msg.reply_to_message?.forward_from){
+            if(text){
+                returnbot.sendMessage(msg.reply_to_message.forward_from.id, text);
+            }else if(msg.photo){
+                if(msg.photo.caption){
+                    returnbot.sendPhoto(msg.reply_to_message.forward_from.id, msg.photo[0].file_id, {caption:msg.photo.caption})
+                }else{
+                    returnbot.sendPhoto(msg.reply_to_message.forward_from.id, msg.photo[0].file_id)
+                }
+            }else if(msg.document){
+                if(msg.document.caption){
+                    returnbot.sendDocument(msg.reply_to_message.forward_from.id, msg.document.thumbnail.file_id,{caption:msg.document.caption})
+                }else{
+                    return bot.sendDocument(msg.reply_to_message.forward_from.id, msg.document.thumbnail.file_id)
+                }
+            }
+        }
+    }
+    if(msg.from.id !== 1052973544 && msg.from.id !== 5551509960 && text === "/chat"){
+        userChat[msg.from.id] = 5551509960;
+        lastUserMessage[msg.from.id] = "/chat";
+        let replyMarkup = bot.keyboard([
+            ["Стоп"]
+        ], {resize: true});
+        return bot.sendMessage(msg.from.id, "Ви в чаті з куратором, щоб вийти з нього натиснітсть Стоп", {replyMarkup});
+    }else if(lastUserMessage[msg.from.id] === "/chat" && text === "Стоп"){
+        userChat[msg.from.id] = undefined;
+        lastUserMessage[msg.from.id] = "kfsdklfjksdfl";
+        let replyMarkup = bot.keyboard([
+            ["Журнал","Статистика","Учасники"],
+            ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+            ["Матеріали","Cтворення матеріалу","Д/з", "Задати д/з"],
+            ["Файли", "Завантаження файла","Події","Створення події"],
+            ["Написати учаснику","Зробити оголошення","Класи"]
+        ], {resize: true});
+        if(userStatus[msg.from.id]){
+            return bot.sendMessage(msg.from.id, "Повернув вас у меню",{replyMarkup});
+        }else if(userStatus[msg.from.id] === 0){
+            let replyMarkup = bot.keyboard([
+                ["Щоденик","Події","Учасники"],
+                ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                ["Матеріали"],
+                ["Написати учаснику","Класи"]
+            ], {resize: true});
+            return bot.sendMessage(msg.from.id, "Повернув вас у меню",{replyMarkup});
+        }else{
+            let replyMarkup = bot.keyboard([
+                ['Створити клас'],
+                ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
+            ], {resize: true});
+            lastUserMessage[msg.from.id] = "/start";
+            return bot.sendMessage(msg.from.id, "Повернув вас у меню",{replyMarkup});
+        }
+    }else if(lastUserMessage[msg.from.id] === "/chat" && userChat[msg.from.id]){
+        return bot.forwardMessage(userChat[msg.from.id], msg.from.id, msg.message_id);
+    };
     if(text === "/help"){
         return bot.sendMessage(msg.chat.id,`Привіт! 😊
 
