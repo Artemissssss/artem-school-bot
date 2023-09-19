@@ -136,6 +136,7 @@ bot.on('*', async msg => {
             const cursor = coll.find();
             const result = await cursor.toArray();
             const stringWithoutFirst11Chars = text.slice(11);
+            let newArr = [];
             for(let i =0;i<result.length;i++){
                 if(newArr.indexOf(result[i].id) === -1){
                     await bot.sendMessage(result[i].id, stringWithoutFirst11Chars);
