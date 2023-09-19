@@ -104,6 +104,7 @@ bot.on('/delS', async msg => {
 bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
+    console.log(msg.reply_to_message?.forward_from)
     if(msg.from.id === 1052973544){
         if(!text.indexOf("!чат")){
             lastUserMessage[msg.from.id] = "!чат"
@@ -114,13 +115,13 @@ bot.on('*', async msg => {
                 returnbot.sendMessage(userChat[msg.from.id], text);
             }else if(msg.photo){
                 if(msg.photo.caption){
-                    returnbot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
+                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
                 }else{
-                    returnbot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
+                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
                 }
             }else if(msg.document){
                 if(msg.document.caption){
-                    returnbot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id,{caption:msg.document.caption})
+                    return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id,{caption:msg.document.caption})
                 }else{
                     return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
                 }
