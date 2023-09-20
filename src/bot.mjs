@@ -114,7 +114,7 @@ bot.on('*', async msg => {
         }else if(lastUserMessage[msg.from.id] === "!чат" && userChat[msg.from.id]){
             console.log(text)
             if(text){
-                returnbot.sendMessage(userChat[msg.from.id], text);
+                return bot.sendMessage(userChat[msg.from.id], text);
             }else if(msg?.photo[0].file_id){
                 if(msg.photo?.caption){
                     return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
