@@ -147,7 +147,7 @@ bot.on('*', async msg => {
             return null;
         }else if(msg.reply_to_message?.forward_from.id){
             if(text){
-                returnbot.sendMessage(userChat[msg.from.id], text);
+                return bot.sendMessage(userChat[msg.from.id], text);
             }else if(msg?.photo[0].file_id){
                 if(msg.photo?.caption){
                     return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
