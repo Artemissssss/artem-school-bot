@@ -112,6 +112,7 @@ bot.on('*', async msg => {
             return null;
         }else if(text === "!стоп"){
             userChat[msg.from.id] = undefined;
+            return null;
         }else if(lastUserMessage[msg.from.id] === "!чат" && userChat[msg.from.id]){
             console.log(text)
             if(text){
