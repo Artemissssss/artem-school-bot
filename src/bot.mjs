@@ -119,9 +119,9 @@ bot.on('*', async msg => {
             }else if(msg?.photo[0].file_id){
                 console.log(msg?.photo[0].file_id)
                 if(msg.photo?.caption){
-                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_unique_id, {caption:msg.photo.caption})
+                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
                 }else{
-                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_unique_id)
+                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
                 }
             }else if(msg?.document.thumbnail.file_id){
                 if(msg.document.caption){
