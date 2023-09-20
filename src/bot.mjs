@@ -104,16 +104,15 @@ bot.on('/delS', async msg => {
 bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
-    console.log(msg.from.id)
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
         if(!text.indexOf("!чат")){
             lastUserMessage[msg.from.id] = "!чат"
             userChat[msg.from.id] = parseInt(text.split(" ")[1]);
-            console.log(userChat[msg.from.id])
             return null;
         }else if(text === "!стоп"){
             userChat[msg.from.id] = undefined;
         }else if(lastUserMessage[msg.from.id] === "!чат" && userChat[msg.from.id]){
+            console.log(text)
             if(text){
                 returnbot.sendMessage(userChat[msg.from.id], text);
             }else if(msg?.photo[0].file_id){
