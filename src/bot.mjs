@@ -109,6 +109,7 @@ bot.on('*', async msg => {
         if(!text.indexOf("!чат")){
             lastUserMessage[msg.from.id] = "!чат"
             userChat[msg.from.id] = parseInt(text.split(" ")[1]);
+            console.log(userChat[msg.from.id])
             return null;
         }else if(text === "!стоп"){
             userChat[msg.from.id] = undefined;
