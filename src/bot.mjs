@@ -104,6 +104,7 @@ bot.on('/delS', async msg => {
 bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
+    console.log(lastUserMessage[msg.from.id] === "!чат",userChat[msg.from.id])
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
         if(!text.indexOf("!чат")){
             lastUserMessage[msg.from.id] = "!чат"
@@ -129,7 +130,7 @@ bot.on('*', async msg => {
                     return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
                 }
             }
-        }else if(!text.indexOf("!розсилка")){
+        }else if(!text?.indexOf("!розсилка")){
             const client = await MongoClient.connect(
                 `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
                 { useNewUrlParser: true, useUnifiedTopology: true }
