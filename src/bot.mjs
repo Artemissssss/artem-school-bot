@@ -106,7 +106,7 @@ bot.on('*', async msg => {
     const text = msg.text
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
-        if(text.indexOf("!чат") === 0){
+        if(text?.indexOf("!чат") === 0){
             lastUserMessage[msg.from.id] = "!чат"
             userChat[msg.from.id] = parseInt(text.split(" ")[1]);
             return null;
