@@ -1,6 +1,8 @@
 import TeleBot from "telebot"
 import pkg from 'telebot';
 const { Markup } = pkg;
+// const openai = require('openai');
+// const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
@@ -1231,7 +1233,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
             userAction[msg.from.id] = undefined;
             bot.sendMessage(msg.from.id, `Ніхто не виконав д/з`)
         }
-    }else if(userAction[msg.from.id].idSTHM){
+    }else if(userAction[msg.from.id]?.idSTHM){
         let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === userAction[msg.from.id]._id)[0].whoMade.filter(arr => `${arr.id}` === msg.data);
         console.log(userAction[msg.from.id],msg.data, newArr)
             userAction[msg.from.id] = undefined;
