@@ -4,7 +4,7 @@ const { Markup } = pkg;
 // const openai = require('openai');
 // const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
@@ -131,23 +131,6 @@ bot.on('*', async msg => {
                     return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
                 }
             }
-        }else if(!text?.indexOf("!розсилка")){
-            const client = await MongoClient.connect(
-                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-                { useNewUrlParser: true, useUnifiedTopology: true }
-            );
-            const coll = client.db('artem-school').collection('users');
-            const cursor = coll.find();
-            const result = await cursor.toArray();
-            const stringWithoutFirst11Chars = text.slice(10);
-            let newArr = [];
-            for(let i =0;i<result.length;i++){
-                if(newArr.indexOf(result[i].id) === -1){
-                    await bot.sendMessage(result[i].id, stringWithoutFirst11Chars);
-                    newArr = [result[i].id,...newArr];
-                }
-            };
-            return null;
         }else if(msg.reply_to_message?.forward_from.id){
             if(text){
                 return bot.sendMessage(userChat[msg.from.id], text);
@@ -166,6 +149,25 @@ bot.on('*', async msg => {
             }
         }
     }
+
+    // else if(!text?.indexOf("!розсилка")){
+    //     const client = await MongoClient.connect(
+    //         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+    //         { useNewUrlParser: true, useUnifiedTopology: true }
+    //     );
+    //     const coll = client.db('artem-school').collection('users');
+    //     const cursor = coll.find();
+    //     const result = await cursor.toArray();
+    //     const stringWithoutFirst11Chars = text.slice(10);
+    //     let newArr = [];
+    //     for(let i =0;i<result.length;i++){
+    //         if(newArr.indexOf(result[i].id) === -1){
+    //             await bot.sendMessage(result[i].id, stringWithoutFirst11Chars);
+    //             newArr = [result[i].id,...newArr];
+    //         }
+    //     };
+    //     return null;
+    // }
     if(msg.from.id !== 1052973544 && msg.from.id !== 5551509960 && text === "/chat"){
         userChat[msg.from.id] = 5551509960;
         lastUserMessage[msg.from.id] = "/chat";
@@ -259,9 +261,9 @@ bot.on('*', async msg => {
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
         const coll = client.db('artem-school').collection('classrooms');
-        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],marks:[],lessons:[],statisticks:[],materials:[]})
+        const result = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],marks:[],statisticks:[],materials:[]});
         const coll2 = client.db('artem-school').collection('users');
-        const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]})
+        const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]});
         await client.close();
         lastUserMessage[msg.from.id] = text;
         userStatus[msg.from.id] = 1;
