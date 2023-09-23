@@ -1247,7 +1247,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
         let newArr = userAction[msg.from.id].filter(arr => arr.joinId === msg.data);
         console.log(newArr)
         userStatus[msg.from.id] = newArr[0].role;
-        userClass[msg.from.id] = newArr[0].classId;
+        userClass[msg.from.id] = newArr[0].id;
         userAction[msg.from.id]= undefined;
         if(userStatus[msg.from.id]){
             let replyMarkup = bot.keyboard([
