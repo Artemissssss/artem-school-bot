@@ -4,7 +4,7 @@ const { Markup } = pkg;
 // const openai = require('openai');
 // const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
-import { nanoid } from 'nanoid';
+import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
@@ -58,7 +58,7 @@ bot.on('/delS', async msg => {
         ["Щоденик","Події","Учасники"],
         ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
         ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-        ["Матеріали"],
+        ["Матеріали", "Події"],
         ["Написати учаснику","Класи"]
     ], {resize: true});
 
@@ -131,6 +131,23 @@ bot.on('*', async msg => {
                     return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
                 }
             }
+        }else if(text?.indexOf("!розсилка") === 0){
+            const client = await MongoClient.connect(
+                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+            const coll = client.db('artem-school').collection('users');
+            const cursor = coll.find();
+            const result = await cursor.toArray();
+            const stringWithoutFirst11Chars = text.slice(10);
+            let newArr = [];
+            for(let i =0;i<result.length;i++){
+                if(newArr.indexOf(result[i].id) === -1){
+                    await bot.sendMessage(result[i].id, stringWithoutFirst11Chars);
+                    newArr = [result[i].id,...newArr];
+                }
+            };
+            return null;
         }else if(msg.reply_to_message?.forward_from.id){
             if(text){
                 return bot.sendMessage(userChat[msg.from.id], text);
@@ -150,24 +167,7 @@ bot.on('*', async msg => {
         }
     }
 
-    // else if(!text?.indexOf("!розсилка")){
-    //     const client = await MongoClient.connect(
-    //         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-    //         { useNewUrlParser: true, useUnifiedTopology: true }
-    //     );
-    //     const coll = client.db('artem-school').collection('users');
-    //     const cursor = coll.find();
-    //     const result = await cursor.toArray();
-    //     const stringWithoutFirst11Chars = text.slice(10);
-    //     let newArr = [];
-    //     for(let i =0;i<result.length;i++){
-    //         if(newArr.indexOf(result[i].id) === -1){
-    //             await bot.sendMessage(result[i].id, stringWithoutFirst11Chars);
-    //             newArr = [result[i].id,...newArr];
-    //         }
-    //     };
-    //     return null;
-    // }
+
     if(msg.from.id !== 1052973544 && msg.from.id !== 5551509960 && text === "/chat"){
         userChat[msg.from.id] = 5551509960;
         lastUserMessage[msg.from.id] = "/chat";
@@ -192,7 +192,7 @@ bot.on('*', async msg => {
                 ["Щоденик","Події","Учасники"],
                 ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                 ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                ["Матеріали"],
+                ["Матеріали", "Події"],
                 ["Написати учаснику","Класи"]
             ], {resize: true});
             return bot.sendMessage(msg.from.id, "Повернув вас у меню",{replyMarkup});
@@ -282,7 +282,7 @@ bot.on('*', async msg => {
                 ["Щоденик","Події","Учасники"],
                 ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                 ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                ["Матеріали"],
+                ["Матеріали", "Події"],
                 ["Написати учаснику","Класи"]
             ], {resize: true});
             return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
@@ -298,7 +298,7 @@ bot.on('*', async msg => {
             ["Щоденик","Події","Учасники"],
             ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
             ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-            ["Матеріали"],
+            ["Матеріали", "Події"],
             ["Написати учаснику","Класи"]
         ], {resize: true});
         const client = await MongoClient.connect(
@@ -548,7 +548,7 @@ if(text === "Написати учаснику"){
                         ["Щоденик","Події","Учасники"],
                         ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                         ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                        ["Матеріали"],
+                        ["Матеріали", "Події"],
                         ["Написати учаснику","Класи"]
                     ], {resize: true});
                     return await bot.sendMessage(msg.chat.id, 'Файл додано', {replyMarkup});
@@ -849,7 +849,7 @@ if(userStatus[msg.from.id]){
                         ["Щоденик","Події","Учасники"],
                         ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                         ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                        ["Матеріали","Cтворення матеріалу"],
+                        ["Матеріали", "Події"],
                         ["Написати учаснику","Класи"]
                     ], {resize: true});
                     return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
@@ -1007,7 +1007,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
             ["Щоденик","Події","Учасники"],
             ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
             ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-            ["Матеріали"],
+            ["Матеріали", "Події"],
             ["Написати учаснику","Класи"]
         ], {resize: true});
         console.log(userAction[msg.from.id])
@@ -1078,7 +1078,7 @@ if(msg.text.split(" ")[1]){
                     ["Щоденик","Події","Учасники"],
                     ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                     ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                    ["Матеріали"],
+                    ["Матеріали", "Події"],
                     ["Написати учаснику","Класи"]
                 ], {resize: true});
                 const coll2 = client.db('artem-school').collection('users');
@@ -1264,7 +1264,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
                 ["Щоденик","Події","Учасники"],
                 ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
                 ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                ["Матеріали","Cтворення матеріалу"],
+                ["Матеріали", "Події"],
                 ["Написати учаснику","Класи"]
             ], {resize: true});
             bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`,{replyMarkup})
