@@ -5,7 +5,7 @@ const { Markup } = pkg;
 // const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
-import moment from 'moment-timezone';
+import moment from 'moment-timezone'
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
 let lastUserMessage = {};
