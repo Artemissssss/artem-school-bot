@@ -102,6 +102,7 @@ bot.on('/delS', async msg => {
 // })
 
 bot.on('*', async msg => {
+    console.log(msg.reply_to_message.text)
     console.log(msg)
     const text = msg.text
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
@@ -893,7 +894,7 @@ if(userStatus[msg.from.id]){
                 lastUserMessage[msg.from.id] = "textФайл";
                 return await bot.sendMessage(msg.chat.id, 'Матеріал додано', {replyMarkup});
     }
-console.log(msg.reply_to_message.text)
+
 if (text === "Видалити" && msg.reply_to_message !== undefined && userAction[msg.from.id] === undefined && msg.reply_to_message.text.includes("&&")){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
