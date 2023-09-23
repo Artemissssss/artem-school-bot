@@ -880,8 +880,8 @@ if(userStatus[msg.from.id]){
         console.log(userClass[msg.from.id])
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
+        console.log(result1)
                 const materials = {materials : [...result1[0].materials, {chatID:msg.chat.id, msgID:msg.message_id}]}
-                console.log(result1)
                 await coll1.updateOne(
                     {_id: new ObjectId(result1[0]._id)},
                     {
