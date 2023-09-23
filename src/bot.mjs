@@ -102,7 +102,6 @@ bot.on('/delS', async msg => {
 // })
 
 bot.on('*', async msg => {
-    console.log(msg.reply_to_message.text)
     console.log(msg)
     const text = msg.text
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
@@ -120,6 +119,22 @@ bot.on('*', async msg => {
                 return bot.sendMessage(userChat[msg.from.id], text);
             }else if(msg?.photo[0].file_id){
                 console.log(msg?.photo[0].file_id)
+                if(msg.photo?.caption){
+                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
+                }else{
+                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
+                }
+            }else if(msg?.document.thumbnail.file_id){
+                if(msg.document.caption){
+                    return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id,{caption:msg.document.caption})
+                }else{
+                    return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
+                }
+            }
+        }else if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
+            if(text){
+                return bot.sendMessage(userChat[msg.from.id], text);
+            }else if(msg?.photo[0].file_id){
                 if(msg.photo?.caption){
                     return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
                 }else{
@@ -150,23 +165,6 @@ bot.on('*', async msg => {
             };
             return null;
         }
-        // else if(msg.reply_to_message?.forward_from.id){
-        //     if(text){
-        //         return bot.sendMessage(userChat[msg.from.id], text);
-        //     }else if(msg?.photo[0].file_id){
-        //         if(msg.photo?.caption){
-        //             return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
-        //         }else{
-        //             return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
-        //         }
-        //     }else if(msg?.document.thumbnail.file_id){
-        //         if(msg.document.caption){
-        //             return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id,{caption:msg.document.caption})
-        //         }else{
-        //             return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
-        //         }
-        //     }
-        // }
     }
 
 
