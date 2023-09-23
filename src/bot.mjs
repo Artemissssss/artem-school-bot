@@ -1,8 +1,6 @@
 import TeleBot from "telebot"
 import pkg from 'telebot';
 const { Markup } = pkg;
-// const openai = require('openai');
-// const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
