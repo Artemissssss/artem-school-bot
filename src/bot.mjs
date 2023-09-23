@@ -876,7 +876,8 @@ if(userStatus[msg.from.id]){
 
 
         const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = userStatus[msg.from.id]  ?  {idT: userClass[msg.from.id]} : {idS: userClass[msg.from.id]};
+        const filter1 = {idT: userClass[msg.from.id]}
+        console.log(userClass[msg.from.id])
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
                 const materials = {materials : [...result1[0].materials, {chatID:msg.chat.id, msgID:msg.message_id}]}
@@ -890,9 +891,7 @@ if(userStatus[msg.from.id]){
                  )
                 await client.close();
                 lastUserMessage[msg.from.id] = "textФайл";
-                if(userStatus[msg.from.id]){
-                    return await bot.sendMessage(msg.chat.id, 'Матеріал додано', {replyMarkup});
-                }
+                return await bot.sendMessage(msg.chat.id, 'Матеріал додано', {replyMarkup});
     }
 
 if (text === "Видалити" && msg.reply_to_message !== undefined && userAction[msg.from.id] === undefined && msg.reply_to_message.text.includes("&&")){
@@ -1248,7 +1247,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
         let newArr = userAction[msg.from.id].filter(arr => arr.joinId === msg.data);
         console.log(newArr)
         userStatus[msg.from.id] = newArr[0].role;
-        userClass[msg.from.id] = newArr[0].id;
+        userClass[msg.from.id] = newArr[0].classId;
         userAction[msg.from.id]= undefined;
         if(userStatus[msg.from.id]){
             let replyMarkup = bot.keyboard([
