@@ -1180,6 +1180,8 @@ bot.on('callbackQuery', async msg => {
         }else{
             await bot.sendMessage(msg.from.id, "Це д/з тест");
         }
+        await bot.sendMessage(msg.from.id, `Завдання потрібно виконати до ${newArr[0].time} ${newArr[0].date}`)
+
     }
     if(lastUserMessage[msg.from.id] === "Д/з" && userStatus[msg.from.id]){
         let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === msg.data);
@@ -1194,8 +1196,6 @@ bot.on('callbackQuery', async msg => {
             ]]);
             bot.sendMessage(msg.from.id, "Виберіть дію:",{replyMarkup})
             lastUserMessage[msg.from.id] = "fgfds";
-        }else{
-            await bot.sendMessage(msg.from.id, "Це д/з тест");
         }
     }
 if(lastUserMessage[msg.from.id] === "Написати учаснику"){
