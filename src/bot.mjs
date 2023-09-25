@@ -1155,7 +1155,7 @@ bot.on("/test", msg => {
         })
         .then(data => {
           // Обробка отриманих даних
-          bot.sendMessage(msg.from.id, data.idRoom)
+          return bot.sendMessage(msg.from.id, data.idRoom)
           console.log(data);
         })
         .catch(error => {
