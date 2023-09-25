@@ -1,5 +1,6 @@
-import { initializeApp } from 'firebase/app';
-import { getDatabase, set, ref, onValue  } from 'firebase/database';
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.2/firebase-app.js";
+import { getDatabase, set, ref ,push, child, onValue, remove} from
+"https://www.gstatic.com/firebasejs/9.6.2/firebase-database.js";
 // import { nanoid } from 'nanoid'
 
 export default async function ({type, time,idRoom}) {
@@ -33,7 +34,7 @@ export default async function ({type, time,idRoom}) {
         snapshot.forEach(childSnapshot => {
             if (childSnapshot.key === idRoom) {
                 let newUs = childSnapshot.val().members;
-                res.status(200).json({members: newUs})
+                return {members: newUs}
             }
         });
         return {members: []}
