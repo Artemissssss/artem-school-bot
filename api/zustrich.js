@@ -1,6 +1,6 @@
-import { initializeApp } from 'firebase/app/dist/index.cjs.js';
-import { getDatabase, set, ref, onValue,  } from 'firebase/database';
-import { nanoid } from 'nanoid'
+import { initializeApp } from '@firebase/app';
+import { getDatabase, set, ref, onValue  } from '@firebase/database';
+// import { nanoid } from 'nanoid'
 
 export default async function handler(req, res) {
     const firebaseConfig = {
