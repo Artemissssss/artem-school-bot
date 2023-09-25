@@ -1297,13 +1297,15 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
 bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
     console.log(props.match[1])
     await bot.sendMessage(msg.from.id, "Запит пішов")
-    await fetch('https://artem-school-bot.vercel.app/api/ai', {
+    await fetch("https://this-is-api.run-eu-central1.goorm.site/v1/chat/completions", {
         method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
         headers: {
           'Content-Type': 'application/json', // Заголовок запиту
           // Інші заголовки, якщо потрібно
         },
-        body:JSON.stringify({ prompt: props.match[1]})
+        body:JSON.stringify({ "model": "gpt-3.5-turbo",
+        "messages": [{"role": "user", "content": props.match[1]}],
+        "temperature": 2})    
         // Тіло запиту, якщо потрібно передати дані
         // body: JSON.stringify({ key: 'value' }),
       })
@@ -1319,6 +1321,28 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
           // Обробка помилок
           console.error('Виникла помилка:', error);
         });
+    // await fetch('https://artem-school-bot.vercel.app/api/ai', {
+    //     method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+    //     headers: {
+    //       'Content-Type': 'application/json', // Заголовок запиту
+    //       // Інші заголовки, якщо потрібно
+    //     },
+    //     body:JSON.stringify({ prompt: props.match[1]})
+    //     // Тіло запиту, якщо потрібно передати дані
+    //     // body: JSON.stringify({ key: 'value' }),
+    //   })
+    //     .then(response => {
+    //       return response.json(); // Повернути відповідь у форматі JSON
+    //     })
+    //     .then(data => {
+    //       // Обробка отриманих даних
+    //       console.log(data);
+    //       bot.sendMessage(msg.from.id, data.response);
+    //     })
+    //     .catch(error => {
+    //       // Обробка помилок
+    //       console.error('Виникла помилка:', error);
+    //     });
     return await bot.sendMessage(msg.from.id, "Все")
       
 })
