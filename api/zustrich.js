@@ -1,4 +1,4 @@
-import { initializeApp } from 'firebase/app.js';
+import { initializeApp } from 'firebase/app/dist/index.cjs.js';
 import { getDatabase, set, ref, onValue,  } from 'firebase/database';
 import { nanoid } from 'nanoid'
 
