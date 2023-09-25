@@ -1,6 +1,5 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.2/firebase-app.js";
-import { getDatabase, set, ref ,push, child, onValue, remove} from
-"https://www.gstatic.com/firebasejs/9.6.2/firebase-database.js";
+import { initializeApp } from 'firebase/app';
+import { getDatabase, set, ref ,push, child, onValue, remove } from 'firebase/database';
 import { nanoid } from 'nanoid'
 
 export default async function handler(req, res) {
