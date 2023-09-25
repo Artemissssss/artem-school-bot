@@ -1,5 +1,5 @@
-import { initializeApp } from '@firebase/app';
-import { getDatabase, set, ref, onValue  } from '@firebase/database';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, set, ref, onValue  } from 'firebase/database';
 // import { nanoid } from 'nanoid'
 
 export default async function ({type, time,idRoom}) {
