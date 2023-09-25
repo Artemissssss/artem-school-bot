@@ -6,48 +6,48 @@ const { Markup } = pkg;
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
-import { initializeApp } from '@firebase/app';
-import { getDatabase, set, ref, onValue  } from '@firebase/database';
+// import { initializeApp } from '@firebase/app';
+// import { getDatabase, set, ref, onValue  } from '@firebase/database';
 
 
 async function zustrich (type, time,idRoom) {
-    const firebaseConfig = {
-    apiKey: process.env.API_KEY_FIREBASE,
-    authDomain: "zustrich-be18b.firebaseapp.com",
-    databaseURL: "https://zustrich-be18b-default-rtdb.firebaseio.com",
-    projectId: "zustrich-be18b",
-    storageBucket: "zustrich-be18b.appspot.com",
-    messagingSenderId: "125274425353",
-    appId: "1:125274425353:web:6f38bd6892f88805ee10d8",
-    measurementId: "G-4MH57WVHBD"
-    };
+    // const firebaseConfig = {
+    // apiKey: process.env.API_KEY_FIREBASE,
+    // authDomain: "zustrich-be18b.firebaseapp.com",
+    // databaseURL: "https://zustrich-be18b-default-rtdb.firebaseio.com",
+    // projectId: "zustrich-be18b",
+    // storageBucket: "zustrich-be18b.appspot.com",
+    // messagingSenderId: "125274425353",
+    // appId: "1:125274425353:web:6f38bd6892f88805ee10d8",
+    // measurementId: "G-4MH57WVHBD"
+    // };
 
-    if(type){
-        const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
-        const room = nanoid()
-        await set(ref(database, "rooms/" + room), {
-            time: time,
-            members:[]
-        });
+    // if(type){
+    //     const app = initializeApp(firebaseConfig);
+    //     const database = getDatabase(app);
+    //     const room = nanoid()
+    //     await set(ref(database, "rooms/" + room), {
+    //         time: time,
+    //         members:[]
+    //     });
 
-        return {idRoom: room}
-    }else{
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const starCountRef = ref(database, 'rooms/');
+    //     return {idRoom: room}
+    // }else{
+    // const app = initializeApp(firebaseConfig);
+    // const database = getDatabase(app);
+    // const starCountRef = ref(database, 'rooms/');
 
-    onValue(starCountRef, (snapshot) => {
-        snapshot.forEach(childSnapshot => {
-            if (childSnapshot.key === idRoom) {
-                let newUs = childSnapshot.val().members;
-                return {members: newUs}
-            }
-        });
-        return {members: []}
-    });
-    }
-
+    // onValue(starCountRef, (snapshot) => {
+    //     snapshot.forEach(childSnapshot => {
+    //         if (childSnapshot.key === idRoom) {
+    //             let newUs = childSnapshot.val().members;
+    //             return {members: newUs}
+    //         }
+    //     });
+    //     return {members: []}
+    // });
+    // }
+return "f"
 }
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
