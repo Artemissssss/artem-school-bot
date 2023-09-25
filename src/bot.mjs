@@ -1308,20 +1308,18 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
         // body: JSON.stringify({ key: 'value' }),
       })
         .then(response => {
-          if (!response.ok) {
-            throw new Error('Помилка мережі'); // Обробка помилок мережі
-          }
           return response.json(); // Повернути відповідь у форматі JSON
         })
         .then(data => {
           // Обробка отриманих даних
           console.log(data);
-          return bot.sendMessage(msg.from.id, data.response);
+          bot.sendMessage(msg.from.id, data.response);
         })
         .catch(error => {
           // Обробка помилок
           console.error('Виникла помилка:', error);
         });
+    return await bot.sendMessage(msg.from.id, "Все")
       
 })
 // // Inline query
