@@ -6,49 +6,7 @@ const { Markup } = pkg;
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
-// import { initializeApp } from '@firebase/app';
-// import { getDatabase, set, ref, onValue  } from '@firebase/database';
 
-
-async function zustrich (type, time,idRoom) {
-    // const firebaseConfig = {
-    // apiKey: process.env.API_KEY_FIREBASE,
-    // authDomain: "zustrich-be18b.firebaseapp.com",
-    // databaseURL: "https://zustrich-be18b-default-rtdb.firebaseio.com",
-    // projectId: "zustrich-be18b",
-    // storageBucket: "zustrich-be18b.appspot.com",
-    // messagingSenderId: "125274425353",
-    // appId: "1:125274425353:web:6f38bd6892f88805ee10d8",
-    // measurementId: "G-4MH57WVHBD"
-    // };
-
-    // if(type){
-    //     const app = initializeApp(firebaseConfig);
-    //     const database = getDatabase(app);
-    //     const room = nanoid()
-    //     await set(ref(database, "rooms/" + room), {
-    //         time: time,
-    //         members:[]
-    //     });
-
-    //     return {idRoom: room}
-    // }else{
-    // const app = initializeApp(firebaseConfig);
-    // const database = getDatabase(app);
-    // const starCountRef = ref(database, 'rooms/');
-
-    // onValue(starCountRef, (snapshot) => {
-    //     snapshot.forEach(childSnapshot => {
-    //         if (childSnapshot.key === idRoom) {
-    //             let newUs = childSnapshot.val().members;
-    //             return {members: newUs}
-    //         }
-    //     });
-    //     return {members: []}
-    // });
-    // }
-return "f"
-}
 
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
 let lastUserMessage = {};
@@ -147,6 +105,7 @@ bot.on('/delS', async msg => {
 bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
+    if (text.includes("/gpt")) return true;
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
         if(text?.indexOf("!чат") === 0){
@@ -1179,35 +1138,7 @@ if(msg.text.split(" ")[1]){
 
 });
 
-bot.on("/test", msg => {
-    bot.sendMessage(msg.from.id,zustrich({type:1, time:"17:25-17:40"}).idRoom)
-    // fetch('https://artem-school-bot.vercel.app/api/zustrich', {
-    //     method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
-    //     headers: {
-    //       'Content-Type': 'application/json', // Заголовок запиту
-    //       // Інші заголовки, якщо потрібно
-    //     },
-    //     body:JSON.stringify({type:1, time:"17:25-17:40"})
-    //     // Тіло запиту, якщо потрібно передати дані
-    //     // body: JSON.stringify({ key: 'value' }),
-    //   })
-    //     .then(response => {
-    //       if (!response.ok) {
-    //         throw new Error('Помилка мережі'); // Обробка помилок мережі
-    //       }
-    //       return response.json(); // Повернути відповідь у форматі JSON
-    //     })
-    //     .then(data => {
-    //       // Обробка отриманих даних
-    //       return bot.sendMessage(msg.from.id, data.idRoom)
-    //       console.log(data);
-    //     })
-    //     .catch(error => {
-    //       // Обробка помилок
-    //       console.error('Виникла помилка:', error);
-    //     });
-      
-});
+
 
 
 // bot.on("text", async msg => {
@@ -1363,7 +1294,34 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
     }
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
-
+bot.on(["/gpt"], (msg, props) =>{
+    fetch('https://artem-school-bot.vercel.app/api/ai', {
+        method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+        headers: {
+          'Content-Type': 'application/json', // Заголовок запиту
+          // Інші заголовки, якщо потрібно
+        },
+        body:JSON.stringify({ prompt: props.match[1]})
+        // Тіло запиту, якщо потрібно передати дані
+        // body: JSON.stringify({ key: 'value' }),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Помилка мережі'); // Обробка помилок мережі
+          }
+          return response.json(); // Повернути відповідь у форматі JSON
+        })
+        .then(data => {
+          // Обробка отриманих даних
+          console.log(data);
+          bot.sendMessage(msg.chat.id, data.response)
+        })
+        .catch(error => {
+          // Обробка помилок
+          console.error('Виникла помилка:', error);
+        });
+      
+})
 // // Inline query
 // bot.on('inlineQuery', msg => {
 
