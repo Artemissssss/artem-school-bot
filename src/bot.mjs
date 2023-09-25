@@ -1136,7 +1136,34 @@ if(msg.text.split(" ")[1]){
 
 });
 
-
+bot.on("/test", msg => {
+    fetch('https://artem-school-bot.vercel.app/api/zustrich', {
+        method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+        headers: {
+          'Content-Type': 'application/json', // Заголовок запиту
+          // Інші заголовки, якщо потрібно
+        },
+        body:JSON.stringify({type:1, time:"17:25-17:40"})
+        // Тіло запиту, якщо потрібно передати дані
+        // body: JSON.stringify({ key: 'value' }),
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Помилка мережі'); // Обробка помилок мережі
+          }
+          return response.json(); // Повернути відповідь у форматі JSON
+        })
+        .then(data => {
+          // Обробка отриманих даних
+          bot.sendMessage(msg.from.id, data.idRoom)
+          console.log(data);
+        })
+        .catch(error => {
+          // Обробка помилок
+          console.error('Виникла помилка:', error);
+        });
+      
+});
 
 
 // bot.on("text", async msg => {
