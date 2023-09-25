@@ -6,9 +6,8 @@ const { Markup } = pkg;
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.2/firebase-app.js";
-import { getDatabase, set, ref ,push, child, onValue, remove} from
-"https://www.gstatic.com/firebasejs/9.6.2/firebase-database.js";
+import { initializeApp } from '@firebase/app';
+import { getDatabase, set, ref, onValue  } from '@firebase/database';
 
 
 async function zustrich (type, time,idRoom) {
