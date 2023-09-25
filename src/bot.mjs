@@ -1294,9 +1294,10 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
     }
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
-bot.on(/^\/gpt (.+)$/, (msg, props) =>{
+bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
     console.log(props.match[1])
-    fetch('https://artem-school-bot.vercel.app/api/ai', {
+    await bot.sendMessage(msg.from.id, "Запит пішов")
+    await fetch('https://artem-school-bot.vercel.app/api/ai', {
         method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
         headers: {
           'Content-Type': 'application/json', // Заголовок запиту
