@@ -665,7 +665,7 @@ if(text === "Написати учаснику"){
         let conArr = [...result2,...result];
         let msgRep = ``;
         for(let i = 0; i<conArr.length;i++){
-            msgRep+= `<code>${conArr[i].id}</code> - це ${conArr[i].name} та ${conArr[i] ? "вчитель" : "учень"}\n`;
+            msgRep+= `<code>${conArr[i].id}</code> - це ${conArr[i].name} та ${conArr[i].role ? "вчитель" : "учень"}\n`;
         }
 
         return  await bot.sendMessage(msg.chat.id, msgRep,{parseMode: 'html'});
