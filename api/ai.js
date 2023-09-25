@@ -1,6 +1,7 @@
 import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
   
-  export default async function handler(req, res) {
+export default async function handler(req, res) {
+      console.log(req.body.prompt)
     if (req.method === "POST") {
       try {
         const chatGPT = new ChatGPTUnofficialProxyAPI({
@@ -10,7 +11,6 @@ import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
           const response = await chatGPT.sendMessage(`${req.body.prompt}`);
       
 
-      console.log(response)
         await res.status(200).json({
           response: response.text
         });
