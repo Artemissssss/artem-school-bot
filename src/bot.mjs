@@ -1315,7 +1315,7 @@ bot.on(/^\/gpt (.+)$/, (msg, props) =>{
         .then(data => {
           // Обробка отриманих даних
           console.log(data);
-          return bot.sendMessage(msg.chat.id, data.response)
+          return bot.sendMessage(msg.from.id, data.response);
         })
         .catch(error => {
           // Обробка помилок
