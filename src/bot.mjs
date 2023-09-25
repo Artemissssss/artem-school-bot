@@ -971,10 +971,14 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
                 bot.inlineButton(result[i].name, {callback: result[i]._id}),
             ],...arrNew]
         }
-        let replyMarkup = bot.inlineKeyboard(arrNew);
-        userAction[msg.from.id] = {task:result};
-        lastUserMessage[msg.from.id] = "Д/з";
-        return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
+        if(arrNew.length){
+            let replyMarkup = bot.inlineKeyboard(arrNew);
+            userAction[msg.from.id] = {task:result};
+            lastUserMessage[msg.from.id] = "Д/з";
+            return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
+        }else{
+            return bot.sendMessage(msg.from.id, "Домашніх завдань немає")
+        }
     }
     if(text === "Здати д/з"){
         // let replyMarkup = bot.keyboard([
@@ -1216,6 +1220,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
         }else{
             await bot.sendMessage(msg.from.id, "Це д/з тест");
         }
+        await bot.sendMessage(msg.from.id, `Завдання потрібно виконати до ${newArr[0].time} ${newArr[0].date}`)
     }else if(msg.data === "Хто виконав"){
         let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === userAction[msg.from.id]._id);
         console.log(userAction[msg.from.id],msg.data, newArr)
@@ -1228,7 +1233,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
                 ],...arrNew]
             }
             let replyMarkup = bot.inlineKeyboard(arrNew);
-            bot.sendMessage(msg.from.id, `Виберіть учня для перевірки д/з`,{replyMarkup})
+            bot.sendMessage(msg.from.id, `Виберіть учня для перевірки д/з`,{replyMarkup});
         }else{
             userAction[msg.from.id] = undefined;
             bot.sendMessage(msg.from.id, `Ніхто не виконав д/з`)
