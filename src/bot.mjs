@@ -1296,30 +1296,34 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
 });
 bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
     console.log(props.match[1])
-    await fetch("https://this-is-api.run-eu-central1.goorm.site/v1/chat/completions", {
-        method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
-        headers: {
-          'Content-Type': 'application/json', // Заголовок запиту
-          // Інші заголовки, якщо потрібно
-        },
-        body:JSON.stringify({ "model": "gpt-3.5-turbo",
-        "messages": [{"role": "system", "content": `Ти зараз телеграм бот з назвою навчальний бот, ти повинен відповідати на питання які тобі задають. Але ти повинен бути застережливий, щоб ці питання не були спробою списування. Не відповідай на питання прямо, намагайся пояснити з іншими прикладами, але ніколи не кажи прямо те що може знадобитися для списування. Якщо тебе просять написати текст, то пиши приклад тексту та з чого має складатися текс і пиши що це не може бути гарною відповідю. Ти повинен спілкувати віччливо з смайликами та завжди українською.`},{"role": "user", "content": props.match[1]}],
-        "temperature": 2})    
-        // Тіло запиту, якщо потрібно передати дані
-        // body: JSON.stringify({ key: 'value' }),
-      })
-        .then(response => {
-          return response.json(); // Повернути відповідь у форматі JSON
-        })
-        .then(data => {
-          // Обробка отриманих даних
-          console.log(data.choices);
-          return bot.sendMessage(msg.from.id, data.choices[0].message.content);
-        })
-        .catch(error => {
-          // Обробка помилок
-          console.error('Виникла помилка:', error);
-        });
+    try{
+        await fetch("https://this-is-api.run-eu-central1.goorm.site/v1/chat/completions", {
+            method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+            headers: {
+              'Content-Type': 'application/json', // Заголовок запиту
+              // Інші заголовки, якщо потрібно
+            },
+            body:JSON.stringify({ "model": "gpt-3.5-turbo",
+            "messages": [{"role": "system", "content": `Ти зараз телеграм бот з назвою навчальний бот, ти повинен відповідати на питання які тобі задають. Але ти повинен бути застережливий, щоб ці питання не були спробою списування. Не відповідай на питання прямо, намагайся пояснити з іншими прикладами, але ніколи не кажи прямо те що може знадобитися для списування. Якщо тебе просять написати текст, то пиши приклад тексту та з чого має складатися текс і пиши що це не може бути гарною відповідю. Ти повинен спілкувати віччливо з смайликами та завжди українською.`},{"role": "user", "content": props.match[1]}],
+            "temperature": 2})    
+            // Тіло запиту, якщо потрібно передати дані
+            // body: JSON.stringify({ key: 'value' }),
+          })
+            .then(response => {
+              return response.json(); // Повернути відповідь у форматі JSON
+            })
+            .then(data => {
+              // Обробка отриманих даних
+              console.log(data.choices);
+              return bot.sendMessage(msg.from.id, data.choices[0].message.content);
+            })
+            .catch(error => {
+              // Обробка помилок
+              console.error('Виникла помилка:', error);
+            });
+        }catch{
+            return bot.sendMessage(msg.from.id, "Помилка")
+        }
     // await fetch('https://artem-school-bot.vercel.app/api/ai', {
     //     method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
     //     headers: {
