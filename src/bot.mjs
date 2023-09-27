@@ -1319,6 +1319,7 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
             })
             .catch(error => {
               // Обробка помилок
+              return bot.sendMessage(msg.from.id, "Erorr");
               console.error('Виникла помилка:', error);
             });
         }catch{
