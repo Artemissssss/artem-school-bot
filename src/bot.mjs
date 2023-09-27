@@ -1296,7 +1296,6 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
 });
 bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
     console.log(props.match[1])
-    await bot.sendMessage(msg.from.id, "Запит пішов")
     await fetch("https://this-is-api.run-eu-central1.goorm.site/v1/chat/completions", {
         method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
         headers: {
@@ -1304,7 +1303,7 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
           // Інші заголовки, якщо потрібно
         },
         body:JSON.stringify({ "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": props.match[1]}],
+        "messages": [{"role": "system", "content": `Ти зараз телеграм бот з назвою навчальний бот, ти повинен відповідати на питання які тобі задають. Але ти повинен бути застережливий, щоб ці питання не були спробою списування. Не відповідай на питання прямо, намагайся пояснити з іншими прикладами, але ніколи не кажи прямо те що може знадобитися для списування. Якщо тебе просять написати текст, то пиши приклад тексту та з чого має складатися текс і пиши що це не може бути гарною відповідю. Ти повинен спілкувати віччливо з смайликами та завжди українською.`},{"role": "user", "content": props.match[1]}],
         "temperature": 2})    
         // Тіло запиту, якщо потрібно передати дані
         // body: JSON.stringify({ key: 'value' }),
@@ -1343,7 +1342,7 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
     //       // Обробка помилок
     //       console.error('Виникла помилка:', error);
     //     });
-    return await bot.sendMessage(msg.from.id, "Все")
+    return null
       
 })
 // // Inline query
