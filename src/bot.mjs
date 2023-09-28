@@ -1296,7 +1296,6 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
 });
 bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
     console.log(props.match[1]);
-    return bot.sendMessage(msg.from.id, "Помилка")
     try{
         await fetch("https://this-is-api.run-eu-central1.goorm.site/v1/chat/completions", {
             method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
