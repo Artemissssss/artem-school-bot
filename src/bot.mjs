@@ -105,7 +105,7 @@ bot.on('/delS', async msg => {
 bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
-    if (text.includes("/gpt")) return null;
+    if (text.indexOf("/gpt") !== 0) return null;
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
         if(text?.indexOf("!чат") === 0){
