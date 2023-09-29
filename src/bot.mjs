@@ -1294,7 +1294,47 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
     }
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
 });
-
+bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
+    console.log(props.match[1]);
+    try{
+        await fetch("https://artem-school-api.onrender.com/api/gpt", {
+            method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+            headers: {
+              'Content-Type': 'application/json', // Заголовок запиту
+              // Інші заголовки, якщо потрібно
+            },
+            body:JSON.stringify({text:props.match[1], id:msg.chat.id})    
+            // Тіло запиту, якщо потрібно передати дані
+            // body: JSON.stringify({ key: 'value' }),
+          });
+        }catch{
+            return bot.sendMessage(msg.from.id, "Помилка")
+        }
+    // await fetch('https://artem-school-bot.vercel.app/api/ai', {
+    //     method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+    //     headers: {
+    //       'Content-Type': 'application/json', // Заголовок запиту
+    //       // Інші заголовки, якщо потрібно
+    //     },
+    //     body:JSON.stringify({ prompt: props.match[1]})
+    //     // Тіло запиту, якщо потрібно передати дані
+    //     // body: JSON.stringify({ key: 'value' }),
+    //   })
+    //     .then(response => {
+    //       return response.json(); // Повернути відповідь у форматі JSON
+    //     })
+    //     .then(data => {
+    //       // Обробка отриманих даних
+    //       console.log(data);
+    //       bot.sendMessage(msg.from.id, data.response);
+    //     })
+    //     .catch(error => {
+    //       // Обробка помилок
+    //       console.error('Виникла помилка:', error);
+    //     });
+    return null
+      
+})
 // // Inline query
 // bot.on('inlineQuery', msg => {
 

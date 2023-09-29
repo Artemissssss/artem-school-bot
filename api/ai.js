@@ -2,6 +2,7 @@ import {ChatGPTUnofficialProxyAPI} from 'chatgpt';
   
 export default async function handler(req, res) {
       console.log(req.body.prompt)
+      
     if (req.method === "POST") {
       try {
         const chatGPT = new ChatGPTUnofficialProxyAPI({
@@ -9,12 +10,12 @@ export default async function handler(req, res) {
             apiReverseProxyUrl: "https://ai.fakeopen.com/api/conversation"
           });
           const response = await chatGPT.sendMessage(`${req.body.prompt}`);
-      
-
-        await res.status(200).json({
-          response: response.text
-        });
-  
+          
+          
+          await res.status(200).json({
+            response: response.text
+          });
+          
       } catch (error) {
         res.status(200).json({
             response: "Internal server error"
