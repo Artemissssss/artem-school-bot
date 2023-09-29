@@ -1,6 +1,7 @@
 import TeleBot from "telebot"
 
 export default async function handler(req, res) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
     const bot = new TeleBot(process.env.TELEGRAM_BOT_TOKEN);
     if (req.method === 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Origin', '*');
