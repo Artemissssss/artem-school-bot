@@ -695,6 +695,19 @@ if(text === "Написати учаснику"){
     }
 
 }
+if(text === "Розклад"){
+    userAction[msg.from.id] = getWeeks();
+    lastUserMessage[msg.from.id] = "Розклад";
+    let arrBtn = () => {
+        let arr = [];
+        for(let i = 0; i< getWeeks().length;i++){
+            arr = [[bot.inlineButton(`${getWeeks()[i][0]} - ${getWeeks()[i][4]}`, {callback: i})],...arr]
+        };
+        return arr;
+    };
+    let replyMarkup = bot.inlineKeyboard(arrBtn());
+    return bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
+}
 
 if(userStatus[msg.from.id]){
     if(text === "Д/з"){
@@ -718,19 +731,7 @@ if(userStatus[msg.from.id]){
         lastUserMessage[msg.from.id] = "Д/з";
         return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
     }
-    if(text === "Розклад"){
-        userAction[msg.from.id] = getWeeks();
-        lastUserMessage[msg.from.id] = "Розклад";
-        let arrBtn = () => {
-            let arr = [];
-            for(let i = 0; i< getWeeks().length;i++){
-                arr = [[bot.inlineButton(`${getWeeks()[i][0]} - ${getWeeks()[i][4]}`, {callback: i})],...arr]
-            };
-            return arr;
-        };
-        let replyMarkup = bot.inlineKeyboard(arrBtn());
-        bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
-    }
+
     if(text === "Задати д/з"){
         let replyMarkup = bot.keyboard([
             ["Назад"],
