@@ -701,7 +701,8 @@ if(text === "Розклад"){
     let arrBtn = () => {
         let arr = [];
         for(let i = 0; i< getWeeks().length;i++){
-            arr = [[bot.inlineButton(`${getWeeks()[i][0]} - ${getWeeks()[i][4]}`, {callback: i})],...arr]
+            console.log(`${getWeeks()[i][0]} - ${getWeeks()[i][4]}`)
+            arr = [[bot.inlineButton(`${getWeeks()[i][0]} - ${getWeeks()[i][4]}`, {callback: `${i}`})],...arr]
         };
         return arr;
     };
