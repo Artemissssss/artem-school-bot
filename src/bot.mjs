@@ -24,7 +24,7 @@ function getWeeks() {
         const monday = now.clone().add(i, 'weeks').startOf('isoWeek');
 
         for(let j = 0; j < 5; j++) {
-            week.push(monday.clone().add(j, 'days').format('YYYY-MM-DD'));
+            week.push(monday.clone().add(j, 'days').format('DD.MM.YYYY'));
         }
 
         weeks.push(week);
