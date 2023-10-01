@@ -718,7 +718,19 @@ if(userStatus[msg.from.id]){
         lastUserMessage[msg.from.id] = "Д/з";
         return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
     }
-
+    if(text === "Розклад"){
+        userAction[msg.from.id] = getWeeks();
+        lastUserMessage[msg.from.id] = "Розклад";
+        let arrBtn = () => {
+            let arr = [];
+            for(let i = 0; i< getWeeks().length;i++){
+                arr = [[bot.inlineButton(`${getWeeks()[i][0]} - ${getWeeks()[i][4]}`, {callback: i})],...arr]
+            };
+            return arr;
+        };
+        let replyMarkup = bot.inlineKeyboard(arrBtn());
+        bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
+    }
     if(text === "Задати д/з"){
         let replyMarkup = bot.keyboard([
             ["Назад"],
@@ -1189,6 +1201,26 @@ if(msg.text.split(" ")[1]){
 bot.on('callbackQuery', async msg => {
     // User message alert
     console.log(msg.data)
+    if(lastUserMessage[msg.from.id] === "Розклад"){
+        userAction[msg.from.id] = getWeeks()[parseInt(msg.data)];
+        lastUserMessage[msg.from.id] = "РозкладТиждень";
+        let arrBtn = () => {
+            let arr = [];
+            for(let i = 0; i< getWeeks()[parseInt(msg.data)].length;i++){
+                arr = [[bot.inlineButton(`${getWeeks()[parseInt(msg.data)][i]}`, {callback: i})],...arr]
+            };
+            return arr;
+        };
+        let replyMarkup = bot.inlineKeyboard(arrBtn());
+        bot.sendMessage(msg.from.id, `Виберіть навчальний день:`, {replyMarkup})
+    }else if(lastUserMessage[msg.from.id] === "РозкладТиждень"){
+        if(userStatus[msg.from.id]){
+            let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок`, {callback: `Створити урок`})],[bot.inlineButton(`Уроки сьогодні`, {callback: `Уроки сьогодні`})]]);
+            bot.sendMessage(msg.from.id, `Виберіть:`, {replyMarkup})
+        }else{
+
+        }
+    }
     if(lastUserMessage[msg.from.id] === "Д/з" && userStatus[msg.from.id] === 0){
         let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === msg.data);
         console.log(userAction[msg.from.id],msg.data, newArr)
