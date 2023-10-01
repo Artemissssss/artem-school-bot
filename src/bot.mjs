@@ -14,6 +14,25 @@ let userStatus = {};
 let userClass = {};
 let userChat = {};
 let userAction = {};
+
+function getWeeks() {
+    const weeks = [];
+    const now = moment().tz("Europe/Kiev");
+
+    for(let i = -3; i <= 1; i++) {
+        const week = [];
+        const monday = now.clone().add(i, 'weeks').startOf('isoWeek');
+
+        for(let j = 0; j < 5; j++) {
+            week.push(monday.clone().add(j, 'days').format('YYYY-MM-DD'));
+        }
+
+        weeks.push(week);
+    }
+
+    return weeks;
+}
+
 bot.on('/del', async msg => {
     // const markup = updateKeyboard('apples');
 
@@ -23,6 +42,7 @@ bot.on('/del', async msg => {
     //     // Start updating message
     //     lastMessage = [msg.from.id, re.result.message_id];
     // });
+    console.log(getWeeks());
     let replyMarkup = bot.keyboard([
         ["Журнал","Статистика","Учасники"],
         ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
