@@ -30,10 +30,20 @@ function getWeeks() {
         weeks.push(week);
     }
 
-    return weeks;
+    return weeks.reverse();
 }
 
 bot.on('/del', async msg => {
+    await fetch("https://artem-school-api.onrender.com/api/zustrich", {
+        method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+        headers: {
+          'Content-Type': 'application/json', // Заголовок запиту
+          // Інші заголовки, якщо потрібно
+        },
+        body:JSON.stringify({type:1, time:"18:00-18:21"})    
+        // Тіло запиту, якщо потрібно передати дані
+        // body: JSON.stringify({ key: 'value' }),
+      });
     // const markup = updateKeyboard('apples');
 
     // return bot.sendMessage(
