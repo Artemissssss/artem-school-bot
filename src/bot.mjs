@@ -1219,7 +1219,7 @@ bot.on('callbackQuery', async msg => {
         let arrBtn = () => {
             let arr = [];
             for(let i = 0; i< getWeeks()[parseInt(msg.data)].length;i++){
-                arr = [[bot.inlineButton(`${getWeeks()[parseInt(msg.data)][i]}`, {callback: i})],...arr]
+                arr = [[bot.inlineButton(`${getWeeks()[parseInt(msg.data)][i]}`, {callback: `${i}`})],...arr]
             };
             return arr;
         };
