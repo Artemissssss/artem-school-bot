@@ -1237,7 +1237,7 @@ bot.on('callbackQuery', async msg => {
             lastUserMessage[msg.from.id] = "РозкладТижденьЗадати";
             bot.sendMessage(msg.from.id, "Опис/завдання уроку:")
         }else if(userStatus[msg.from.id]){
-            userAction[msg.from.id] = {...userAction[msg.from.id], day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)], week:getWeeks()[userAction[msg.from.id].week]};
+            userAction[msg.from.id] = {...userAction[msg.from.id], day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)], file:[]};
             let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок`, {callback: `Створити урок`})],[bot.inlineButton(`Уроки сьогодні`, {callback: `Уроки сьогодні`})]]);
             bot.sendMessage(msg.from.id, `Виберіть:`, {replyMarkup})
         }else{
