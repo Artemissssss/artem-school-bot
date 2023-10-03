@@ -70,6 +70,34 @@ function isValidFormat(text) {
     return true;
 }
 
+function sortTimes(times) {
+    return times.sort(function(a, b) {
+        var startA = a.split('-')[0];
+        var endA = a.split('-')[1];
+        var startB = b.split('-')[0];
+        var endB = b.split('-')[1];
+
+        var startHourA = parseInt(startA.split(':')[0], 10);
+        var startMinuteA = parseInt(startA.split(':')[1], 10);
+        var endHourA = parseInt(endA.split(':')[0], 10);
+        var endMinuteA = parseInt(endA.split(':')[1], 10);
+
+        var startHourB = parseInt(startB.split(':')[0], 10);
+        var startMinuteB = parseInt(startB.split(':')[1], 10);
+        var endHourB = parseInt(endB.split(':')[0], 10);
+        var endMinuteB = parseInt(endB.split(':')[1], 10);
+
+        if (startHourA !== startHourB) {
+            return startHourA - startHourB;
+        } else if (startMinuteA !== startMinuteB) {
+            return startMinuteA - startMinuteB;
+        } else if (endHourA !== endHourB) {
+            return endHourA - endHourB;
+        } else {
+            return endMinuteA - endMinuteB;
+        }
+    });
+}
 
 bot.on('/del', async msg => {
     await fetch("https://artem-school-api.onrender.com/api/zustrich", {
@@ -1241,8 +1269,57 @@ bot.on('callbackQuery', async msg => {
             let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок`, {callback: `Створити урок`})],[bot.inlineButton(`Уроки сьогодні`, {callback: `Уроки сьогодні`})]]);
             bot.sendMessage(msg.from.id, `Виберіть:`, {replyMarkup})
         }else{
-
+            const client = await MongoClient.connect(
+                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+            const coll = client.db('artem-school').collection('lessons');
+                    const filter = {classId:userClass[msg.from.id],day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)]};
+                    const cursor = coll.find(filter);
+                    const result = await cursor.toArray();
+                    userAction[msg.from.id] = result;
+                    if(result.length){
+                        let newArr = [];
+                        for(let i = 0; i< sortTimes(result).length;i++){
+                            newArr =[...newArr,result[i].time]
+                        };
+                        let arrBtn = () => {
+                            let arr = [];
+                            for(let i = 0; i< sortTimes(result).length;i++){
+                                arr = [[bot.inlineButton(`${sortTimes(newArr)[i]}`, {callback: sortTimes(newArr)[i]})],...arr]
+                            };
+                            return arr;
+                        };
+                        lastUserMessage[msg.from.id] = "dayChoose"
+                        let replyMarkup = bot.inlineKeyboard(arrBtn());
+                        await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
+                    }else{
+                        bot.sendMessage(msg.from.id, "Сьгодні нічого немає")
+                    }
         }
+    }else if(lastUserMessage[msg.from.id] === "dayChoose"){
+    let newUs = userAction[msg.from.id].filter((arr) => arr.time === msg.data);
+    if(newUs[0]?.idmeet){
+        bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
+
+${newUs[0].text}
+
+Посилання, щоб долучитися до конференції у Зустрічі:
+Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі <code>/join/${newUs[0].idmeet}</code>.
+Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${newUs[0].idmeet}.`,{parseMode:'html'})
+    }else if(newUs[0]?.meet === false){
+        bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
+
+${newUs[0].text}
+        
+Зучтрічі немає.`)
+    }else{
+        bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
+
+${newUs[0].text}
+        
+${newUs[0].meet}`,{parseMode:'html'})
+    }
     }else if(msg.data ==="Зустріч"){
             await fetch("https://artem-school-api.onrender.com/api/zustrich", {
                 method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
@@ -1260,8 +1337,8 @@ bot.on('callbackQuery', async msg => {
                 // Обробка отриманих даних
                 console.log(data);
                 await bot.sendMessage(msg.from.id, `Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
-Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${data.idRoom}.
-Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`);
+Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі <code>/join/${data.idRoom}</code>.
+Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`,{parseMode:"html"});
 lastUserMessage[msg.from.id] = data.idRoom;
               });
             const client = await MongoClient.connect(
@@ -1269,9 +1346,7 @@ lastUserMessage[msg.from.id] = data.idRoom;
               { useNewUrlParser: true, useUnifiedTopology: true }
           );
           const coll = client.db('artem-school').collection('lessons');
-          const result1 = await coll.insertOne({classId: userClass[msg.from.id], idmeet:lastUserMessage[msg.from.id], ...userAction[msg.from.id], meet:`Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
-          Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${lastUserMessage[msg.from.id]}.
-          Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${lastUserMessage[msg.from.id]}.`});
+          const result1 = await coll.insertOne({classId: userClass[msg.from.id], idmeet:lastUserMessage[msg.from.id], ...userAction[msg.from.id]});
             await bot.sendMessage(msg.from.id, "Зустріч створена та подія в розкладі")
     }else if(msg.data==="Своє"){
         lastUserMessage[msg.from.id] = "Своє";
