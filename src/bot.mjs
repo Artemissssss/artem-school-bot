@@ -1264,18 +1264,19 @@ bot.on('callbackQuery', async msg => {
 Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${data.idRoom}.
 Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`);
               });
-              const client = await MongoClient.connect(
-                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-                { useNewUrlParser: true, useUnifiedTopology: true }
-            );
-            const coll = client.db('artem-school').collection('lessons');
-            const result1 = await coll.insertOne({classId: userClass[msg.from.id], ...userAction[msg.from.id], meet:`Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
-            Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${data.idRoom}.
-            Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`});
-              await bot.sendMessage(msg.from.id, "Зустріч створена та подія в розкладі")
+              lastUserMessage[msg.from.id] = idRoom;
             }catch{
                 return bot.sendMessage(msg.from.id, "Помилка")
             }
+            const client = await MongoClient.connect(
+              `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+              { useNewUrlParser: true, useUnifiedTopology: true }
+          );
+          const coll = client.db('artem-school').collection('lessons');
+          const result1 = await coll.insertOne({classId: userClass[msg.from.id], idmeet:lastUserMessage[msg.from.id], ...userAction[msg.from.id], meet:`Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
+          Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${lastUserMessage[msg.from.id]}.
+          Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${lastUserMessage[msg.from.id]}.`});
+            await bot.sendMessage(msg.from.id, "Зустріч створена та подія в розкладі")
     }else if(msg.data==="Своє"){
         lastUserMessage[msg.from.id] = "Своє";
         bot.sendMessage(msg.from.id, "Надішлість своє посилання:");
