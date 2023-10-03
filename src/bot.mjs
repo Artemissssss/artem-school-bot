@@ -1262,8 +1262,8 @@ bot.on('callbackQuery', async msg => {
                 await bot.sendMessage(msg.from.id, `Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
 Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${data.idRoom}.
 Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`);
+lastUserMessage[msg.from.id] = data.idRoom;
               });
-              lastUserMessage[msg.from.id] = data.idRoom;
             const client = await MongoClient.connect(
               `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
               { useNewUrlParser: true, useUnifiedTopology: true }
