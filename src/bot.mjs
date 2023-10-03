@@ -331,7 +331,7 @@ bot.on('*', async msg => {
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
         const coll = client.db('artem-school').collection('classrooms');
-        const result = await coll.insertOne({name:text,_id:new ObjectId(idClass[1]),idS:idClass[0],files:[],events:[],marks:[],statisticks:[],materials:[]});
+        const result = await coll.insertOne({name:text,_id:idClass[1],idS:idClass[0],files:[],events:[],marks:[],statisticks:[],materials:[]});
         const coll2 = client.db('artem-school').collection('users');
         const result2 = await coll2.insertOne({nameC: text,name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:1, classId: idClass[1]});
         await client.close();
@@ -404,7 +404,7 @@ bot.on('*', async msg => {
             { useNewUrlParser: true, useUnifiedTopology: true }
         );
         const coll = client.db('artem-school').collection('classrooms');
-                const filter = {_id: new ObjectId(msg.text)};
+                const filter = {_id: msg.text};
                 const cursor = coll.find(filter);
                 const result = await cursor.toArray();
                 if(result[0]){
@@ -1143,7 +1143,7 @@ if(msg.text.split(" ")[1]){
                     ["Написати учаснику","Зробити оголошення","Класи"]
                 ], {resize: true});
                 const coll = client.db('artem-school').collection('classrooms');
-                        const filter = {_id: new ObjectId(msg.text.split(" ")[1])};
+                        const filter = {_id: msg.text.split(" ")[1]};
                         const cursor = coll.find(filter);
                         const result = await cursor.toArray();
                         if(result[0]){
