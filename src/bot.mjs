@@ -1244,7 +1244,6 @@ bot.on('callbackQuery', async msg => {
 
         }
     }else if(msg.data ==="Зустріч"){
-        try{
             await fetch("https://artem-school-api.onrender.com/api/zustrich", {
                 method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
                 headers: {
@@ -1265,9 +1264,6 @@ bot.on('callbackQuery', async msg => {
 Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`);
               });
               lastUserMessage[msg.from.id] = idRoom;
-            }catch{
-                return bot.sendMessage(msg.from.id, "Помилка")
-            }
             const client = await MongoClient.connect(
               `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
               { useNewUrlParser: true, useUnifiedTopology: true }
