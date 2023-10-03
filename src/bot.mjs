@@ -739,7 +739,7 @@ if(text === "Розклад"){
     let arrBtn = () => {
         let arr = [];
         for(let i = 0; i< getWeeks().length;i++){
-            arr = [[bot.inlineButton(`${getWeeks()[i][0]} - ${getWeeks()[i][4]}`, {callback: `${i}`})],...arr]
+            arr = [[bot.inlineButton(`${getWeeks()[i][4]} - ${getWeeks()[i][0]}`, {callback: `${i}`})],...arr]
         };
         return arr;
     };
@@ -1226,7 +1226,7 @@ bot.on('callbackQuery', async msg => {
         let arrBtn = () => {
             let arr = [];
             for(let i = 0; i< getWeeks()[parseInt(msg.data)].length;i++){
-                arr = [[bot.inlineButton(`${getWeeks()[parseInt(msg.data)][i]}`, {callback: i})],...arr]
+                arr = [[bot.inlineButton(`${getWeeks()[parseInt(msg.data)][i]}`, {callback: `${i}`})],...arr]
             };
             return arr;
         };
