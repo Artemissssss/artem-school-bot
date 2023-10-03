@@ -1264,6 +1264,34 @@ bot.on('callbackQuery', async msg => {
         if(msg.data === "Створити урок"){
             lastUserMessage[msg.from.id] = "РозкладТижденьЗадати";
             bot.sendMessage(msg.from.id, "Опис/завдання уроку:")
+        }else if(msg.data === `Уроки сьогодні`){
+            const client = await MongoClient.connect(
+                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+            const coll = client.db('artem-school').collection('lessons');
+                    const filter = {classId:userClass[msg.from.id],day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)]};
+                    const cursor = coll.find(filter);
+                    const result = await cursor.toArray();
+                    userAction[msg.from.id] = result;
+                    if(result.length){
+                        let newArr = [];
+                        for(let i = 0; i< sortTimes(result).length;i++){
+                            newArr =[...newArr,result[i].time]
+                        };
+                        let arrBtn = () => {
+                            let arr = [];
+                            for(let i = 0; i< sortTimes(result).length;i++){
+                                arr = [[bot.inlineButton(`${sortTimes(newArr)[i]}`, {callback: sortTimes(newArr)[i]})],...arr]
+                            };
+                            return arr;
+                        };
+                        lastUserMessage[msg.from.id] = "dayChoose"
+                        let replyMarkup = bot.inlineKeyboard(arrBtn());
+                        await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
+                    }else{
+                        bot.sendMessage(msg.from.id, "Сьгодні нічого немає")
+                    }
         }else if(userStatus[msg.from.id]){
             userAction[msg.from.id] = {...userAction[msg.from.id], day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)], file:[]};
             let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок`, {callback: `Створити урок`})],[bot.inlineButton(`Уроки сьогодні`, {callback: `Уроки сьогодні`})]]);
