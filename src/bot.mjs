@@ -1325,8 +1325,8 @@ bot.on('callbackQuery', async msg => {
         }
     }else if(lastUserMessage[msg.from.id] === "dayChoose"){
         lastUserMessage[msg.from.id] ="fdsfsdfsdf";
+        let newUs = userAction[msg.from.id].filter((arr) => arr.time === msg.data);
         userAction[msg.from.id] = undefined;
-    let newUs = userAction[msg.from.id].filter((arr) => arr.time === msg.data);
     if(newUs[0]?.idmeet){
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
 
