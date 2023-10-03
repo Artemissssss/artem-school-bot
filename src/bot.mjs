@@ -1263,7 +1263,7 @@ bot.on('callbackQuery', async msg => {
 Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${data.idRoom}.
 Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`);
               });
-              lastUserMessage[msg.from.id] = idRoom;
+              lastUserMessage[msg.from.id] = data.idRoom;
             const client = await MongoClient.connect(
               `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
               { useNewUrlParser: true, useUnifiedTopology: true }
