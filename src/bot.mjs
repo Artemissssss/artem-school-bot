@@ -772,7 +772,7 @@ if(userStatus[msg.from.id]){
     if(lastUserMessage[msg.from.id] === "РозкладТижденьЗадати"){
         userAction[msg.from.id] = {...userAction[msg.from.id], text:text};
         lastUserMessage[msg.from.id] = "РозкладТижденьЗадатиДату"
-        bot.sendMessage(msg.from.id, "Вкажіть час уроку у форматі гг:хх-гг:хх(приклад 08:30-9:15):");
+        return bot.sendMessage(msg.from.id, "Вкажіть час уроку у форматі гг:хх-гг:хх(приклад 08:30-9:15):");
     }else if(lastUserMessage[msg.from.id] === "РозкладТижденьЗадатиДату"){
     if(isValidFormat(text)){
         let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок на Зустрічі`, {callback: `Зустріч`})],[bot.inlineButton(`Своє посилання на урок`, {callback: `Своє`})],[bot.inlineButton(`Зустрічі не буде`, {callback: `Немає`})]]);
@@ -1237,7 +1237,7 @@ bot.on('callbackQuery', async msg => {
             lastUserMessage[msg.from.id] = "РозкладТижденьЗадати";
             bot.sendMessage(msg.from.id, "Опис/завдання уроку:")
         }else if(userStatus[msg.from.id]){
-            userAction[msg.from.id] = {...userAction[msg.from.id], day:parseInt(msg.data)};
+            userAction[msg.from.id] = {...userAction[msg.from.id], day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)], week:getWeeks()[userAction[msg.from.id].week]};
             let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок`, {callback: `Створити урок`})],[bot.inlineButton(`Уроки сьогодні`, {callback: `Уроки сьогодні`})]]);
             bot.sendMessage(msg.from.id, `Виберіть:`, {replyMarkup})
         }else{
