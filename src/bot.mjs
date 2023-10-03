@@ -253,6 +253,7 @@ bot.on('*', async msg => {
             const coll = client.db('artem-school').collection('users');
             const cursor = coll.find();
             const result = await cursor.toArray();
+            await client.close();
             const stringWithoutFirst11Chars = text.slice(10);
             let newArr = [];
             for(let i =0;i<result.length;i++){
@@ -782,7 +783,7 @@ if(text === "Д/з"){
     const coll = client.db('artem-school').collection('homework');
     const cursor = coll.find({id:userClass[msg.from.id]});
     const result = await cursor.toArray();
-
+    await client.close();
     let arrNew = [];
 
     for(let i =0; i<result.length;i++){
@@ -816,6 +817,7 @@ if(userStatus[msg.from.id]){
         );
         const coll = client.db('artem-school').collection('lessons');
         const result1 = await coll.insertOne({classId: userClass[msg.from.id], ...userAction[msg.from.id], meet:text});
+        await client.close();
           await bot.sendMessage(msg.from.id, "Подія в розкладі")
     }
     if(text === "Задати д/з"){
@@ -1271,6 +1273,7 @@ bot.on('callbackQuery', async msg => {
                     const filter = {classId:userClass[msg.from.id],day:userAction[msg.from.id].day};
                     const cursor = coll.find(filter);
                     const result = await cursor.toArray();
+                    await client.close();
                     userAction[msg.from.id] = result;
                     if(result.length){
                         let newArr = [];
@@ -1304,6 +1307,7 @@ bot.on('callbackQuery', async msg => {
                     const cursor = coll.find(filter);
                     const result = await cursor.toArray();
                     userAction[msg.from.id] = result;
+                    await client.close();
                     if(result.length){
                         let newArr = [];
                         for(let i = 0; i< sortTimes(result).length;i++){
@@ -1375,6 +1379,7 @@ lastUserMessage[msg.from.id] = data.idRoom;
           );
           const coll = client.db('artem-school').collection('lessons');
           const result1 = await coll.insertOne({classId: userClass[msg.from.id], idmeet:lastUserMessage[msg.from.id], ...userAction[msg.from.id]});
+          await client.close();
             await bot.sendMessage(msg.from.id, "Зустріч створена та подія в розкладі")
     }else if(msg.data==="Своє"){
         lastUserMessage[msg.from.id] = "Своє";
@@ -1386,6 +1391,7 @@ lastUserMessage[msg.from.id] = data.idRoom;
         );
         const coll = client.db('artem-school').collection('lessons');
         const result1 = await coll.insertOne({classId: userClass[msg.from.id],...userAction[msg.from.id], meet:false});
+        await client.close();
           await bot.sendMessage(msg.from.id, "Подія створена")
     }
     if(lastUserMessage[msg.from.id] === "Д/з" && userStatus[msg.from.id] === 0){
