@@ -1247,9 +1247,7 @@ bot.on('callbackQuery', async msg => {
     // User message alert
     console.log(msg.data)
     if(lastUserMessage[msg.from.id] === "Розклад"){
-        if(userStatus[msg.from.id]){
             userAction[msg.from.id] = {week:parseInt(msg.data)};
-        }
         lastUserMessage[msg.from.id] = "РозкладТиждень";
         let arrBtn = () => {
             let arr = [];
