@@ -1302,7 +1302,7 @@ bot.on('callbackQuery', async msg => {
                 { useNewUrlParser: true, useUnifiedTopology: true }
             );
             const coll = client.db('artem-school').collection('lessons');
-                    const filter = {classId:userClass[msg.from.id],day:msg.data};
+                    const filter = {classId:userClass[msg.from.id],day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)]};
                     const cursor = coll.find(filter);
                     const result = await cursor.toArray();
                     userAction[msg.from.id] = result;
