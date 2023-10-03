@@ -1296,7 +1296,7 @@ bot.on('callbackQuery', async msg => {
             userAction[msg.from.id] = {...userAction[msg.from.id], day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)], file:[]};
             let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок`, {callback: `Створити урок`})],[bot.inlineButton(`Уроки сьогодні`, {callback: `Уроки сьогодні`})]]);
             bot.sendMessage(msg.from.id, `Виберіть:`, {replyMarkup})
-        }else{
+        }else {
             const client = await MongoClient.connect(
                 `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
                 { useNewUrlParser: true, useUnifiedTopology: true }
@@ -1326,6 +1326,8 @@ bot.on('callbackQuery', async msg => {
                     }
         }
     }else if(lastUserMessage[msg.from.id] === "dayChoose"){
+        lastUserMessage[msg.from.id] ="fdsfsdfsdf";
+        userAction[msg.from.id] = undefined;
     let newUs = userAction[msg.from.id].filter((arr) => arr.time === msg.data);
     if(newUs[0]?.idmeet){
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
