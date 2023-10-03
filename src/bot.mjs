@@ -781,6 +781,14 @@ if(userStatus[msg.from.id]){
     }else{
         return bot.sendMessage(msg.from.id, "Неправильно вказаний формат часу, напишіть у форматі гг:хх-гг:хх(приклад 08:30-9:15)")
     }
+    }else if(lastUserMessage[msg.from.id] ==="Своє"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('lessons');
+        const result1 = await coll.insertOne({classId: userClass[msg.from.id], ...userAction[msg.from.id], meet:text});
+          await bot.sendMessage(msg.from.id, "Подія в розкладі")
     }
     if(text === "Задати д/з"){
         let replyMarkup = bot.keyboard([
@@ -1261,18 +1269,24 @@ bot.on('callbackQuery', async msg => {
                 { useNewUrlParser: true, useUnifiedTopology: true }
             );
             const coll = client.db('artem-school').collection('lessons');
-            const filter = {idS: msg.text.split(" ")[1]};
-            const cursor = coll.find(filter);
-            const result = await cursor.toArray();
-            const result1 = await coll.insertOne({name:text,idT:idClass[1],idS:idClass[0],files:[],events:[],marks:[],statisticks:[],materials:[]});
+            const result1 = await coll.insertOne({classId: userClass[msg.from.id], ...userAction[msg.from.id], meet:`Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
+            Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі /join/${data.idRoom}.
+            Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`});
               await bot.sendMessage(msg.from.id, "Зустріч створена та подія в розкладі")
             }catch{
                 return bot.sendMessage(msg.from.id, "Помилка")
             }
     }else if(msg.data==="Своє"){
-
+        lastUserMessage[msg.from.id] = "Своє";
+        bot.sendMessage(msg.from.id, "Надішлість своє посилання:");
     }else if(msg.data==="Немає"){
-
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        const coll = client.db('artem-school').collection('lessons');
+        const result1 = await coll.insertOne({classId: userClass[msg.from.id],...userAction[msg.from.id], meet:false});
+          await bot.sendMessage(msg.from.id, "Подія створена")
     }
     if(lastUserMessage[msg.from.id] === "Д/з" && userStatus[msg.from.id] === 0){
         let newArr = userAction[msg.from.id].task.filter(arr => `${arr._id}` === msg.data);
