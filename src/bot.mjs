@@ -1276,7 +1276,7 @@ bot.on('callbackQuery', async msg => {
                             };
                             return arr;
                         };
-                        lastUserMessage[msg.from.id] = "Файли урокуТра"
+                        lastUserMessage[msg.from.id] = "Файли урокуТ"
                         let replyMarkup = bot.inlineKeyboard(arrBtn());
                         await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
                     }else{
