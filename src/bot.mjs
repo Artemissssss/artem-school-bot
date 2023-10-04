@@ -761,6 +761,46 @@ if(text === "Написати учаснику"){
     }
 
 }
+if(lastUserMessage[msg.from.id] === "Завантаження файлів для урокуГА"){
+userAction[msg.from.id] = {...userAction[msg.from.id],file:[{msgId:msg.message_id , chatId:msg.from.id},...userAction[msg.from.id].file]}
+}else if(text === "Це всі файли уроку"){
+    const client = await MongoClient.connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    // const coll = client.db('artem-school').collection('users');
+    // const filter = {id: msg.from.id};
+    // const cursor = coll.find(filter);
+    // const result = await cursor.toArray();
+
+
+    const coll1 = client.db('artem-school').collection('lessons');
+            const file = {file : userAction[msg.from.id].file}
+            console.log(result1)
+            await coll1.updateOne(
+                {_id: new ObjectId(userAction[msg.from.id]._id)},
+                {
+                  $set: { ...file},
+                  $currentDate: { lastModified: true }
+                }
+             )
+            await client.close();
+            lastUserMessage[msg.from.id] = "textФайл";
+            userAction[msg.from.id] = undefined;
+            if(userStatus[msg.from.id]){
+                return await bot.sendMessage(msg.chat.id, 'Файл додано', {replyMarkup});
+            }else if(userStatus[msg.from.id] === 0){
+                let replyMarkup = bot.keyboard([
+                    ["Щоденик","Події","Учасники"],
+                    ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                    ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                    ["Матеріали", "Події"],
+                    ["Написати учаснику","Класи"]
+                ], {resize: true});
+                return await bot.sendMessage(msg.chat.id, 'Файл додано', {replyMarkup});
+            }
+    return await bot.sendMessage(msg.chat.id, 'Файл додано');
+}
 if(text === "Розклад"){
     lastUserMessage[msg.from.id] = "Розклад";
     let arrBtn = () => {
@@ -775,6 +815,18 @@ if(text === "Розклад"){
 }
 if(text === "Файли уроку"){
     lastUserMessage[msg.from.id] = "Файли уроку";
+    let arrBtn = () => {
+        let arr = [];
+        for(let i = 0; i< getWeeks().length;i++){
+            arr = [[bot.inlineButton(`${getWeeks()[i][4]} - ${getWeeks()[i][0]}`, {callback: `${i}`})],...arr]
+        };
+        return arr;
+    };
+    let replyMarkup = bot.inlineKeyboard(arrBtn());
+    return bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
+}
+if(text === "Завантаження файлів для уроку"){
+    lastUserMessage[msg.from.id] = "Завантаження файлів для уроку";
     let arrBtn = () => {
         let arr = [];
         for(let i = 0; i< getWeeks().length;i++){
@@ -1233,10 +1285,12 @@ if(msg.text.split(" ")[1]){
 
 bot.on('callbackQuery', async msg => {
     console.log(msg.data)
-    if(lastUserMessage[msg.from.id] === "Розклад" || lastUserMessage[msg.from.id] ===  "Файли уроку"){
+    if(lastUserMessage[msg.from.id] === "Розклад" || lastUserMessage[msg.from.id] ===  "Файли уроку" || lastUserMessage[msg.from.id] === "Завантаження файлів для уроку"){
             userAction[msg.from.id] = {week:parseInt(msg.data)};
             if(lastUserMessage[msg.from.id] === "Розклад"){
                 lastUserMessage[msg.from.id] = "РозкладТиждень";
+            }else if(lastUserMessage[msg.from.id] === "Завантаження файлів для уроку"){
+                lastUserMessage[msg.from.id] = "Завантаження файлів для урокуА";
             }else{
                 lastUserMessage[msg.from.id] = "Файли урокуТа";
             }
@@ -1249,10 +1303,39 @@ bot.on('callbackQuery', async msg => {
         };
         let replyMarkup = bot.inlineKeyboard(arrBtn());
         bot.sendMessage(msg.from.id, `Виберіть навчальний день:`, {replyMarkup})
-    }else if(lastUserMessage[msg.from.id] === "РозкладТиждень" || lastUserMessage[msg.from.id] ===  "Файли урокуТа"){
+    }else if(lastUserMessage[msg.from.id] === "РозкладТиждень" || lastUserMessage[msg.from.id] ===  "Файли урокуТа" || lastUserMessage[msg.from.id] === "Завантаження файлів для урокуА"){
         if(msg.data === "Створити урок"){
             lastUserMessage[msg.from.id] = "РозкладТижденьЗадати";
             bot.sendMessage(msg.from.id, "Опис/завдання уроку:")
+        }else if(lastUserMessage[msg.from.id] === "Завантаження файлів для урокуА"){
+            const client = await MongoClient.connect(
+                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+            const coll = client.db('artem-school').collection('lessons');
+                    const filter = {classId:userClass[msg.from.id],day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)]};
+                    const cursor = coll.find(filter);
+                    const result = await cursor.toArray();
+                    userAction[msg.from.id] = result;
+                    await client.close();
+                    if(result.length){
+                        let newArr = [];
+                        for(let i = 0; i< sortTimes(result).length;i++){
+                            newArr =[...newArr,result[i].time]
+                        };
+                        let arrBtn = () => {
+                            let arr = [];
+                            for(let i = 0; i< sortTimes(result).length;i++){
+                                arr = [[bot.inlineButton(`${sortTimes(newArr)[i]}`, {callback: sortTimes(newArr)[i]})],...arr]
+                            };
+                            return arr;
+                        };
+                        lastUserMessage[msg.from.id] = "Завантаження файлів для урокуГА"
+                        let replyMarkup = bot.inlineKeyboard(arrBtn());
+                        await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
+                    }else{
+                        bot.sendMessage(msg.from.id, "Сьгодні нічого немає")
+                    }
         }else if(lastUserMessage[msg.from.id] ===  "Файли урокуТа"){
             const client = await MongoClient.connect(
                 `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -1345,11 +1428,16 @@ bot.on('callbackQuery', async msg => {
                         bot.sendMessage(msg.from.id, "Нічого немає")
                     }
         }
-    }else if(lastUserMessage[msg.from.id] === "dayChoose" || lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
+    }else if(lastUserMessage[msg.from.id] === "dayChoose" || lastUserMessage[msg.from.id] ===  "Файли урокуТ" || lastUserMessage[msg.from.id] === "Завантаження файлів для урокуГА"){
         let newUs = userAction[msg.from.id].filter((arr) => arr.time === msg.data);
-        userAction[msg.from.id] = undefined;
         
-        if(lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
+        if(lastUserMessage[msg.from.id] === "Завантаження файлів для урокуГА"){
+            userAction[msg.from.id] = newUs[0];
+            let replyMarkup = bot.keyboard([
+                ["Це всі файли уроку"]
+            ], {resize: true});
+            bot.sendMessage(msg.from.id, "Надішліть файли для завантаження",{replyMarkup})
+        }else if(lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
         if(newUs[0].file.length){
             for(let i = 0; i<newUs[0].file.length;i++){
                 await bot.forwardMessage(msg.from.id,newUs[0].file[i].chatId,newUs[0].file[i].msgId)
@@ -1357,6 +1445,8 @@ bot.on('callbackQuery', async msg => {
         }else{
             await bot.sendMessage(msg.from.id, "Немає файлів")
         }
+        userAction[msg.from.id] = undefined;
+        lastUserMessage[msg.from.id] ="fdsfsdfsdf";
     }else if(newUs[0]?.idmeet){
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
         
@@ -1364,21 +1454,27 @@ bot.on('callbackQuery', async msg => {
         
         Посилання, щоб долучитися до конференції у Зустрічі:
         Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі <code>/join/${newUs[0].idmeet}</code>.
-        Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${newUs[0].idmeet}.`,{parseMode:'html'})
+        Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${newUs[0].idmeet}.`,{parseMode:'html'});
+        userAction[msg.from.id] = undefined;
+        lastUserMessage[msg.from.id] ="fdsfsdfsdf";
     }else if(newUs[0]?.meet === false){
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
         
         ${newUs[0].text}
         
-        Зучтрічі немає.`)
+        Зучтрічі немає.`);
+        userAction[msg.from.id] = undefined;
+        lastUserMessage[msg.from.id] ="fdsfsdfsdf";
     }else{
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
         
         ${newUs[0].text}
         
-        ${newUs[0].meet}`,{parseMode:'html'})
+        ${newUs[0].meet}`,{parseMode:'html'});
+        userAction[msg.from.id] = undefined;
+        lastUserMessage[msg.from.id] ="fdsfsdfsdf";
     }
-    lastUserMessage[msg.from.id] ="fdsfsdfsdf";
+
 }else if(msg.data ==="Зустріч"){
     await fetch("https://artem-school-api.onrender.com/api/zustrich", {
         method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
