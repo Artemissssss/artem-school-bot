@@ -774,7 +774,6 @@ if(text === "Це всі файли уроку"){
 
     const coll1 = client.db('artem-school').collection('lessons');
             const file = {file : userAction[msg.from.id].file}
-            console.log(result1)
             await coll1.updateOne(
                 {_id: new ObjectId(userAction[msg.from.id]._id)},
                 {
