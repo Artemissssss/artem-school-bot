@@ -761,9 +761,7 @@ if(text === "Написати учаснику"){
     }
 
 }
-if(lastUserMessage[msg.from.id] === "Завантаження файлів для урокуГА"){
-userAction[msg.from.id] = {...userAction[msg.from.id],file:[{msgId:msg.message_id , chatId:msg.from.id},...userAction[msg.from.id].file]}
-}else if(text === "Це всі файли уроку"){
+if(text === "Це всі файли уроку"){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
@@ -800,7 +798,9 @@ userAction[msg.from.id] = {...userAction[msg.from.id],file:[{msgId:msg.message_i
                 return await bot.sendMessage(msg.chat.id, 'Файл додано', {replyMarkup});
             }
     return await bot.sendMessage(msg.chat.id, 'Файл додано');
-}
+}else if(lastUserMessage[msg.from.id] === "Завантаження файлів для урокуГА"){
+    userAction[msg.from.id] = {...userAction[msg.from.id],file:[{msgId:msg.message_id , chatId:msg.from.id},...userAction[msg.from.id].file]}
+    }
 if(text === "Розклад"){
     lastUserMessage[msg.from.id] = "Розклад";
     let arrBtn = () => {
