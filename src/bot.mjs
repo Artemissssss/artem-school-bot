@@ -1346,11 +1346,10 @@ bot.on('callbackQuery', async msg => {
                     }
         }
     }else if(lastUserMessage[msg.from.id] === "dayChoose" || lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
-        lastUserMessage[msg.from.id] ="fdsfsdfsdf";
         let newUs = userAction[msg.from.id].filter((arr) => arr.time === msg.data);
         userAction[msg.from.id] = undefined;
-
-    if(lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
+        
+        if(lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
         if(newUs[0].file.length){
             for(let i = 0; i<newUs[0].file.length;i++){
                 await bot.forwardMessage(msg.from.id,newUs[0].file[i].chatId,newUs[0].file[i].msgId)
@@ -1360,39 +1359,40 @@ bot.on('callbackQuery', async msg => {
         }
     }else if(newUs[0]?.idmeet){
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
-
-${newUs[0].text}
-
-Посилання, щоб долучитися до конференції у Зустрічі:
-Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі <code>/join/${newUs[0].idmeet}</code>.
-Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${newUs[0].idmeet}.`,{parseMode:'html'})
+        
+        ${newUs[0].text}
+        
+        Посилання, щоб долучитися до конференції у Зустрічі:
+        Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі <code>/join/${newUs[0].idmeet}</code>.
+        Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${newUs[0].idmeet}.`,{parseMode:'html'})
     }else if(newUs[0]?.meet === false){
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
-
-${newUs[0].text}
         
-Зучтрічі немає.`)
+        ${newUs[0].text}
+        
+        Зучтрічі немає.`)
     }else{
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
-
-${newUs[0].text}
         
-${newUs[0].meet}`,{parseMode:'html'})
+        ${newUs[0].text}
+        
+        ${newUs[0].meet}`,{parseMode:'html'})
     }
-    }else if(msg.data ==="Зустріч"){
-            await fetch("https://artem-school-api.onrender.com/api/zustrich", {
-                method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
-                headers: {
-                  'Content-Type': 'application/json', // Заголовок запиту
-                  // Інші заголовки, якщо потрібно
-                },
+    lastUserMessage[msg.from.id] ="fdsfsdfsdf";
+}else if(msg.data ==="Зустріч"){
+    await fetch("https://artem-school-api.onrender.com/api/zustrich", {
+        method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
+        headers: {
+            'Content-Type': 'application/json', // Заголовок запиту
+            // Інші заголовки, якщо потрібно
+        },
                 body:JSON.stringify({type:1, time:userAction[msg.from.id].time, date:userAction[msg.from.id].date})    
                 // Тіло запиту, якщо потрібно передати дані
                 // body: JSON.stringify({ key: 'value' }),
-              }).then(response => {
+            }).then(response => {
                 return response.json(); // Повернути відповідь у форматі JSON
-              })
-              .then(async data => {
+            })
+            .then(async data => {
                 // Обробка отриманих даних
                 console.log(data);
                 await bot.sendMessage(msg.from.id, `Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
