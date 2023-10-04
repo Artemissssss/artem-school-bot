@@ -1276,7 +1276,7 @@ bot.on('callbackQuery', async msg => {
                             };
                             return arr;
                         };
-                        lastUserMessage[msg.from.id] = "Файли урокуТ"
+                        lastUserMessage[msg.from.id] = "Файли урокуТра"
                         let replyMarkup = bot.inlineKeyboard(arrBtn());
                         await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
                     }else{
@@ -1311,7 +1311,7 @@ bot.on('callbackQuery', async msg => {
                     }else{
                         bot.sendMessage(msg.from.id, "Сьгодні нічого немає")
                     }
-        }else if(userStatus[msg.from.id]){
+        }else if(userStatus[msg.from.id] && lastUserMessage[msg.from.id] !== "Файли урокуТра"){
             userAction[msg.from.id] = {...userAction[msg.from.id], day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)], file:[]};
             let replyMarkup = bot.inlineKeyboard([[bot.inlineButton(`Створити урок`, {callback: `Створити урок`})],[bot.inlineButton(`Уроки сьогодні`, {callback: `Уроки сьогодні`})]]);
             bot.sendMessage(msg.from.id, `Виберіть:`, {replyMarkup})
@@ -1338,7 +1338,7 @@ bot.on('callbackQuery', async msg => {
                             };
                             return arr;
                         };
-                        lastUserMessage[msg.from.id] = "dayChoose"
+                        lastUserMessage[msg.from.id] = lastUserMessage[msg.from.id] === "Файли урокуТра" ? "Файли урокуТ": "dayChoose";
                         let replyMarkup = bot.inlineKeyboard(arrBtn());
                         await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
                     }else{
