@@ -1,8 +1,6 @@
 import TeleBot from "telebot"
 import pkg from 'telebot';
 const { Markup } = pkg;
-// const openai = require('openai');
-// const { MongoClient } = require('mongodb');
 import { MongoClient,ObjectId } from 'mongodb';
 import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
@@ -775,6 +773,18 @@ if(text === "Розклад"){
     let replyMarkup = bot.inlineKeyboard(arrBtn());
     return bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
 }
+if(text === "Файли уроку"){
+    lastUserMessage[msg.from.id] = "Файли уроку";
+    let arrBtn = () => {
+        let arr = [];
+        for(let i = 0; i< getWeeks().length;i++){
+            arr = [[bot.inlineButton(`${getWeeks()[i][4]} - ${getWeeks()[i][0]}`, {callback: `${i}`})],...arr]
+        };
+        return arr;
+    };
+    let replyMarkup = bot.inlineKeyboard(arrBtn());
+    return bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
+}
 if(text === "Д/з"){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -1220,37 +1230,16 @@ if(msg.text.split(" ")[1]){
 
 
 
-// bot.on("text", async msg => {
-//     let replyMarkup = bot.keyboard([
-//         ['/buttons', '/inlineKeyboard'],
-//         ['/start', '/hide']
-//     ], {resize: true});
 
-//     return bot.sendMessage(msg.from.id, 'Keyboard example.', {replyMarkup});
-// });
-
-// bot.on('/inlineKeyboard', msg => {
-
-//     let replyMarkup = bot.inlineKeyboard([
-//         [
-//             bot.inlineButton('callback', {callback: 'this_is_data'}),
-//             bot.inlineButton('inline', {inline: 'some query'})
-//         ], [
-//             bot.inlineButton('url', {url: 'https://telegram.org'})
-//         ]
-//     ]);
-
-//     return bot.sendMessage(msg.from.id, 'Inline keyboard example.', {replyMarkup});
-
-// });
-
-// Inline button callback
 bot.on('callbackQuery', async msg => {
-    // User message alert
     console.log(msg.data)
-    if(lastUserMessage[msg.from.id] === "Розклад"){
+    if(lastUserMessage[msg.from.id] === "Розклад" || lastUserMessage[msg.from.id] ===  "Файли уроку"){
             userAction[msg.from.id] = {week:parseInt(msg.data)};
-        lastUserMessage[msg.from.id] = "РозкладТиждень";
+            if(lastUserMessage[msg.from.id] === "Розклад"){
+                lastUserMessage[msg.from.id] = "РозкладТиждень";
+            }else{
+                lastUserMessage[msg.from.id] === "Файли урокуТа";
+            }
         let arrBtn = () => {
             let arr = [];
             for(let i = 0; i< getWeeks()[parseInt(msg.data)].length;i++){
@@ -1260,10 +1249,39 @@ bot.on('callbackQuery', async msg => {
         };
         let replyMarkup = bot.inlineKeyboard(arrBtn());
         bot.sendMessage(msg.from.id, `Виберіть навчальний день:`, {replyMarkup})
-    }else if(lastUserMessage[msg.from.id] === "РозкладТиждень"){
+    }else if(lastUserMessage[msg.from.id] === "РозкладТиждень" || lastUserMessage[msg.from.id] ===  "Файли урокуТа"){
         if(msg.data === "Створити урок"){
             lastUserMessage[msg.from.id] = "РозкладТижденьЗадати";
             bot.sendMessage(msg.from.id, "Опис/завдання уроку:")
+        }else if(lastUserMessage[msg.from.id] ===  "Файли урокуТа"){
+            const client = await MongoClient.connect(
+                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+            const coll = client.db('artem-school').collection('lessons');
+                    const filter = {classId:userClass[msg.from.id],day:getWeeks()[userAction[msg.from.id].week][parseInt(msg.data)]};
+                    const cursor = coll.find(filter);
+                    const result = await cursor.toArray();
+                    userAction[msg.from.id] = result;
+                    await client.close();
+                    if(result.length){
+                        let newArr = [];
+                        for(let i = 0; i< sortTimes(result).length;i++){
+                            newArr =[...newArr,result[i].time]
+                        };
+                        let arrBtn = () => {
+                            let arr = [];
+                            for(let i = 0; i< sortTimes(result).length;i++){
+                                arr = [[bot.inlineButton(`${sortTimes(newArr)[i]}`, {callback: sortTimes(newArr)[i]})],...arr]
+                            };
+                            return arr;
+                        };
+                        lastUserMessage[msg.from.id] = "Файли урокуТ"
+                        let replyMarkup = bot.inlineKeyboard(arrBtn());
+                        await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
+                    }else{
+                        bot.sendMessage(msg.from.id, "Сьгодні нічого немає")
+                    }
         }else if(msg.data === `Уроки сьогодні`){
             const client = await MongoClient.connect(
                 `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -1324,14 +1342,23 @@ bot.on('callbackQuery', async msg => {
                         let replyMarkup = bot.inlineKeyboard(arrBtn());
                         await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
                     }else{
-                        bot.sendMessage(msg.from.id, "Сьгодні нічого немає")
+                        bot.sendMessage(msg.from.id, "Нічого немає")
                     }
         }
-    }else if(lastUserMessage[msg.from.id] === "dayChoose"){
+    }else if(lastUserMessage[msg.from.id] === "dayChoose" || lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
         lastUserMessage[msg.from.id] ="fdsfsdfsdf";
         let newUs = userAction[msg.from.id].filter((arr) => arr.time === msg.data);
         userAction[msg.from.id] = undefined;
-    if(newUs[0]?.idmeet){
+
+    if(lastUserMessage[msg.from.id] ===  "Файли урокуТ"){
+        if(newUs[0].file.length){
+            for(let i = 0; i<newUs[0].file.length;i++){
+                await bot.forwardMessage(msg.from.id,newUs[0].file[i].chatId,newUs[0].file[i].msgId)
+            }
+        }else{
+            await bot.sendMessage(msg.from.id, "Немає файлів")
+        }
+    }else if(newUs[0]?.idmeet){
         bot.sendMessage(msg.from.id, `${newUs[0].time} ${newUs[0].day}
 
 ${newUs[0].text}
@@ -1578,7 +1605,3 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
 // });
 
 export default bot
-
-//YsbcVL8dXcW0lAY7
-
-
