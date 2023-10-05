@@ -1490,7 +1490,7 @@ bot.on('callbackQuery', async msg => {
             .then(async data => {
                 // Обробка отриманих даних
                 console.log(data);
-                await bot.sendMessage(msg.from.id, `Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].date} у Зустрічі:
+                await bot.sendMessage(msg.from.id, `Посилання, щоб долучитися до конференції на період ${userAction[msg.from.id].time} ${userAction[msg.from.id].day} у Зустрічі:
 Ви можете зайти нас сайт zustrich.artemissssss.de та долучитися, за допомогою Id зустрічі <code>/join/${data.idRoom}</code>.
 Або перейдіть за посиланням https://zustrich.artemissssss.de/join/${data.idRoom}.`,{parseMode:"html"});
 lastUserMessage[msg.from.id] = data.idRoom;
