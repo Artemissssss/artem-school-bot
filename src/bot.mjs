@@ -200,6 +200,7 @@ bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
     if (text?.indexOf("/gpt") === 0) return null;
+    if (text?.indexOf("/reset") === 0) return null;
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
         if(text?.indexOf("!чат") === 0){
@@ -309,9 +310,10 @@ bot.on('*', async msg => {
 
 Якщо вам потрібна допомога з використанням цього бота, ось посилання на сторінку з інструкцією: 👉 https://artem-school-doc.vercel.app/docs/intro 👈
         
-На цій сторінці ви знайдете всю необхідну інформацію щодо використання бота. Якщо у вас виникнуть які-небудь додаткові питання, не соромтесь питати через /chat або у @honkai_star_rails! 🤖💬
-✨ Цікавий файт: більшість проблем і багів можна вирішити через /reset або написати Назад ✨   
-     
+На цій сторінці ви знайдете всю необхідну інформацію щодо використання бота. Якщо у вас виникнуть які-небудь додаткові питання, не соромтесь питати через /chat або до @honkai_star_rails! 🤖💬
+
+✨ Цікавий факт: більшість проблем і багів можна вирішити через /reset або написати Назад ✨   
+
 Удачі у використанні бота! 👍😄`)
     }
     let replyMarkup = bot.keyboard([
@@ -1663,46 +1665,29 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
         }catch{
             return bot.sendMessage(msg.from.id, "Помилка")
         }
-    // await fetch('https://artem-school-bot.vercel.app/api/ai', {
-    //     method: 'POST', // Метод запиту (GET, POST, PUT, DELETE тощо)
-    //     headers: {
-    //       'Content-Type': 'application/json', // Заголовок запиту
-    //       // Інші заголовки, якщо потрібно
-    //     },
-    //     body:JSON.stringify({ prompt: props.match[1]})
-    //     // Тіло запиту, якщо потрібно передати дані
-    //     // body: JSON.stringify({ key: 'value' }),
-    //   })
-        // .then(response => {
-        //   return response.json(); // Повернути відповідь у форматі JSON
-        // })
-        // .then(data => {
-        //   // Обробка отриманих даних
-        //   console.log(data);
-        //   bot.sendMessage(msg.from.id, data.response);
-        // })
-    //     .catch(error => {
-    //       // Обробка помилок
-    //       console.error('Виникла помилка:', error);
-    //     });
+
     return null
       
 })
-// // Inline query
-// bot.on('inlineQuery', msg => {
 
-//     const query = msg.query;
-//     const answers = bot.answerList(msg.id);
+bot.on(/^\/reset (.+)$/, async (msg, props) =>{
+    lastUserMessage[msg.from.id] = 'someText';
+    userAction[msg.from.id] = undefined;
+    userChat[msg.from.id] = undefined;
 
-//     answers.addArticle({
-//         id: 'query',
-//         title: 'Inline Query',
-//         description: `Your query: ${ query }`,
-//         message_text: 'Click!'
-//     });
-
-//     return bot.answerQuery(answers);
-
-// });
+    if(userStatus[msg.from.id]){
+        return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
+    }else if(userStatus[msg.from.id] === 0){
+        let replyMarkup = bot.keyboard([
+            ["Щоденик ❌","Події","Учасники"],
+            ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+            ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+            ["Матеріали", "Події"],
+            ["Написати учаснику","Класи"]
+        ], {resize: true});
+        return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
+    }
+      
+})
 
 export default bot
