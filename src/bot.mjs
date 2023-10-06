@@ -390,7 +390,7 @@ bot.on('*', async msg => {
             ], {resize: true});
             return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
         }
-    }else if(text === "Приєднатися в клас, як учень" && lastUserMessage[msg.from.id] === "/start"  && userClass[msg.from.id]){
+    }else if(text === "Приєднатися в клас, як учень" && lastUserMessage[msg.from.id] === "/start"  && !userClass[msg.from.id]){
         let replyMarkup = bot.keyboard([
             ["Назад"],
         ], {resize: true});
@@ -432,7 +432,7 @@ bot.on('*', async msg => {
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
                 }  
-    }else if(text === "Приєднатися в клас, як вчитель" && lastUserMessage[msg.from.id] === "/start"  && userClass[msg.from.id]){
+    }else if(text === "Приєднатися в клас, як вчитель" && lastUserMessage[msg.from.id] === "/start"  && !userClass[msg.from.id]){
         let replyMarkup = bot.keyboard([
             ["Назад"],
         ], {resize: true});
