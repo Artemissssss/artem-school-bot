@@ -477,7 +477,7 @@ bot.on('*', async msg => {
                     for(let i = 0; i< result.length;i++){
                         let joinId =nanoid()
                         userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userAction[msg.from.id]]
-                        arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: joinId})],...arr]
+                        arr = [[bot.inlineButton(`${result[i].nameC} ${result[i].role ? "вч" : "уч"}`, {callback: joinId})],...arr]
                     };
                     return arr;
                 };
@@ -553,7 +553,7 @@ if(text === "Написати учаснику"){
                     for(let i = 0; i< result.length;i++){
                         let joinId =nanoid()
                         userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userAction[msg.from.id]]
-                        arr = [[bot.inlineButton(`${result[i].nameC}`, {callback: joinId})],...arr]
+                        arr = [[bot.inlineButton(`${result[i].nameC} ${result[i].role ? "вч" : "уч"}`, {callback: joinId})],...arr]
                     };
                     return arr;
                 };
@@ -761,6 +761,11 @@ if(text === "Написати учаснику"){
     }
 
 }
+
+if(text === "Журнал"){
+    return bot.sendMessage(msg.from.id, "")
+}
+
 if(text === "Це всі файли уроку"){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
