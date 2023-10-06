@@ -1677,7 +1677,13 @@ bot.on(/^\/reset (.+)$/, async (msg, props) =>{
     lastUserMessage[msg.from.id] = 'someText';
     userAction[msg.from.id] = undefined;
     userChat[msg.from.id] = undefined;
-
+    let replyMarkup = bot.keyboard([
+        ["Журнал ❌","Статистика❌","Учасники"],
+        ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+        ["Матеріали","Cтворення матеріалу","Д/з", "Задати д/з"],
+        ["Файли", "Завантаження файла","Події","Створення події"],
+        ["Написати учаснику","Зробити оголошення","Класи"]
+    ], {resize: true});
     if(userStatus[msg.from.id]){
         return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
     }else if(userStatus[msg.from.id] === 0){
