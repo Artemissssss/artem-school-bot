@@ -390,7 +390,7 @@ bot.on('*', async msg => {
             ], {resize: true});
             return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
         }
-    }else if(text === "Приєднатися в клас, як учень" && lastUserMessage[msg.from.id] === "/start"){
+    }else if(text === "Приєднатися в клас, як учень" && lastUserMessage[msg.from.id] === "/start"  && userClass[msg.from.id]){
         let replyMarkup = bot.keyboard([
             ["Назад"],
         ], {resize: true});
@@ -415,7 +415,14 @@ bot.on('*', async msg => {
                 console.log(result)
                 if(result[0]){
                     const coll2 = client.db('artem-school').collection('users');
-                    const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: `${result[0]._id}`})
+                    const filter = {classId: msg.text.split(" ")[1]};
+                    const cursor = coll.find(filter);
+                    const result = await cursor.toArray();
+                    if(result[0]?.role !==0){
+                        const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: `${result[0]._id}`})
+                    }else{
+                        return bot.sendMessage(msg.from.id, "Ви уже є в цьому класі")
+                    }
                      await client.close();
                      lastUserMessage[msg.from.id] = text;
                      userStatus[msg.from.id] = 0;
@@ -425,7 +432,7 @@ bot.on('*', async msg => {
                     await client.close();
                     return await bot.sendMessage(msg.from.id, `Ви вели неправильний id класу`);
                 }  
-    }else if(text === "Приєднатися в клас, як вчитель" && lastUserMessage[msg.from.id] === "/start"){
+    }else if(text === "Приєднатися в клас, як вчитель" && lastUserMessage[msg.from.id] === "/start"  && userClass[msg.from.id]){
         let replyMarkup = bot.keyboard([
             ["Назад"],
         ], {resize: true});
@@ -1219,7 +1226,7 @@ bot.on('/start', async msg => {
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
     ], {resize: true});
-if(msg.text.split(" ")[1]){
+if(msg.text.split(" ")[1] && !userClass[msg.from.id]){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
@@ -1238,7 +1245,14 @@ if(msg.text.split(" ")[1]){
                     ["Написати учаснику","Класи"]
                 ], {resize: true});
                 const coll2 = client.db('artem-school').collection('users');
-                const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: `${result[0]._id}`})
+                const filter = {classId: msg.text.split(" ")[1]};
+                        const cursor = coll.find(filter);
+                        const result = await cursor.toArray();
+                        if(result[0]?.role !==0){
+                            const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: `${result[0]._id}`})
+                        }else{
+                            return bot.sendMessage(msg.from.id, "Ви уже є в цьому класі")
+                        }
                  await client.close();
                  lastUserMessage[msg.from.id] = msg.text;
                  userStatus[msg.from.id] = 0;
@@ -1699,7 +1713,7 @@ bot.on(/^\/reset (.+)$/, async (msg, props) =>{
         ], {resize: true});
         return  bot.sendMessage(msg.from.id, `Ви повернулися в головне меню`, {replyMarkup});
     }
-      
+    return bot.sendMessage(msg.from.id, `Очищено`);
 })
 
 export default bot
