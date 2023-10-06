@@ -1006,7 +1006,7 @@ if(userStatus[msg.from.id]){
                 const events = {events : [...result1[0].events, userAction[msg.from.id]]}
                 console.log(result1)
                 await coll1.updateOne(
-                    {_id: new ObjectId(result1[0]._id)},
+                    {_id: result1[0]._id},
                     {
                       $set: { ...events},
                       $currentDate: { lastModified: true }
