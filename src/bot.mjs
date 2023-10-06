@@ -477,7 +477,7 @@ bot.on('*', async msg => {
                     for(let i = 0; i< result.length;i++){
                         let joinId =nanoid()
                         userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userAction[msg.from.id]]
-                        arr = [[bot.inlineButton(`${result[i].nameC} ${result[i].role ? "вч" : "уч"}`, {callback: joinId})],...arr]
+                        arr = [[bot.inlineButton(`${result[i].nameC} ${result[i].role ? "(вч)" : ""}`, {callback: joinId})],...arr]
                     };
                     return arr;
                 };
@@ -553,7 +553,7 @@ if(text === "Написати учаснику"){
                     for(let i = 0; i< result.length;i++){
                         let joinId =nanoid()
                         userAction[msg.from.id] = [{name:result[i].nameC,id:result[i].classId, role:result[i].role, joinId:joinId},...userAction[msg.from.id]]
-                        arr = [[bot.inlineButton(`${result[i].nameC} ${result[i].role ? "вч" : "уч"}`, {callback: joinId})],...arr]
+                        arr = [[bot.inlineButton(`${result[i].nameC} ${result[i].role ? "(вч)" : ""}`, {callback: joinId})],...arr]
                     };
                     return arr;
                 };
