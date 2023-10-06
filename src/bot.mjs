@@ -1625,7 +1625,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
                 ["Файли", "Завантаження файла","Події","Створення події"],
                 ["Написати учаснику","Зробити оголошення","Класи"]
             ], {resize: true});
-            bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`,{replyMarkup})
+            bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}, як вчитель`,{replyMarkup})
         }else{
             let replyMarkup = bot.keyboard([
                 ["Щоденик ❌","Події","Учасники"],
@@ -1634,7 +1634,7 @@ if(lastUserMessage[msg.from.id] === "Написати учаснику"){
                 ["Матеріали", "Події"],
                 ["Написати учаснику","Класи"]
             ], {resize: true});
-            bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}`,{replyMarkup})
+            bot.sendMessage(msg.from.id,`Ви успішно увійшли в кімнату ${newArr[0].name}, як учень`,{replyMarkup})
         }
 
     }else if(userAction[msg.from.id]?.typeHm){
