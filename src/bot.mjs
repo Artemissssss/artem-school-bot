@@ -9,7 +9,7 @@ import moment from 'moment-timezone';
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['floodProtection'],
 pluginConfig: {
     floodProtection: {
-        interval: 3,
+        interval: 2,
         message: 'Занадто багато повідомлень'
     }
 }})
@@ -1384,7 +1384,10 @@ if(msg.text.split(" ")[1]){
 
 bot.on('callbackQuery', async msg => {
     console.log(msg.data)
-    if(lastUserMessage[msg.from.id] === "Розклад" || lastUserMessage[msg.from.id] ===  "Файли уроку" || lastUserMessage[msg.from.id] === "Завантаження файлів для уроку"){
+    if(msg.data ==="Архів днів" || msg.data ==="Архів днів файли"){
+        lastUserMessage[msg.from.id] = "Архів днів" === msg.data ? "Архів днів": "Архів днів файли";
+        bot.sendMessage(msg.from.id, "Напишіть дату бажанного дня");
+    }else if(lastUserMessage[msg.from.id] === "Розклад" || lastUserMessage[msg.from.id] ===  "Файли уроку" || lastUserMessage[msg.from.id] === "Завантаження файлів для уроку"){
             userAction[msg.from.id] = {week:parseInt(msg.data)};
             if(lastUserMessage[msg.from.id] === "Розклад"){
                 lastUserMessage[msg.from.id] = "РозкладТиждень";
@@ -1402,9 +1405,6 @@ bot.on('callbackQuery', async msg => {
         };
         let replyMarkup = bot.inlineKeyboard(arrBtn());
         bot.sendMessage(msg.from.id, `Виберіть навчальний день:`, {replyMarkup})
-    }else if(msg.data ==="Архів днів" || msg.data ==="Архів днів файли"){
-        lastUserMessage[msg.from.id] = "Архів днів" === msg.data ? "Архів днів": "Архів днів файли";
-        bot.sendMessage(msg.from.id, "Напишіть дату бажанного дня");
     }else if(lastUserMessage[msg.from.id] === "РозкладТиждень" || lastUserMessage[msg.from.id] ===  "Файли урокуТа" || lastUserMessage[msg.from.id] === "Завантаження файлів для урокуА"){
         if(msg.data === "Створити урок"){
             lastUserMessage[msg.from.id] = "РозкладТижденьЗадати";
