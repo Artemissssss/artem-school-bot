@@ -1064,9 +1064,13 @@ if(userStatus[msg.from.id]){
         userAction[msg.from.id] = {id:nanoid(),text:text,date:"", time:"",who:""}
         return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id] = {...userAction[msg.from.id], date:text};
-        console.log(userAction[msg.from.id])
-        return bot.sendMessage(msg.chat.id, 'Надішліть час події у форматі гг:хх');
+       if(isValidDate(text)){
+           userAction[msg.from.id] = {...userAction[msg.from.id], date:text};
+           console.log(userAction[msg.from.id])
+           return bot.sendMessage(msg.chat.id, 'Надішліть час події у форматі гг:хх');
+       }else{
+        return bot.sendMessage(msg.from.id, "Напишіть валідну дату")
+       }
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
         userAction[msg.from.id] = {...userAction[msg.from.id], time:text};
         return bot.sendMessage(msg.chat.id, 'Надішліть для кого призначена ця подія у довільному форматі');
