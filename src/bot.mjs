@@ -9,7 +9,7 @@ import moment from 'moment-timezone';
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['floodProtection'],
 pluginConfig: {
     floodProtection: {
-        interval: 2,
+        interval: 1,
         message: 'Занадто багато повідомлень'
     }
 }})
@@ -911,7 +911,7 @@ if(lastUserMessage[msg.from.id] === "Архів днів" || lastUserMessage[msg
             }else{
                 return bot.sendMessage(msg.from.id, "Нічого немає")
             }
-}else{
+}else if(lastUserMessage[msg.from.id] === "Архів днів" || lastUserMessage[msg.from.id] === "Архів днів файли" && !isValidDate(text)){
     return bot.sendMessage(msg.from.id, "Ведіть правильну дату")
 }
 if(text === "Завантаження файлів для уроку"){
