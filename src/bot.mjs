@@ -907,9 +907,9 @@ if(lastUserMessage[msg.from.id] === "Архів днів" || lastUserMessage[msg
                 };
                 lastUserMessage[msg.from.id] = lastUserMessage[msg.from.id] === "Архів днів файли" ? "Файли урокуТ": "dayChoose";
                 let replyMarkup = bot.inlineKeyboard(arrBtn());
-                await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
+                return bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
             }else{
-                bot.sendMessage(msg.from.id, "Нічого немає")
+                return bot.sendMessage(msg.from.id, "Нічого немає")
             }
 }else{
     return bot.sendMessage(msg.from.id, "Ведіть правильну дату")
