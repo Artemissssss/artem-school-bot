@@ -1402,7 +1402,7 @@ bot.on('callbackQuery', async msg => {
         };
         let replyMarkup = bot.inlineKeyboard(arrBtn());
         bot.sendMessage(msg.from.id, `Виберіть навчальний день:`, {replyMarkup})
-    }else if(mag.data ==="Архів днів" || msg.data ==="Архів днів файли"){
+    }else if(msg.data ==="Архів днів" || msg.data ==="Архів днів файли"){
         lastUserMessage[msg.from.id] = "Архів днів" === msg.data ? "Архів днів": "Архів днів файли";
         bot.sendMessage(msg.from.id, "Напишіть дату бажанного дня");
     }else if(lastUserMessage[msg.from.id] === "РозкладТиждень" || lastUserMessage[msg.from.id] ===  "Файли урокуТа" || lastUserMessage[msg.from.id] === "Завантаження файлів для урокуА"){
