@@ -19,6 +19,40 @@ let userClass = {};
 let userChat = {};
 let userAction = {};
 
+function isValidDate(dateString) {
+    // Перевірка формату дати
+    var regex = /^\d{2}\.\d{2}\.\d{4}$/;
+    if(!regex.test(dateString))
+        return false;
+
+    // Розбиття дати на частини
+    var parts = dateString.split(".");
+    var day = parseInt(parts[0], 10);
+    var month = parseInt(parts[1], 10);
+    var year = parseInt(parts[2], 10);
+
+    // Перевірка року
+    if(year < 1000 || year > 3000 || month == 0 || month > 12)
+        return false;
+
+    var monthLength = [ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+
+    // Перевірка високосного року
+    if(year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        monthLength[1] = 29;
+
+    // Перевірка дня
+    if(!(day > 0 && day <= monthLength[month - 1]))
+        return false;
+
+    // Перевірка дати на "не раніше ніж"
+    var inputDate = new Date(year, month - 1, day);
+    var minDate = new Date(2023, 8, 1); // Дата у форматі мм.дд.рррр
+
+    return inputDate >= minDate;
+}
+
+
 function getWeeks() {
     const weeks = [];
     const now = moment().tz("Europe/Kiev");
@@ -831,7 +865,7 @@ if(text === "Розклад"){
         for(let i = 0; i< getWeeks().length;i++){
             arr = [[bot.inlineButton(`${getWeeks()[i][4]} - ${getWeeks()[i][0]}`, {callback: `${i}`})],...arr]
         };
-        return arr;
+        return [[bot.inlineButton(`Архів днів`, {callback: `Архів днів`})],...arr];
     };
     let replyMarkup = bot.inlineKeyboard(arrBtn());
     return bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
@@ -843,10 +877,42 @@ if(text === "Файли уроку"){
         for(let i = 0; i< getWeeks().length;i++){
             arr = [[bot.inlineButton(`${getWeeks()[i][4]} - ${getWeeks()[i][0]}`, {callback: `${i}`})],...arr]
         };
-        return arr;
+        return [[bot.inlineButton(`Архів днів файли`, {callback: `Архів днів файли`})],...arr];
     };
     let replyMarkup = bot.inlineKeyboard(arrBtn());
     return bot.sendMessage(msg.from.id, `Виберіть навчальний тиждень:`, {replyMarkup})
+}
+if(lastUserMessage[msg.from.id] === "Архів днів" || lastUserMessage[msg.from.id] === "Архів днів файли" && isValidDate(text)){
+    const client = await MongoClient.connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    const coll = client.db('artem-school').collection('lessons');
+            const filter = {classId:userClass[msg.from.id],day:text};
+            const cursor = coll.find(filter);
+            const result = await cursor.toArray();
+            userAction[msg.from.id] = result;
+            await client.close();
+            if(result.length){
+                let newArr = [];
+                for(let i = 0; i< sortTimes(result).length;i++){
+                    newArr =[...newArr,result[i].time]
+                };
+                let arrBtn = () => {
+                    let arr = [];
+                    for(let i = 0; i< sortTimes(result).length;i++){
+                        arr = [[bot.inlineButton(`${sortTimes(newArr)[i]}`, {callback: sortTimes(newArr)[i]})],...arr]
+                    };
+                    return arr;
+                };
+                lastUserMessage[msg.from.id] = lastUserMessage[msg.from.id] === "Архів днів файли" ? "Файли урокуТ": "dayChoose";
+                let replyMarkup = bot.inlineKeyboard(arrBtn());
+                await bot.sendMessage(msg.from.id, "Виберіть годину:", {replyMarkup})
+            }else{
+                bot.sendMessage(msg.from.id, "Нічого немає")
+            }
+}else{
+    return bot.sendMessage(msg.from.id, "Ведіть правильну дату")
 }
 if(text === "Завантаження файлів для уроку"){
     lastUserMessage[msg.from.id] = "Завантаження файлів для уроку";
@@ -1336,6 +1402,9 @@ bot.on('callbackQuery', async msg => {
         };
         let replyMarkup = bot.inlineKeyboard(arrBtn());
         bot.sendMessage(msg.from.id, `Виберіть навчальний день:`, {replyMarkup})
+    }else if(mag.data ==="Архів днів" || msg.data ==="Архів днів файли"){
+        lastUserMessage[msg.from.id] = "Архів днів" === msg.data ? "Архів днів": "Архів днів файли";
+        bot.sendMessage(msg.from.id, "Напишіть дату бажанного дня");
     }else if(lastUserMessage[msg.from.id] === "РозкладТиждень" || lastUserMessage[msg.from.id] ===  "Файли урокуТа" || lastUserMessage[msg.from.id] === "Завантаження файлів для урокуА"){
         if(msg.data === "Створити урок"){
             lastUserMessage[msg.from.id] = "РозкладТижденьЗадати";
