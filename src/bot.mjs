@@ -396,7 +396,7 @@ bot.on('*', async msg => {
         ], {resize: true});
         lastUserMessage[msg.from.id] = text;
         return  bot.sendMessage(msg.from.id, `Надішліть id учня`, {replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень" && userClass[msg.from.id] !== text){
+    }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як учень"){
         let replyMarkup = bot.keyboard([
             ["Щоденик ❌","Події","Учасники"],
             ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
@@ -438,7 +438,7 @@ bot.on('*', async msg => {
         ], {resize: true});
         lastUserMessage[msg.from.id] = text;
         return  bot.sendMessage(msg.from.id, `Надішліть id вчителя `, {replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель" && userClass[msg.from.id] !== text){
+    }else if(lastUserMessage[msg.from.id] === "Приєднатися в клас, як вчитель"){
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -1226,7 +1226,7 @@ bot.on('/start', async msg => {
         ['Створити клас'],
         ['Приєднатися в клас, як учень', 'Приєднатися в клас, як вчитель']
     ], {resize: true});
-if(userClass[msg.from.id] !== msg.text.split(" ")[1]){
+if(msg.text.split(" ")[1]){
     const client = await MongoClient.connect(
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
