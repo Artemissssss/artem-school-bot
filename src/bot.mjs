@@ -6,7 +6,13 @@ import { nanoid } from 'nanoid'
 import moment from 'moment-timezone';
 
 
-const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN})
+const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['floodProtection'],
+pluginConfig: {
+    floodProtection: {
+        interval: 2,
+        message: 'Too many messages, relax!'
+    }
+}})
 let lastUserMessage = {};
 let userStatus = {};
 let userClass = {};
