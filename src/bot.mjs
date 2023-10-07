@@ -9,7 +9,7 @@ import moment from 'moment-timezone';
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['floodProtection'],
 pluginConfig: {
     floodProtection: {
-        interval: 2,
+        interval: 1,
         message: 'Too many messages, relax!'
     }
 }})
