@@ -9,8 +9,8 @@ import moment from 'moment-timezone';
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['floodProtection'],
 pluginConfig: {
     floodProtection: {
-        interval: 1,
-        message: 'Too many messages, relax!'
+        interval: 3,
+        message: 'Занадто багато повідомлень'
     }
 }})
 let lastUserMessage = {};
