@@ -1325,7 +1325,7 @@ if(msg.text.split(" ")[1]){
                         const cursor = coll.find(filter);
                         const result1 = await cursor.toArray();
                         if(result1[0]?.role !== 0){
-                            const result2 = await coll2.insertOne({nameC: result[0].nameC, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: `${result[0]._id}`})
+                            const result2 = await coll2.insertOne({nameC: result[0].name, name:msg.from.first_name, username:msg.from.username, id:msg.from.id, role:0, classId: `${result[0]._id}`})
                         }else{
                             return bot.sendMessage(msg.from.id, "Ви уже є в цьому класі")
                         }
