@@ -556,21 +556,18 @@ if(text === "Написати учаснику"){
         `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
         { useNewUrlParser: true, useUnifiedTopology: true }
     );
-    const coll1 = client.db('artem-school').collection('classrooms');
-    const filter1 = {_id: userClass[msg.from.id]};
-    const cursor1 = coll1.find(filter1);
-    const result1 = await cursor1.toArray();
+    
 
     const coll = client.db('artem-school').collection('users');
-    const filter = {classId: result1[0].idS};
-    const filter2 = {classId: result1[0].idT};
+    const filter = {classId: userClass[msg.from.id]};
+    
     const cursor = coll.find(filter);
-    const cursor2 = coll.find(filter2);
+    
     const result = await cursor.toArray();
-    const result2 = await cursor2.toArray();
+    
     await client.close();
     
-    let conArr = [...result2,...result];
+    let conArr = [...result];
         let arr = [];
         userAction[msg.from.id] = {users:[...conArr]};
         lastUserMessage[msg.from.id] = "Написати учаснику";
