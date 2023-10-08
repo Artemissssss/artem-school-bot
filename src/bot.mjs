@@ -682,7 +682,7 @@ if(text === "Написати учаснику"){
                 const files = {files : [...result1[0].files, {chatID:msg.chat.id, msgID:msg.message_id}]}
                 console.log(result1)
                 await coll1.updateOne(
-                    {_id: new ObjectId(result1[0]._id)},
+                    {_id: result1[0]._id},
                     {
                       $set: { ...files},
                       $currentDate: { lastModified: true }
@@ -1145,7 +1145,7 @@ if(userStatus[msg.from.id]){
         console.log(result1)
                 const materials = {materials : [...result1[0].materials, {chatID:msg.chat.id, msgID:msg.message_id}]}
                 await coll1.updateOne(
-                    {_id: new ObjectId(result1[0]._id)},
+                    {_id: result1[0]._id},
                     {
                       $set: { ...materials},
                       $currentDate: { lastModified: true }
@@ -1216,6 +1216,15 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
         return null;
     }
 }else if(userStatus[msg.from.id] === 0){
+    if(text === "Запросити подію"){
+        lastUserMessage[msg.from.id] = "Запросити подію";
+        let replyMarkup = [[
+            bot.inlineButton("Запропонувати подію", {callback: `подію`}),
+        ],[
+            bot.inlineButton("Запропунувати в розкладі", {callback: `в розкладі`}),
+        ]]
+        return bot.sendMessage(msg.from.id, "Ви хочете запропонувати подію чи створити подію в рокзаді?:",{replyMarkup})
+    }
     if(text === "Здати д/з"){
         // let replyMarkup = bot.keyboard([
         //     ["Назад"],
