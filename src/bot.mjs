@@ -235,7 +235,6 @@ bot.on('/delS', async msg => {
 // }
 // return null 
 // })
-
 bot.on('*', async msg => {
     console.log(msg)
     const text = msg.text
@@ -585,6 +584,7 @@ if(text === "Написати учаснику"){
     return bot.sendMessage(msg.chat.id,`Виберіть кому ви хочете написати:`, {replyMarkup});
 
 }
+
     if(text === "Класи"){
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -1213,16 +1213,45 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
             lastUserMessage[msg.from.id] = "textФайл";
     return await bot.sendMessage(msg.chat.id, 'Подію видалено');
 }else{
+    if(!text){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
+
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = {_id: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+                const files = {files : [...result1[0].files, {chatID:msg.chat.id, msgID:msg.message_id}]}
+                console.log(result1)
+                await coll1.updateOne(
+                    {_id: result1[0]._id},
+                    {
+                      $set: { ...files},
+                      $currentDate: { lastModified: true }
+                    }
+                 )
+                await client.close();
+                lastUserMessage[msg.from.id] = "textФайл";
+        return await bot.sendMessage(msg.chat.id, 'Файл додано');
+    }else{
         return null;
     }
+}
 }else if(userStatus[msg.from.id] === 0){
     if(text === "Запросити подію"){
         lastUserMessage[msg.from.id] = "Запросити подію";
-        let replyMarkup = [[
+        let replyMarkup = bot.inlineKeyboard([[
             bot.inlineButton("Запропонувати подію", {callback: `подію`}),
         ],[
             bot.inlineButton("Запропунувати в розкладі", {callback: `в розкладі`}),
-        ]]
+        ]]);
         return bot.sendMessage(msg.from.id, "Ви хочете запропонувати подію чи створити подію в рокзаді?:",{replyMarkup})
     }
     if(text === "Здати д/з"){
@@ -1299,7 +1328,36 @@ console.log(result1[0])
         console.log(userAction[msg.from.id])
         return null;
     }else{
-        return null;
+        if(!text){
+            const client = await MongoClient.connect(
+                `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                { useNewUrlParser: true, useUnifiedTopology: true }
+            );
+            // const coll = client.db('artem-school').collection('users');
+            // const filter = {id: msg.from.id};
+            // const cursor = coll.find(filter);
+            // const result = await cursor.toArray();
+    
+    
+            const coll1 = client.db('artem-school').collection('classrooms');
+            const filter1 = {_id: userClass[msg.from.id]};
+            const cursor1 = coll1.find(filter1);
+            const result1 = await cursor1.toArray();
+                    const files = {files : [...result1[0].files, {chatID:msg.chat.id, msgID:msg.message_id}]}
+                    console.log(result1)
+                    await coll1.updateOne(
+                        {_id: result1[0]._id},
+                        {
+                          $set: { ...files},
+                          $currentDate: { lastModified: true }
+                        }
+                     )
+                    await client.close();
+                    lastUserMessage[msg.from.id] = "textФайл";
+            return await bot.sendMessage(msg.chat.id, 'Файл додано');
+        }else{
+            return null;
+        }
     }
 }
 });
@@ -1397,6 +1455,13 @@ if(msg.text.split(" ")[1]){
 
 bot.on('callbackQuery', async msg => {
     console.log(msg.data)
+
+    if(msg.data === "подію"){
+
+    }else if(msg.data === "в розкладі"){
+
+    }
+
     if(msg.data ==="Архів днів" || msg.data ==="Архів днів файли"){
         lastUserMessage[msg.from.id] = "Архів днів" === msg.data ? "Архів днів": "Архів днів файли";
         bot.sendMessage(msg.from.id, "Напишіть дату бажанного дня");
