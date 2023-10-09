@@ -1840,7 +1840,7 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
       
 })
 
-bot.on(/^\/reset (.+)$/, async (msg, props) =>{
+bot.on(["/reset"], async (msg, props) =>{
     console.log(userStatus[msg.from.id])
     lastUserMessage[msg.from.id] = 'someText';
     userAction[msg.from.id] = undefined;
