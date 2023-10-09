@@ -9,7 +9,7 @@ import moment from 'moment-timezone';
 const bot = new TeleBot( {token: process.env.TELEGRAM_BOT_TOKEN,usePlugins: ['floodProtection'],
 pluginConfig: {
     floodProtection: {
-        interval: 1,
+        interval: 0.5,
         message: 'Занадто багато повідомлень'
     }
 }})
@@ -1841,7 +1841,6 @@ bot.on(/^\/gpt (.+)$/, async (msg, props) =>{
 })
 
 bot.on(["/reset"], async (msg, props) =>{
-    console.log(userStatus[msg.from.id])
     lastUserMessage[msg.from.id] = 'someText';
     userAction[msg.from.id] = undefined;
     userChat[msg.from.id] = undefined;
