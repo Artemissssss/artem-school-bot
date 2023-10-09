@@ -1210,7 +1210,7 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
             lastUserMessage[msg.from.id] = "textФайл";
     return await bot.sendMessage(msg.chat.id, 'Подію видалено');
 }else{
-    if(!text){
+    if(!text && !userAction[msg.from.id] && !userChat[msg.from.id] && lastUserMessage[msg.from.id] !== "Завантаження файлів для урокуГА"){
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
             { useNewUrlParser: true, useUnifiedTopology: true }
@@ -1325,7 +1325,7 @@ console.log(result1[0])
         console.log(userAction[msg.from.id])
         return null;
     }else{
-        if(!text){
+        if(!text && !userAction[msg.from.id] && !userChat[msg.from.id] && lastUserMessage[msg.from.id] !== "Завантаження файлів для урокуГА"){
             const client = await MongoClient.connect(
                 `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
                 { useNewUrlParser: true, useUnifiedTopology: true }
