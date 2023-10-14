@@ -1458,7 +1458,7 @@ bot.on('callbackQuery', async msg => {
     if(msg.data === "подію"){
         lastUserMessage[msg.from.id] = "Створення події";
         userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
-        bot.sendMessage(msg.chat.id, 'Надішліть текст події',{replyMarkup});
+        bot.sendMessage(msg.from.id, 'Надішліть текст події',{replyMarkup});
     }else if(msg.data === "в розкладі"){
 
     }
