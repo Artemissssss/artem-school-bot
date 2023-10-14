@@ -946,6 +946,63 @@ if(text === "Д/з"){
     lastUserMessage[msg.from.id] = "Д/з";
     return bot.sendMessage(msg.chat.id, `Виберіть домашнє завдання:`, {replyMarkup});
 }
+if(lastUserMessage[msg.from.id] === "Створення події" && !userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
+    userAction[msg.from.id] = {id:nanoid(),text:text,date:"", time:"",who:""}
+    return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
+}else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
+   if(isValidDate(text)){
+       userAction[msg.from.id] = {...userAction[msg.from.id], date:text};
+       console.log(userAction[msg.from.id])
+       return bot.sendMessage(msg.chat.id, 'Надішліть час події у форматі гг:хх');
+   }else{
+    return bot.sendMessage(msg.from.id, "Напишіть валідну дату")
+   }
+}else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
+    userAction[msg.from.id] = {...userAction[msg.from.id], time:text};
+    return bot.sendMessage(msg.chat.id, 'Надішліть для кого призначена ця подія у довільному форматі');
+}else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && userAction[msg.from.id].time && !userAction[msg.from.id].who){
+    userAction[msg.from.id] = {...userAction[msg.from.id],who:text, status:userStatus[msg.from.id] ? false : true};
+    
+    console.log(lastUserMessage[msg.from.id])
+    const client = await MongoClient.connect(
+        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+        { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    // const coll = client.db('artem-school').collection('users');
+    // const filter = {id: msg.from.id};
+    // const cursor = coll.find(filter);
+    // const result = await cursor.toArray();
+
+
+    const coll1 = client.db('artem-school').collection('classrooms');
+    const filter1 = {_id: userClass[msg.from.id]};
+    const cursor1 = coll1.find(filter1);
+    const result1 = await cursor1.toArray();
+            const events = {events : [...result1[0].events, userAction[msg.from.id]]}
+            console.log(result1)
+            await coll1.updateOne(
+                {_id: result1[0]._id},
+                {
+                  $set: { ...events},
+                  $currentDate: { lastModified: true }
+                }
+             )
+            await client.close();
+            lastUserMessage[msg.from.id] = "textФайл";
+            userAction[msg.from.id] = undefined;
+            if(userStatus[msg.from.id]){
+                return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
+            }else if(userStatus[msg.from.id] === 0){
+                let replyMarkup = bot.keyboard([
+                    ["Щоденик","Події","Учасники"],
+                    ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
+                    ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
+                    ["Матеріали", "Запросити подію"],
+                    ["Написати учаснику","Класи"]
+                ], {resize: true});
+                return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
+            }
+}
 
 if(userStatus[msg.from.id]){
     if(lastUserMessage[msg.from.id] === "РозкладТижденьЗадати"){
@@ -1059,62 +1116,6 @@ if(userStatus[msg.from.id]){
         lastUserMessage[msg.from.id] = text;
         userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
         return bot.sendMessage(msg.chat.id, 'Надішліть текст події',{replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Створення події" && !userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id] = {id:nanoid(),text:text,date:"", time:"",who:""}
-        return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
-    }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
-       if(isValidDate(text)){
-           userAction[msg.from.id] = {...userAction[msg.from.id], date:text};
-           console.log(userAction[msg.from.id])
-           return bot.sendMessage(msg.chat.id, 'Надішліть час події у форматі гг:хх');
-       }else{
-        return bot.sendMessage(msg.from.id, "Напишіть валідну дату")
-       }
-    }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id] = {...userAction[msg.from.id], time:text};
-        return bot.sendMessage(msg.chat.id, 'Надішліть для кого призначена ця подія у довільному форматі');
-    }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id] = {...userAction[msg.from.id],who:text, status:userStatus[msg.from.id] ? false : true};
-        
-        console.log(lastUserMessage[msg.from.id])
-        const client = await MongoClient.connect(
-            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-            { useNewUrlParser: true, useUnifiedTopology: true }
-        );
-        // const coll = client.db('artem-school').collection('users');
-        // const filter = {id: msg.from.id};
-        // const cursor = coll.find(filter);
-        // const result = await cursor.toArray();
-
-
-        const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = {_id: userClass[msg.from.id]};
-        const cursor1 = coll1.find(filter1);
-        const result1 = await cursor1.toArray();
-                const events = {events : [...result1[0].events, userAction[msg.from.id]]}
-                console.log(result1)
-                await coll1.updateOne(
-                    {_id: result1[0]._id},
-                    {
-                      $set: { ...events},
-                      $currentDate: { lastModified: true }
-                    }
-                 )
-                await client.close();
-                lastUserMessage[msg.from.id] = "textФайл";
-                userAction[msg.from.id] = undefined;
-                if(userStatus[msg.from.id]){
-                    return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
-                }else if(userStatus[msg.from.id] === 0){
-                    let replyMarkup = bot.keyboard([
-                        ["Щоденик","Події","Учасники"],
-                        ["Розклад","Файли уроку", "Завантаження файлів для уроку"],
-                        ["Файли", "Завантаження файла","Д/з", "Здати д/з"],
-                        ["Матеріали", "Запросити подію"],
-                        ["Написати учаснику","Класи"]
-                    ], {resize: true});
-                    return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
-                }
     }
 
     if(text === "Cтворення матеріалу" && userAction[msg.from.id] === undefined){
