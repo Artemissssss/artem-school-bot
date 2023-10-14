@@ -1059,7 +1059,7 @@ if(userStatus[msg.from.id]){
         lastUserMessage[msg.from.id] = text;
         userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
         return bot.sendMessage(msg.chat.id, 'Надішліть текст події',{replyMarkup});
-    }else if(lastUserMessage[msg.from.id] === "Створення події" && lastUserMessage[msg.from.id] === "Створення події" && !userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
+    }else if(lastUserMessage[msg.from.id] === "Створення події" && !userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
         userAction[msg.from.id] = {id:nanoid(),text:text,date:"", time:"",who:""}
         return bot.sendMessage(msg.chat.id, 'Надішліть дату події у форматі дд.мм.рррр');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && !userAction[msg.from.id].date && !userAction[msg.from.id].time && !userAction[msg.from.id].who){
@@ -1462,6 +1462,7 @@ bot.on('callbackQuery', async msg => {
         lastUserMessage[msg.from.id] = "Створення події";
         userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
         bot.sendMessage(msg.from.id, 'Надішліть текст події',{replyMarkup});
+        return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
     }else if(msg.data === "в розкладі"){
 
     }
