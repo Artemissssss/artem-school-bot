@@ -1456,6 +1456,9 @@ bot.on('callbackQuery', async msg => {
     console.log(msg.data)
 
     if(msg.data === "подію"){
+        let replyMarkup = bot.keyboard([
+            ["Назад"],
+        ], {resize: true});
         lastUserMessage[msg.from.id] = "Створення події";
         userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
         bot.sendMessage(msg.from.id, 'Надішліть текст події',{replyMarkup});
