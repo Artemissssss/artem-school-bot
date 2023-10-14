@@ -771,9 +771,11 @@ if(text === "Написати учаснику"){
             }else{
                 console.log(result1[0].events)
                 for(let i = 0; i<result1[0].events.length;i++){
-                    await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
-                    if(msg.chat.type ==="private" && userStatus[msg.from.id]){
-                        await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
+                    if(!result1[0]?.status){
+                        await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
+                        if(msg.chat.type ==="private" && userStatus[msg.from.id]){
+                            await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
+                        }
                     }
                 }
                 return bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
@@ -1072,7 +1074,7 @@ if(userStatus[msg.from.id]){
         userAction[msg.from.id] = {...userAction[msg.from.id], time:text};
         return bot.sendMessage(msg.chat.id, 'Надішліть для кого призначена ця подія у довільному форматі');
     }else if(lastUserMessage[msg.from.id] === "Створення події" && userAction[msg.from.id].text && userAction[msg.from.id].date && userAction[msg.from.id].time && !userAction[msg.from.id].who){
-        userAction[msg.from.id] = {...userAction[msg.from.id],who:text};
+        userAction[msg.from.id] = {...userAction[msg.from.id],who:text, status:userStatus[msg.from.id] ? false : true};
         
         console.log(lastUserMessage[msg.from.id])
         const client = await MongoClient.connect(
@@ -1454,7 +1456,9 @@ bot.on('callbackQuery', async msg => {
     console.log(msg.data)
 
     if(msg.data === "подію"){
-
+        lastUserMessage[msg.from.id] = "Створення події";
+        userAction[msg.from.id] = {id:nanoid(),text:"",date:"", time:"",who:""}
+        bot.sendMessage(msg.chat.id, 'Надішліть текст події',{replyMarkup});
     }else if(msg.data === "в розкладі"){
 
     }
