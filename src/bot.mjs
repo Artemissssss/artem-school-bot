@@ -987,10 +987,11 @@ if(lastUserMessage[msg.from.id] === "Створення події" && !userActi
                   $currentDate: { lastModified: true }
                 }
              )
-            await client.close();
+            
             lastUserMessage[msg.from.id] = "textФайл";
             userAction[msg.from.id] = undefined;
             if(userStatus[msg.from.id]){
+                await client.close();
                 return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
             }else if(userStatus[msg.from.id] === 0){
                 let replyMarkup = bot.keyboard([
@@ -1000,8 +1001,17 @@ if(lastUserMessage[msg.from.id] === "Створення події" && !userActi
                     ["Матеріали", "Запросити подію"],
                     ["Написати учаснику","Класи"]
                 ], {resize: true});
+                const coll = client.db('artem-school').collection('users');
+                const filter = {classId: userClass[msg.from.id],role:1};
+                const cursor = coll.find(filter);
+                const result = await cursor.toArray();
+                await client.close();
+                for(let i = 0; i<result.length;i++){
+                    await bot.sendMessage(result[i].id,`Учень ${msg.from.first_name} хоче створити подію`);
+                }
                 return await bot.sendMessage(msg.chat.id, 'Подія додана',{replyMarkup});
             }
+             await client.close();
 }
 
 if(userStatus[msg.from.id]){
