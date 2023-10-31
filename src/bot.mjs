@@ -743,47 +743,7 @@ if(text === "Написати учаснику"){
         }
     }
 
-    if(text === "Події" && userAction[msg.from.id] === undefined){
-        // let replyMarkup = bot.inlineKeyboard([
-        //     [
-        //         bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
-        //     ], [
-        //         bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
-        //     ]
-        // ]);
-        const client = await MongoClient.connect(
-            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
-            { useNewUrlParser: true, useUnifiedTopology: true }
-        );
-        // const coll = client.db('artem-school').collection('users');
-        // const filter = {id: msg.from.id};
-        // const cursor = coll.find(filter);
-        // const result = await cursor.toArray();
-
-        const coll1 = client.db('artem-school').collection('classrooms');
-        const filter1 = {_id: userClass[msg.from.id]};
-        const cursor1 = coll1.find(filter1);
-        const result1 = await cursor1.toArray();
-        await client.close();
-        if(result1[0]){
-            if(result1[0].events.length===0){
-                return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
-            }else{
-                console.log(result1[0].events)
-                for(let i = 0; i<result1[0].events.length;i++){
-                    if(!result1[0].events[i]?.status){
-                        await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
-                        if(msg.chat.type ==="private" && userStatus[msg.from.id]){
-                            await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
-                        }
-                    }
-                }
-                return bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
-            }
-        }else{
-            return bot.sendMessage(msg.chat.id, 'Error');
-        }
-    }
+   
     if(text === "Учасники" && userAction[msg.from.id] === undefined){
         // let replyMarkup = bot.inlineKeyboard([
         //     [
@@ -1015,6 +975,14 @@ if(lastUserMessage[msg.from.id] === "Створення події" && !userActi
 }
 
 if(userStatus[msg.from.id]){
+    if(text === "Події" && userAction[msg.from.id] === undefined){
+        let replyMarkup = bot.inlineKeyboard([[
+            bot.inlineButton("Запропонованні події", {callback: `Запропонованні події`}),
+        ],[
+            bot.inlineButton("Перегляд подій", {callback: `Перегляд подій`}),
+        ]]);
+       return bot.sendMessage(`Виберіть`,{replyMarkup})
+    }
     if(lastUserMessage[msg.from.id] === "РозкладТижденьЗадати"){
         userAction[msg.from.id] = {...userAction[msg.from.id], text:text};
         lastUserMessage[msg.from.id] = "РозкладТижденьЗадатиДату"
@@ -1255,6 +1223,47 @@ if (text === "Видалити" && msg.reply_to_message !== undefined && userAct
     }
 }
 }else if(userStatus[msg.from.id] === 0){
+    if(text === "Події" && userAction[msg.from.id] === undefined){
+        // let replyMarkup = bot.inlineKeyboard([
+        //     [
+        //         bot.inlineButton('Загрузити файл', {callback: "Загрузити файл"}),
+        //     ], [
+        //         bot.inlineButton('Отримати файли', {callback: "Отримати файли"})
+        //     ]
+        // ]);
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = {_id: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+        await client.close();
+        if(result1[0]){
+            if(result1[0].events.length===0){
+                return bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
+            }else{
+                console.log(result1[0].events)
+                for(let i = 0; i<result1[0].events.length;i++){
+                    if(!result1[0].events[i]?.status){
+                        await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
+                        if(msg.chat.type ==="private" && userStatus[msg.from.id]){
+                            await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
+                        }
+                    }
+                }
+                return bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
+            }
+        }else{
+            return bot.sendMessage(msg.chat.id, 'Error');
+        }
+    }
     if(text === "Запросити подію"){
         lastUserMessage[msg.from.id] = "Запросити подію";
         let replyMarkup = bot.inlineKeyboard([[
@@ -1465,7 +1474,164 @@ if(msg.text.split(" ")[1]){
 
 bot.on('callbackQuery', async msg => {
     console.log(msg.data)
+    if(userAction[msg.from.id]?.accept && userAction[msg.from.id]?.id){
+    if(msg.data ==="одобрити"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
+    
+    
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = {_id: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+                const events = {events : []}
+                for(let i = o; i<result1.length;i++){
+                    if(result1[i] !== userAction[msg.from.id].id){
+                        events.events = [...events.events, result1[i]]
+                    }else{
+                        events.events = [...events.events, {...result1[i],status:false}]
+                    }
+                }
+                console.log(result1)
+                await coll1.updateOne(
+                    {_id: result1[0]._id},
+                    {
+                      $set: { ...events},
+                      $currentDate: { lastModified: true }
+                    }
+                 )
+                
+                lastUserMessage[msg.from.id] = "textФайл";
+                userAction[msg.from.id] = undefined;
+                await client.close();
+                await bot.sendMessage("Подію одобрено")
+    }else if(msg.data ==="відхилити"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
+    
+    
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = {_id: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+                const events = {events : [...result1[0].events.filter(arr => arr.id !== userAction[msg.from.id].id)]}
+                console.log(result1)
+                await coll1.updateOne(
+                    {_id: result1[0]._id},
+                    {
+                      $set: { ...events},
+                      $currentDate: { lastModified: true }
+                    }
+                 )
+                
+                lastUserMessage[msg.from.id] = "textФайл";
+                userAction[msg.from.id] = undefined;
+                    await client.close();
+                await bot.sendMessage("Подію відхилено")
+    }
+    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+    }else if(userAction[msg.from.id]?.accept){
+        let replyMarkup = bot.inlineKeyboard([[
+            bot.inlineButton("Одобрити", {callback: `одобрити`}),
+        ],[
+            bot.inlineButton("Відхилити", {callback: `відхилити`}),
+        ]]);
+        userAction[msg.from.id] = {id:msg.data, ...userAction[msg.from.id]};
+        let newEvent = userAction[msg.from.id].filter(arr => arr.id === msg.data)
+        await bot.sendMessage(msg.chat.id, `${newEvent[0].text}\n\n\nО ${newEvent[0].date} ${newEvent[0].time}\n\nДля: ${newEvent[0].who}`);
+        await bot.sendMessage("Ви хочете одобрити подію чи відхилити",{replyMarkup})
+        return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+    }
+    if(msg.data === "Запропонованні події"){
+        // let replyMarkup = bot.inlineKeyboard([[
+        //     bot.inlineButton("Запропонованні події", {callback: `Запропонованні події`}),
+        // ],[
+        //     bot.inlineButton("Перегляд подій", {callback: `Перегляд подій`}),
+        // ]]);
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
 
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = {_id: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = (await cursor1.toArray()).filter(arr => arr.status);
+        await client.close();
+        if(result1[0]){
+            if(result1[0].events.length===0){
+                bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
+                return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+            }else{
+                userAction[msg.from.id] = {accept:true, data:result1}
+                let newArr = [];
+                for(let i = 0; i<result1.length;i++){
+                    newArr = [[
+                        bot.inlineButton(`${result1[i].text}`, {callback: result1[i].id}),
+                    ],...newArr]
+                }
+                let replyMarkup = bot.inlineKeyboard(newArr);
+                await bot.sendMessage("Виберіть подію:", {replyMarkup})
+                return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+            }
+        }else{
+            bot.sendMessage(msg.chat.id, 'Error');
+            return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+        }
+        return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+    }else if(msg.data === "Перегляд подій"){
+        const client = await MongoClient.connect(
+            `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+            { useNewUrlParser: true, useUnifiedTopology: true }
+        );
+        // const coll = client.db('artem-school').collection('users');
+        // const filter = {id: msg.from.id};
+        // const cursor = coll.find(filter);
+        // const result = await cursor.toArray();
+
+        const coll1 = client.db('artem-school').collection('classrooms');
+        const filter1 = {_id: userClass[msg.from.id]};
+        const cursor1 = coll1.find(filter1);
+        const result1 = await cursor1.toArray();
+        await client.close();
+        if(result1[0]){
+            if(result1[0].events.length===0){
+                bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
+                return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+            }else{
+                console.log(result1[0].events)
+                for(let i = 0; i<result1[0].events.length;i++){
+                    if(!result1[0].events[i]?.status){
+                        await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
+                        if(msg.chat.type ==="private" && userStatus[msg.from.id]){
+                            await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
+                        }
+                    }
+                }
+                bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
+                return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+            }
+        }else{
+            bot.sendMessage(msg.chat.id, 'Error');
+            return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+        }
+    }
     if(msg.data === "подію"){
         let replyMarkup = bot.keyboard([
             ["Назад"],
