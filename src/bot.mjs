@@ -977,9 +977,9 @@ if(lastUserMessage[msg.from.id] === "Створення події" && !userActi
 if(userStatus[msg.from.id]){
     if(text === "Події" && userAction[msg.from.id] === undefined){
         let replyMarkup = bot.inlineKeyboard([[
-            bot.inlineButton("Запропонованні події", {callback: `Запропонованні події`}),
+            bot.inlineButton("Запропонованні події", {callback: 'Запропонованні події'}),
         ],[
-            bot.inlineButton("Перегляд подій", {callback: `Перегляд подій`}),
+            bot.inlineButton("Перегляд подій", {callback: 'Перегляд подій'}),
         ]]);
        return bot.sendMessage(`Виберіть`,{replyMarkup})
     }
