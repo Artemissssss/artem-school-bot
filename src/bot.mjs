@@ -1626,8 +1626,8 @@ bot.on('callbackQuery', async msg => {
                         }
                     }
                 }
-                bot.sendMessage(msg.from.id, 'Це всі події в цьому класі');
-                return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+                await bot.sendMessage(msg.from.id, 'Це всі події в цьому класі');
+                return await bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
             }
         }else{
             bot.sendMessage(msg.chat.id, 'Error');
