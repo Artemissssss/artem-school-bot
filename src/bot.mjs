@@ -236,7 +236,7 @@ bot.on('/delS', async msg => {
 // return null 
 // })
 bot.on('*', async msg => {
-    console.log(msg)
+    console.log(msg.text === "Події",msg)
     const text = msg.text
     if (text?.indexOf("/gpt") === 0) return null;
     if (text?.indexOf("/reset") === 0) return null;
@@ -981,7 +981,7 @@ if(userStatus[msg.from.id]){
         ],[
             bot.inlineButton("Перегляд подій", {callback: 'Перегляд подій'}),
         ]]);
-       return bot.sendMessage(`Виберіть`,{replyMarkup})
+        return bot.sendMessage(`Виберіть`,{replyMarkup});
     }
     if(lastUserMessage[msg.from.id] === "РозкладТижденьЗадати"){
         userAction[msg.from.id] = {...userAction[msg.from.id], text:text};
@@ -1610,6 +1610,7 @@ bot.on('callbackQuery', async msg => {
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
         await client.close();
+        userAction[msg.from.id] = undefined;
         if(result1[0]){
             if(result1[0].events.length===0){
                 bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
