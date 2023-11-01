@@ -1491,7 +1491,7 @@ bot.on('callbackQuery', async msg => {
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
                 const events = {events : []}
-                for(let i = o; i<result1.length;i++){
+                for(let i = 0; i<result1.length;i++){
                     if(result1[i] !== userAction[msg.from.id].id){
                         events.events = [...events.events, result1[i]]
                     }else{
@@ -1626,7 +1626,7 @@ bot.on('callbackQuery', async msg => {
                         }
                     }
                 }
-                bot.sendMessage(msg.chat.id, 'Це всі події в цьому класі');
+                bot.sendMessage(msg.from.id, 'Це всі події в цьому класі');
                 return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
             }
         }else{
