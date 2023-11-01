@@ -1491,11 +1491,11 @@ bot.on('callbackQuery', async msg => {
         const cursor1 = coll1.find(filter1);
         const result1 = await cursor1.toArray();
                 const events = {events : []}
-                for(let i = 0; i<result1.length;i++){
-                    if(result1[i] !== userAction[msg.from.id].id){
-                        events.events = [...events.events, result1[i]]
+                for(let i = 0; i<result1[0].events.length;i++){
+                    if(result1[0].events[i].id !== userAction[msg.from.id].id){
+                        events.events = [...events.events, result1[0].events[i]]
                     }else{
-                        events.events = [...events.events, {...result1[i],status:false}]
+                        events.events = [...events.events, {...result1[0].events[i],status:false}]
                     }
                 }
                 console.log(result1)
@@ -1619,6 +1619,7 @@ bot.on('callbackQuery', async msg => {
             }else{
                 console.log(result1[0].events)
                 for(let i = 0; i<result1[0].events.length;i++){
+                    console.log(result1[0].events[i])
                     if(!result1[0].events[i]?.status){
                         await bot.sendMessage(msg.from.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
                         if(userStatus[msg.from.id]){
