@@ -1572,18 +1572,18 @@ bot.on('callbackQuery', async msg => {
         const coll1 = client.db('artem-school').collection('classrooms');
         const filter1 = {_id: userClass[msg.from.id]};
         const cursor1 = coll1.find(filter1);
-        const result1 = (await cursor1.toArray()).filter(arr => arr.status);
+        const result1 = await cursor1.toArray();
         await client.close();
         if(result1[0]){
             if(result1[0].events.length===0){
                 bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
                 return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
             }else{
-                userAction[msg.from.id] = {accept:true, data:result1}
+                userAction[msg.from.id] = {accept:true, data:result1[0].events}
                 let newArr = [];
-                for(let i = 0; i<result1.length;i++){
+                for(let i = 0; i<result1.events.filter(arr => arr.status).length;i++){
                     newArr = [[
-                        bot.inlineButton(`${result1[i].text}`, {callback: result1[i].id}),
+                        bot.inlineButton(`${result1[0].events.filter(arr => arr.status)[i].text}`, {callback: result1[0].events.filter(arr => arr.status)[i].id}),
                     ],...newArr]
                 }
                 let replyMarkup = bot.inlineKeyboard(newArr);
