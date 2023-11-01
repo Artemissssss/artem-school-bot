@@ -1614,13 +1614,13 @@ bot.on('callbackQuery', async msg => {
         userAction[msg.from.id] = undefined;
         if(result1[0]){
             if(result1[0].events.length===0){
-                bot.sendMessage(msg.chat.id, 'В цьому класі ще немає подій');
+                bot.sendMessage(msg.from.id, 'В цьому класі ще немає подій');
                 return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
             }else{
                 console.log(result1[0].events)
                 for(let i = 0; i<result1[0].events.length;i++){
                     if(!result1[0].events[i]?.status){
-                        await bot.sendMessage(msg.chat.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
+                        await bot.sendMessage(msg.from.id, `${result1[0].events[i].text}\n\n\nО ${result1[0].events[i].date} ${result1[0].events[i].time}\n\nДля: ${result1[0].events[i].who}`);
                         if(msg.chat.type ==="private" && userStatus[msg.from.id]){
                             await bot.sendMessage(msg.from.id, `${result1[0].events[i].id}`);
                         }
