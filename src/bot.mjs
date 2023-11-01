@@ -1540,8 +1540,8 @@ bot.on('callbackQuery', async msg => {
                 userAction[msg.from.id] = undefined;
                     await client.close();
                 await bot.sendMessage(msg.from.id,"Подію відхилено")
-    }
-    return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
+            }
+            return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
     }else if(userAction[msg.from.id]?.accept){
         let replyMarkup = bot.inlineKeyboard([[
             bot.inlineButton("Одобрити", {callback: `одобрити`}),
@@ -1549,7 +1549,7 @@ bot.on('callbackQuery', async msg => {
             bot.inlineButton("Відхилити", {callback: `відхилити`}),
         ]]);
         userAction[msg.from.id] = {id:msg.data, ...userAction[msg.from.id]};
-        let newEvent = userAction[msg.from.id].filter(arr => arr.id === msg.data)
+        let newEvent = userAction[msg.from.id].data.filter(arr => arr.id === msg.data)
         await bot.sendMessage(msg.chat.id, `${newEvent[0].text}\n\n\nО ${newEvent[0].date} ${newEvent[0].time}\n\nДля: ${newEvent[0].who}`);
         await bot.sendMessage(msg.from.id,"Ви хочете одобрити подію чи відхилити",{replyMarkup})
         return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
