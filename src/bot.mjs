@@ -1549,7 +1549,7 @@ bot.on('callbackQuery', async msg => {
             bot.inlineButton("Відхилити", {callback: `відхилити`}),
         ]]);
         userAction[msg.from.id] = {id:msg.data, ...userAction[msg.from.id]};
-        console.log(userAction[msg.from.id].data)
+        console.log(userAction[msg.from.id].id)
         let newEvent = userAction[msg.from.id].data.filter(arr => arr.id === msg.data)
         await bot.sendMessage(msg.chat.id, `${newEvent[0].text}\n\n\nО ${newEvent[0].date} ${newEvent[0].time}\n\nДля: ${newEvent[0].who}`);
         await bot.sendMessage(msg.from.id,"Ви хочете одобрити подію чи відхилити",{replyMarkup})
