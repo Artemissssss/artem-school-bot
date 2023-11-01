@@ -976,12 +976,13 @@ if(lastUserMessage[msg.from.id] === "Створення події" && !userActi
 
 if(userStatus[msg.from.id]){
     if(text === "Події" && userAction[msg.from.id] === undefined){
+        console.log("fjshfdfh")
         let replyMarkup = bot.inlineKeyboard([[
             bot.inlineButton("Запропонованні події", {callback: 'Запропонованні події'}),
         ],[
             bot.inlineButton("Перегляд подій", {callback: 'Перегляд подій'}),
         ]]);
-        return bot.sendMessage(`Виберіть`,{replyMarkup});
+        return bot.sendMessage('Виберіть',{replyMarkup});
     }
     if(lastUserMessage[msg.from.id] === "РозкладТижденьЗадати"){
         userAction[msg.from.id] = {...userAction[msg.from.id], text:text};
