@@ -1581,7 +1581,7 @@ bot.on('callbackQuery', async msg => {
             }else{
                 userAction[msg.from.id] = {accept:true, data:result1[0].events}
                 let newArr = [];
-                for(let i = 0; i<result1.events.filter(arr => arr.status).length;i++){
+                for(let i = 0; i<result1[0].events.filter(arr => arr.status).length;i++){
                     newArr = [[
                         bot.inlineButton(`${result1[0].events.filter(arr => arr.status)[i].text}`, {callback: result1[0].events.filter(arr => arr.status)[i].id}),
                     ],...newArr]
