@@ -976,13 +976,12 @@ if(lastUserMessage[msg.from.id] === "Створення події" && !userActi
 
 if(userStatus[msg.from.id]){
     if(text === "Події" && userAction[msg.from.id] === undefined){
-        console.log("fjshfdfh")
         let replyMarkup = bot.inlineKeyboard([[
             bot.inlineButton("Запропонованні події", {callback: 'Запропонованні події'}),
         ],[
             bot.inlineButton("Перегляд подій", {callback: 'Перегляд подій'}),
         ]]);
-        return bot.sendMessage('Виберіть',{replyMarkup});
+        return bot.sendMessage(msg.from.id, 'Виберіть',{replyMarkup});
     }
     if(lastUserMessage[msg.from.id] === "РозкладТижденьЗадати"){
         userAction[msg.from.id] = {...userAction[msg.from.id], text:text};
@@ -1511,7 +1510,7 @@ bot.on('callbackQuery', async msg => {
                 lastUserMessage[msg.from.id] = "textФайл";
                 userAction[msg.from.id] = undefined;
                 await client.close();
-                await bot.sendMessage("Подію одобрено")
+                await bot.sendMessage(msg.from.id, "Подію одобрено")
     }else if(msg.data ==="відхилити"){
         const client = await MongoClient.connect(
             `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -1540,7 +1539,7 @@ bot.on('callbackQuery', async msg => {
                 lastUserMessage[msg.from.id] = "textФайл";
                 userAction[msg.from.id] = undefined;
                     await client.close();
-                await bot.sendMessage("Подію відхилено")
+                await bot.sendMessage(msg.from.id,"Подію відхилено")
     }
     return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
     }else if(userAction[msg.from.id]?.accept){
@@ -1552,7 +1551,7 @@ bot.on('callbackQuery', async msg => {
         userAction[msg.from.id] = {id:msg.data, ...userAction[msg.from.id]};
         let newEvent = userAction[msg.from.id].filter(arr => arr.id === msg.data)
         await bot.sendMessage(msg.chat.id, `${newEvent[0].text}\n\n\nО ${newEvent[0].date} ${newEvent[0].time}\n\nДля: ${newEvent[0].who}`);
-        await bot.sendMessage("Ви хочете одобрити подію чи відхилити",{replyMarkup})
+        await bot.sendMessage(msg.from.id,"Ви хочете одобрити подію чи відхилити",{replyMarkup})
         return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
     }
     if(msg.data === "Запропонованні події"){
@@ -1588,7 +1587,7 @@ bot.on('callbackQuery', async msg => {
                     ],...newArr]
                 }
                 let replyMarkup = bot.inlineKeyboard(newArr);
-                await bot.sendMessage("Виберіть подію:", {replyMarkup})
+                await bot.sendMessage(msg.from.id,"Виберіть подію:", {replyMarkup})
                 return bot.answerCallbackQuery(msg.from.id, `Inline button callback: ${ msg.data }`, true);
             }
         }else{
