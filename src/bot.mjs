@@ -243,7 +243,7 @@ bot.on('*', async msg => {
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
     if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
         if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
-            if(text?.indexOf("!розсилка") === 0 && msg.reply_to_message){
+            if(text === "!розсилка" && msg.reply_to_message){
                 const client = await MongoClient.connect(
                     `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
                     { useNewUrlParser: true, useUnifiedTopology: true }
@@ -255,9 +255,9 @@ bot.on('*', async msg => {
                 await client.close();
                 let newArr = [];
                 for(let i =0;i<result.length;i++){
-                    if(newArr.indexOf(result[i].id) === -1){
-                        await bot.forwardMessage(result[i].id, msg.from.id, msg.reply_to_message.message_id);
-                        newArr = [result[i].id,...newArr];
+                    if(newArr.indexOf(result[i]?.id) === -1){
+                        await bot.forwardMessage(result[i]?.id, msg.from.id, msg.reply_to_message.message_id);
+                        newArr = [result[i]?.id,...newArr];
                     }
                 };
                 return null;
@@ -277,7 +277,7 @@ bot.on('*', async msg => {
                 }
             }
         }else{
-            return bot.forwardMessage(msg.reply_to_message?.forward_from.id, msg.from.id, msg.message_id)
+            return bot.forwardMessage(msg.reply_to_message?.forward_from?.id, msg.from.id, msg.message_id)
         }
     }
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
