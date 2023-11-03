@@ -240,8 +240,7 @@ bot.on('*', async msg => {
     const text = msg.text
     if (text?.indexOf("/gpt") === 0) return null;
     if (text?.indexOf("/reset") === 0) return null;
-    if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
-        console.log(":dsds")
+    if((msg.reply_to_message?.forward_from?.id || msg.reply_to_message) && text !== "Видалити"){
         if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
             console.log("hello")
             if(text === "!розсилка" && msg.reply_to_message){
