@@ -267,22 +267,6 @@ bot.on('*', async msg => {
                     return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
                 }
             }
-        }else if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
-            if(text){
-                return bot.sendMessage(userChat[msg.from.id], text);
-            }else if(msg?.photo[0].file_id){
-                if(msg.photo?.caption){
-                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
-                }else{
-                    return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
-                }
-            }else if(msg?.document.thumbnail.file_id){
-                if(msg.document.caption){
-                    return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id,{caption:msg.document.caption})
-                }else{
-                    return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
-                }
-            }
         }else if(text?.indexOf("!розсилка") === 0){
             const client = await MongoClient.connect(
                 `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
@@ -303,7 +287,23 @@ bot.on('*', async msg => {
             return null;
         }
     }
-
+     if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
+        if(text){
+            return bot.sendMessage(userChat[msg.from.id], text);
+        }else if(msg?.photo[0].file_id){
+            if(msg.photo?.caption){
+                return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id, {caption:msg.photo.caption})
+            }else{
+                return bot.sendPhoto(userChat[msg.from.id], msg.photo[0].file_id)
+            }
+        }else if(msg?.document.thumbnail.file_id){
+            if(msg.document.caption){
+                return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id,{caption:msg.document.caption})
+            }else{
+                return bot.sendDocument(userChat[msg.from.id], msg.document.thumbnail.file_id)
+            }
+        }
+    }
 
     if(msg.from.id !== 1052973544 && msg.from.id !== 5551509960 && text === "/chat"){
         userChat[msg.from.id] = 5551509960;
