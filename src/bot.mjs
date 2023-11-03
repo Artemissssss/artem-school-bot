@@ -241,6 +241,44 @@ bot.on('*', async msg => {
     if (text?.indexOf("/gpt") === 0) return null;
     if (text?.indexOf("/reset") === 0) return null;
     console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
+    if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
+        if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
+            if(text?.indexOf("!розсилка") === 0 && msg.reply_to_message){
+                const client = await MongoClient.connect(
+                    `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
+                    { useNewUrlParser: true, useUnifiedTopology: true }
+                );
+                const coll = client.db('artem-school').collection('users');
+                const cursor = coll.find();
+                const result = await cursor.toArray();
+                await client.close();
+                let newArr = [];
+                for(let i =0;i<result.length;i++){
+                    if(newArr.indexOf(result[i].id) === -1){
+                        await bot.forwardMessage(result[i].id, msg.from.id, msg.reply_to_message.message_id);
+                        newArr = [result[i].id,...newArr];
+                    }
+                };
+                return null;
+            }else if(text){
+                return bot.sendMessage(msg.reply_to_message?.forward_from.id, text);
+            }else if(msg?.photo[0].file_id){
+                if(msg.photo?.caption){
+                    return bot.sendPhoto(msg.reply_to_message?.forward_from.id, msg.photo[0].file_id, {caption:msg.photo.caption})
+                }else{
+                    return bot.sendPhoto(msg.reply_to_message?.forward_from.id, msg.photo[0].file_id)
+                }
+            }else if(msg?.document.thumbnail.file_id){
+                if(msg.document.caption){
+                    return bot.sendDocument(msg.reply_to_message?.forward_from.id, msg.document.thumbnail.file_id,{caption:msg.document.caption})
+                }else{
+                    return bot.sendDocument(msg.reply_to_message?.forward_from.id, msg.document.thumbnail.file_id)
+                }
+            }
+        }else{
+            return bot.forwardMessage(msg.reply_to_message?.forward_from.id, msg.from.id, msg.message_id)
+        }
+    }
     if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
         if(text?.indexOf("!чат") === 0){
             lastUserMessage[msg.from.id] = "!чат"
@@ -285,23 +323,6 @@ bot.on('*', async msg => {
                 }
             };
             return null;
-        }
-    }
-     if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
-        if(text){
-            return bot.sendMessage(msg.reply_to_message?.forward_from.id, text);
-        }else if(msg?.photo[0].file_id){
-            if(msg.photo?.caption){
-                return bot.sendPhoto(msg.reply_to_message?.forward_from.id, msg.photo[0].file_id, {caption:msg.photo.caption})
-            }else{
-                return bot.sendPhoto(msg.reply_to_message?.forward_from.id, msg.photo[0].file_id)
-            }
-        }else if(msg?.document.thumbnail.file_id){
-            if(msg.document.caption){
-                return bot.sendDocument(msg.reply_to_message?.forward_from.id, msg.document.thumbnail.file_id,{caption:msg.document.caption})
-            }else{
-                return bot.sendDocument(msg.reply_to_message?.forward_from.id, msg.document.thumbnail.file_id)
-            }
         }
     }
 
