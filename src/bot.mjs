@@ -251,6 +251,7 @@ bot.on('*', async msg => {
                 const coll = client.db('artem-school').collection('users');
                 const cursor = coll.find();
                 const result = await cursor.toArray();
+                console.log(result)
                 await client.close();
                 let newArr = [];
                 for(let i =0;i<result.length;i++){
