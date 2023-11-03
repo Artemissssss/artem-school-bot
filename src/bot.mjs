@@ -236,13 +236,14 @@ bot.on('/delS', async msg => {
 // return null 
 // })
 bot.on('*', async msg => {
-    console.log(msg.text === "Події",msg)
+    console.log(msg)
     const text = msg.text
     if (text?.indexOf("/gpt") === 0) return null;
     if (text?.indexOf("/reset") === 0) return null;
-    console.log(lastUserMessage[msg.from.id],userChat[msg.from.id])
     if(msg.reply_to_message?.forward_from.id && text !== "Видалити"){
+        console.log(":dsds")
         if(msg.from.id === 1052973544  || msg.from.id === 5551509960){
+            console.log("hello")
             if(text === "!розсилка" && msg.reply_to_message){
                 const client = await MongoClient.connect(
                     `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_URI}/?retryWrites=true&w=majority`,
